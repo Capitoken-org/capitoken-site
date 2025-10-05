@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Capitoken — Coming Soon</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="assets/img/logo-capitoken.jpg"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+  <!-- Background blobs -->
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <!-- Glass card -->
+  <main class="hero" role="main" aria-label="Capitoken Coming Soon">
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <img class="brand" src="assets/img/logo-capitoken.jpg" alt="Capitoken logo"/>
+    </div>
+
+    <h1 class="title">Capitoken is Coming Soon</h1>
+    <p class="subtitle">The memecoin of the future is almost here. Stay tuned!</p>
+
+    <div class="countdown" id="countdown" aria-live="polite">
+      <div class="cell"><span id="d" class="num">00</span><span class="lbl">Days</span></div>
+      <div class="cell"><span id="h" class="num">00</span><span class="lbl">Hours</span></div>
+      <div class="cell"><span id="m" class="num">00</span><span class="lbl">Minutes</span></div>
+      <div class="cell"><span id="s" class="num">00</span><span class="lbl">Seconds</span></div>
+    </div>
+
+    <div class="cta">
+      <a class="btn primary" href="#" aria-disabled="true">Whitepaper (soon)</a>
+      <a class="btn ghost" href="#" aria-disabled="true">Contract (soon)</a>
+    </div>
+
+    <footer class="foot">© <span id="y"></span> Capitoken</footer>
+  </main>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
