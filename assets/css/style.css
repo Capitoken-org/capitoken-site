@@ -46,3 +46,83 @@ body {
     font-size: 1.4rem;
   }
 }
+/* === FUENTES PRINCIPALES === */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@400;600;800&display=swap');
+
+/* === PALETA DE COLORES === */
+:root {
+  --capitoken-green: #0b1d17;
+  --capitoken-orange: #d87b27;
+  --capitoken-cream: #f8f8f8;
+  --capitoken-accent: #3ddc97;
+}
+
+/* === ESTILO GLOBAL === */
+body {
+  background-color: var(--capitoken-green);
+  color: var(--capitoken-cream);
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* === LOGO === */
+.logo {
+  width: 600px;              /* más grande */
+  max-width: 85%;
+  height: auto;
+  margin-bottom: 40px;
+  transition: transform 0.4s ease-in-out;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* === TITULOS === */
+h1 {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 3rem;           /* tamaño aumentado */
+  color: var(--capitoken-orange);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* === SUBTÍTULO / DESCRIPCIÓN === */
+p {
+  font-size: 1.3rem;         /* ligeramente más grande */
+  color: var(--capitoken-cream);
+  margin: 10px 0 40px 0;
+}
+
+/* === CONTADOR === */
+#countdown {
+  font-size: 2.4rem;         /* más grande para foco visual */
+  font-weight: 800;
+  color: var(--capitoken-accent);
+  letter-spacing: 1.5px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .logo {
+    width: 80%;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+  }
+
+  #countdown {
+    font-size: 1.8rem;
+  }
+}
