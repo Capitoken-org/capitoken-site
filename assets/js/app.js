@@ -1,5 +1,5 @@
 // Fecha de lanzamiento (UTC)
-const LAUNCH_ISO = "2025-10-17T19:17:17Z";
+const LAUNCH_ISO = "2025-10-17T23:17:17Z";
 
 const d = document.getElementById('d');
 const h = document.getElementById('h');
