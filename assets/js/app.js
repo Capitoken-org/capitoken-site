@@ -1,8 +1,6 @@
-// Fecha de lanzamiento (UTC). Ejemplo: "2025-12-01T17:00:00Z"
-// Pon null para ocultar el contador.
-const LAUNCH_ISO = "2025-12-01T17:00:00Z"; // <-- cámbialo o pon null
+// Fecha de lanzamiento (UTC)
+const LAUNCH_ISO = "2025-12-01T17:00:00Z";
 
-const timerEl = document.getElementById('countdown');
 const d = document.getElementById('d');
 const h = document.getElementById('h');
 const m = document.getElementById('m');
@@ -11,7 +9,7 @@ const s = document.getElementById('s');
 function pad(n){ return n.toString().padStart(2,'0'); }
 
 function tick(){
-  if(!LAUNCH_ISO){ if(timerEl) timerEl.style.display='none'; return; }
+  if(!LAUNCH_ISO) return;
   const now = new Date();
   const target = new Date(LAUNCH_ISO);
   let diff = Math.max(0, target - now);
@@ -26,4 +24,3 @@ function tick(){
   s.textContent = pad(ss);
 }
 tick(); setInterval(tick, 1000);
-
