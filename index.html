@@ -21,12 +21,16 @@
   </div>
 
   <!-- Glass card -->
-  <main class="hero">
-    <img class="brand" src="assets/img/logo-capitoken.png" alt="Capitoken"/>
+  <main class="hero" role="main" aria-label="Capitoken Coming Soon">
+    <!-- LOGO arriba (reemplaza el texto) -->
+    <div class="logo-wrap">
+      <img class="brand" src="assets/img/logo-capitoken.png" alt="Capitoken logo"/>
+    </div>
+
     <h1 class="title">Capitoken is Coming Soon</h1>
     <p class="subtitle">The memecoin of the future is almost here. Stay tuned!</p>
 
-    <div class="countdown" id="countdown">
+    <div class="countdown" id="countdown" aria-live="polite">
       <div class="cell"><span id="d" class="num">00</span><span class="lbl">Days</span></div>
       <div class="cell"><span id="h" class="num">00</span><span class="lbl">Hours</span></div>
       <div class="cell"><span id="m" class="num">00</span><span class="lbl">Minutes</span></div>
