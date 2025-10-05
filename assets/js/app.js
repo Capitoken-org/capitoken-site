@@ -1,19 +1,27 @@
-const countdown = document.getElementById('countdown');
-const LAUNCH_ISO = "2025-12-01T17:00:00Z";
+// Fecha de lanzamiento (UTC). Ejemplo: "2025-12-01T17:00:00Z"
+const LAUNCH_ISO = "2025-12-01T17:00:00Z"; // o null para ocultar
 
-function updateCountdown() {
+const timerEl = document.getElementById('countdown');
+const d = document.getElementById('d');
+const h = document.getElementById('h');
+const m = document.getElementById('m');
+const s = document.getElementById('s');
+
+function pad(n){ return n.toString().padStart(2,'0'); }
+
+function tick(){
+  if(!LAUNCH_ISO){ if(timerEl) timerEl.style.display='none'; return; }
   const now = new Date();
-  const launch = new Date(LAUNCH_ISO);
-  const diff = launch - now;
-  if (diff <= 0) {
-    countdown.textContent = "🚀 We are live!";
-    return;
-  }
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  countdown.textContent = `${days}d ${hours}h ${minutes}m`;
-}
+  const target = new Date(LAUNCH_ISO);
+  let diff = Math.max(0, target - now);
+  const dd = Math.floor(diff/86400000); diff -= dd*86400000;
+  const hh = Math.floor(diff/3600000);  diff -= hh*3600000;
+  const mm = Math.floor(diff/60000);    diff -= mm*60000;
+  const ss = Math.floor(diff/1000);
 
-setInterval(updateCountdown, 60000);
-updateCountdown();
+  d.textContent = pad(dd);
+  h.textContent = pad(hh);
+  m.textContent = pad(mm);
+  s.textContent = pad(ss);
+}
+tick(); setInterval(tick, 1000);
