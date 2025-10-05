@@ -1,5 +1,6 @@
 // Fecha de lanzamiento (UTC). Ejemplo: "2025-12-01T17:00:00Z"
-const LAUNCH_ISO = "2025-12-01T17:00:00Z"; // o null para ocultar
+// Pon null para ocultar el contador.
+const LAUNCH_ISO = "2025-12-01T17:00:00Z"; // <-- cámbialo o pon null
 
 const timerEl = document.getElementById('countdown');
 const d = document.getElementById('d');
@@ -25,3 +26,4 @@ function tick(){
   s.textContent = pad(ss);
 }
 tick(); setInterval(tick, 1000);
+
