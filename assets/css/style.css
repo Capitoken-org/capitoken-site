@@ -1,6 +1,6 @@
 body {
   background-color: #0b1d17;
-  color: #f4f4f4;
+  color: #f8f8f8;
   font-family: 'Poppins', sans-serif;
   text-align: center;
   display: flex;
@@ -13,8 +13,8 @@ body {
   max-width: 600px;
 }
 .logo {
-  width: 160px;
-  margin-bottom: 30px;
+  width: 800px;
+  margin-bottom: 150px;
 }
 #countdown {
   font-size: 1.8rem;
