@@ -1,128 +1,116 @@
-body {
-  background-color: #0b1d17;
-  color: #f8f8f8;
-  font-family: 'Poppins', sans-serif;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
+/* ==== PALETA CAPITOKEN ==== */
+:root{
+  --bg-1:#071511;          /* verde muy oscuro */
+  --bg-2:#0b1d17;          /* fondo base */
+  --capy:#e58a27;          /* naranja capy */
+  --accent:#16c27f;        /* verde acento */
+  --ink:#e8f1ec;           /* texto claro */
+  --muted:#a5b7b0;         /* texto secundario */
+  --glass: rgba(255,255,255,.08);
+  --stroke: rgba(255,255,255,.12);
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 600px;
+/* ==== RESET BÁSICO ==== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--ink);
+  background: radial-gradient(60rem 60rem at 10% -10%, #083226 0%, transparent 60%),
+              radial-gradient(50rem 50rem at 110% 10%, #0b503b 0%, transparent 60%),
+              linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  font-family:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+  overflow:hidden; /* evita scroll con blobs */
 }
 
-.logo {
-  width: 80%;
-  max-width: 650px;
-  height: auto;
-  margin-bottom: 35px;
+/* ==== BLOBS DEL FONDO (solo CSS) ==== */
+.bg{position:fixed; inset:0; pointer-events:none; filter: blur(40px) saturate(120%);}
+.blob{position:absolute; border-radius:50%; opacity:.55; transform:translate(-50%,-50%); animation: float 16s ease-in-out infinite}
+.b1{left:18%; top:22%; width:520px; height:520px; background: radial-gradient(circle at 30% 30%, #0ee29a, transparent 70%)}
+.b2{left:78%; top:15%; width:420px; height:420px; background: radial-gradient(circle at 70% 40%, #1aa067, transparent 70%); animation-delay: -6s}
+.b3{left:60%; top:78%; width:560px; height:560px; background: radial-gradient(circle at 50% 60%, #e58a27, transparent 70%); animation-delay: -10s}
+@keyframes float{
+  0%,100%{transform:translate(-50%,-50%)}
+  50%{transform:translate(calc(-50% + 20px), calc(-50% - 15px))}
 }
 
-@media (max-width: 768px) {
-  .logo {
-    width: 90%;
-    max-width: 500px;
-  }
+/* ==== CARD GLASS ==== */
+.hero{
+  position:relative;
+  max-width:980px;
+  width:92%;
+  margin: 6vh auto 0;
+  padding: 36px 28px 28px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border:1px solid var(--stroke);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-align:center;
+  box-shadow: 0 30px 90px rgba(0,0,0,.45);
 }
 
-#countdown {
-  font-size: 1.8rem;
-  margin-top: 20px;
-  color: #3ddc97;
+/* ==== BRAND ==== */
+.brand{
+  width: 520px; max-width: 86%;
+  height:auto; display:block; margin: 0 auto 22px;
+  transition: transform .4s ease;
+}
+.brand:hover{ transform: scale(1.03) }
+
+/* ==== TIPOGRAFÍA ==== */
+.title{
+  font-family:'Archivo Black', sans-serif;
+  font-size: clamp(2rem, 4.8vw, 3.6rem);
+  line-height:1.1;
+  margin: 6px 0 10px;
+  color: var(--capy);
+  letter-spacing:.5px;
+}
+.subtitle{
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  color: var(--muted);
+  margin: 0 0 24px;
 }
 
-@media (max-width: 768px) {
-  .logo {
-    width: 80%;
-  }
-  #countdown {
-    font-size: 1.4rem;
-  }
+/* ==== COUNTDOWN ==== */
+.countdown{
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  margin: 10px auto 24px;
 }
-/* === FUENTES PRINCIPALES === */
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@400;600;800&display=swap');
-
-/* === PALETA DE COLORES === */
-:root {
-  --capitoken-green: #0b1d17;
-  --capitoken-orange: #d87b27;
-  --capitoken-cream: #f8f8f8;
-  --capitoken-accent: #3ddc97;
+.cell{
+  background: var(--glass);
+  border:1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 14px 18px;
+  min-width: 110px;
 }
-
-/* === ESTILO GLOBAL === */
-body {
-  background-color: var(--capitoken-green);
-  color: var(--capitoken-cream);
-  font-family: 'Montserrat', sans-serif;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+.num{
+  font-family:'Archivo Black', sans-serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  color: var(--accent);
+  display:block;
+}
+.lbl{
+  display:block; margin-top:4px; font-size:.85rem; color:var(--muted); letter-spacing:.8px;
 }
 
-/* === LOGO === */
-.logo {
-  width: 600px;              /* más grande */
-  max-width: 85%;
-  height: auto;
-  margin-bottom: 40px;
-  transition: transform 0.4s ease-in-out;
+/* ==== CTAs ==== */
+.cta{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:6px}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:12px 18px; border-radius:12px; text-decoration:none;
+  font-weight:700; letter-spacing:.4px;
+  border:1px solid var(--stroke); color:var(--ink); background:rgba(0,0,0,.12);
 }
+.btn[aria-disabled="true"]{cursor:not-allowed; opacity:.75}
+.btn.primary{ background: var(--accent); color:#0a1c15; border-color: transparent }
+.btn.ghost:hover{ background: rgba(255,255,255,.08) }
 
-.logo:hover {
-  transform: scale(1.05);
-}
+.foot{ margin-top: 10px; color: var(--muted); font-size:.9rem }
 
-/* === TITULOS === */
-h1 {
-  font-family: 'Archivo Black', sans-serif;
-  font-size: 3rem;           /* tamaño aumentado */
-  color: var(--capitoken-orange);
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
-/* === SUBTÍTULO / DESCRIPCIÓN === */
-p {
-  font-size: 1.3rem;         /* ligeramente más grande */
-  color: var(--capitoken-cream);
-  margin: 10px 0 40px 0;
-}
-
-/* === CONTADOR === */
-#countdown {
-  font-size: 2.4rem;         /* más grande para foco visual */
-  font-weight: 800;
-  color: var(--capitoken-accent);
-  letter-spacing: 1.5px;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 768px) {
-  .logo {
-    width: 80%;
-  }
-
-  h1 {
-    font-size: 2.2rem;
-  }
-
-  p {
-    font-size: 1.1rem;
-  }
-
-  #countdown {
-    font-size: 1.8rem;
-  }
+/* ==== RESPONSIVE ==== */
+@media (max-width:640px){
+  .hero{padding:24px 18px}
+  .brand{max-width:92%}
 }
