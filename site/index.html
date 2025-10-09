@@ -1,1 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Capitoken — Community-first memecoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+  <div class="bg">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <header class="container nav">
+    <div class="brand">
+      <img src="assets/img/logo-capitoken.jpg" alt="Capitoken" />
+      <span>Capitoken</span>
+    </div>
+    <nav class="links">
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#faq">FAQ</a>
+      <a href="#audit" class="pill">Audit</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <h1><span class="muted">The community-first</span> memecoin</h1>
+      <p class="lead">
+        Fixed supply, transparent incentives, and a trustless launch schedule. Built for holders, not for bots.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#tokenomics">See Tokenomics</a>
+        <a class="btn" href="../dev/index.html">Coming Soon (public)</a>
+      </div>
+      <div class="metrics">
+        <div class="metric"><span class="k">100B</span><small>Max supply</small></div>
+        <div class="metric"><span class="k">8</span><small>Decimals</small></div>
+        <div class="metric"><span class="k">97%</span><small>Community</small></div>
+      </div>
+    </section>
+
+    <!-- TOKENOMICS -->
+    <section id="tokenomics" class="card">
+      <h2>Tokenomics</h2>
+      <ul class="list">
+        <li><b>Supply:</b> 100,000,000,000 CAPI (8 decimals)</li>
+        <li><b>Distribution:</b> 2% devs • 1% marketing • 97% community (ventas + rewards)</li>
+        <li><b>Incentives:</b> Días 1–30 (x30 → x1), luego +5% hasta día 365</li>
+        <li><b>Rewards:</b> bloqueadas 365 días (claim al año)</li>
+        <li><b>Anti-bot/whale:</b> 1 año (cooldowns, maxTx 1%, maxWallet 7%)</li>
+        <li><b>Vesting comunidad:</b> liberación mensual 12/12 • trustless</li>
+        <li><b>Owner:</b> renunciado después del despliegue</li>
+      </ul>
+    </section>
+
+    <!-- ROADMAP -->
+    <section id="roadmap" class="card">
+      <h2>Roadmap</h2>
+      <div class="grid-3">
+        <div class="step">
+          <h3>Fase 1</h3>
+          <p>ERC-20 + DEX + on-ramp (opcional) + auditoría</p>
+        </div>
+        <div class="step">
+          <h3>Fase 2</h3>
+          <p>Listados en agregadores (CMC / CG) • campañas</p>
+        </div>
+        <div class="step">
+          <h3>Fase 3</h3>
+          <p>CEX Tier-2/Tier-1 • Market making • Partners</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="card">
+      <h2>FAQ</h2>
+      <details>
+        <summary>¿Habrá venta privada o pre-sale?</summary>
+        <p>No. El lanzamiento es abierto y trustless. Sin ventajas ocultas.</p>
+      </details>
+      <details>
+        <summary>¿Dónde compro CAPI?</summary>
+        <p>Inicialmente en DEX (Uniswap). Más adelante, CEX.</p>
+      </details>
+      <details>
+        <summary>¿Por qué 8 decimales?</summary>
+        <p>Para favorecer percepción de precio accesible sin inflar supply artificialmente.</p>
+      </details>
+    </section>
+
+    <!-- AUDIT -->
+    <section id="audit" class="card">
+      <h2>Audit</h2>
+      <p>Publicaremos aquí el reporte y su hash on-chain tras el despliegue.</p>
+      <div class="actions">
+        <a class="btn" href="#" aria-disabled="true">Whitepaper (soon)</a>
+        <a class="btn" href="#" aria-disabled="true">Contract (soon)</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    © <span id="y"></span> Capitoken • Built for the community
+  </footer>
+
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
 
