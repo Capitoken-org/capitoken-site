@@ -29,4 +29,3 @@ window.PAIR_ABI = [
   {"constant":true,"inputs":[],"name":"token0","outputs":[{"type":"address"}],"stateMutability":"view","type":"function"},
   {"constant":true,"inputs":[],"name":"token1","outputs":[{"type":"address"}],"stateMutability":"view","type":"function"}
 ];
-
