@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow"/> <!-- quítalo al publicar -->
+  <title>Capitoken (CAPI) — The MemeCoin of the Future</title>
+  <meta name="description" content="Capitoken (CAPI): memecoin accesible con reglas claras, calendario trustless, ERC-20, supply fijo y foco en comunidad."/>
+  <link rel="icon" href="assets/img/logo-capitoken.jpg"/>
+  <link rel="stylesheet" href="assets/css/main.css"/>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#hero" class="brand">
+        <img src="assets/img/logo-capitoken.jpg" alt="Capitoken" />
+      </a>
+      <nav class="nav">
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#contract">Contrato</a>
+        <a href="#whitepaper">Whitepaper</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button id="menu" class="menu" aria-label="Abrir menú">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="bg">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+    </div>
+    <div class="container hero-inner">
+      <img class="hero-logo" src="assets/img/logo-capitoken.jpg" alt="Capitoken logo" />
+      <h1>Capitoken (CAPI)</h1>
+      <p class="lead">La memecoin accesible con reglas claras y calendario trustless. ERC-20, supply fijo <b>100,000,000,000</b>, 8 decimales, incentivos programados, y foco 100% en comunidad.</p>
+      <div class="cta">
+        <a class="btn primary" href="#contract">Ver Contrato</a>
+        <a class="btn ghost" href="#whitepaper">Whitepaper</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="k">100B</span><span class="l">Supply fijo</span></div>
+        <div class="stat"><span class="k">8</span><span class="l">Decimales</span></div>
+        <div class="stat"><span class="k">ERC-20</span><span class="l">Ethereum</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tokenomics -->
+  <section id="tokenomics" class="section">
+    <div class="container">
+      <h2>Tokenomics</h2>
+      <p class="muted">Distribución inicial y reglas de incentivos.</p>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>Distribución</h3>
+          <ul class="list">
+            <li><b>97%</b> Comunidad (ventas + recompensas)</li>
+            <li><b>2%</b> Desarrolladores</li>
+            <li><b>1%</b> Marketing</li>
+          </ul>
+          <div class="bars">
+            <div class="bar"><span>Comunidad 97%</span><i style="--w:97%"></i></div>
+            <div class="bar"><span>Devs 2%</span><i style="--w:2%"></i></div>
+            <div class="bar"><span>Marketing 1%</span><i style="--w:1%"></i></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Incentivos & Vesting</h3>
+          <ul class="list">
+            <li>Día 1 → bonus x30 por token comprado (recompensas bloqueadas 365 días)</li>
+            <li>Disminuye diariamente: día 30 → x1</li>
+            <li>Día 31–365 → bonus +5% por compra</li>
+            <li>97% liberado en 12 meses (trustless, mensual)</li>
+            <li>Anti-bot/anti-whale durante el primer año</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section id="roadmap" class="section">
+    <div class="container">
+      <h2>Roadmap</h2>
+      <ol class="timeline">
+        <li>
+          <span class="phase">Fase 1</span>
+          <div class="desc">Lanzamiento ERC-20 + DEX + campaña inicial. Web & branding.</div>
+        </li>
+        <li>
+          <span class="phase">Fase 2</span>
+          <div class="desc">Listados en CMC/CGK, verificación contrato, auditoría externa.</div>
+        </li>
+        <li>
+          <span class="phase">Fase 3</span>
+          <div class="desc">CEX tier-2/tier-1, market making, crecimiento comunidad.</div>
+        </li>
+        <li>
+          <span class="phase">Fase 4</span>
+          <div class="desc">Explorar L2 / multi-chain, integraciones y alianzas.</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Contrato -->
+  <section id="contract" class="section">
+    <div class="container">
+      <h2>Contrato</h2>
+      <div class="grid2">
+        <div class="card">
+          <h3>Dirección del token</h3>
+          <p class="muted">Copia y verifica en Etherscan una vez desplegado.</p>
+          <div class="address">
+            <code id="tokenAddress">0xTU_CONTRATO_AQUI</code>
+            <button class="btn tiny" id="copyAddr">Copiar</button>
+          </div>
+          <div class="links">
+            <a class="btn small" href="#" id="etherscan" target="_blank" rel="noreferrer">Etherscan</a>
+            <a class="btn small" href="#" id="uniswap" target="_blank" rel="noreferrer">Uniswap</a>
+          </div>
+          <p class="note">* Cambia la dirección arriba y los enlaces se actualizan solos.</p>
+        </div>
+        <div class="card">
+          <h3>Listados DEX sugeridos</h3>
+          <ul class="list">
+            <li><a href="#" id="uniswapDirect" target="_blank" rel="noreferrer">Uniswap (ETH→CAPI)</a></li>
+            <li><a href="#" id="usdcDirect" target="_blank" rel="noreferrer">Uniswap (USDC→CAPI)</a></li>
+            <li><a href="#" id="usdtDirect" target="_blank" rel="noreferrer">Uniswap (USDT→CAPI)</a></li>
+          </ul>
+          <p class="muted">Sugerencia: mantener pares EJFC/WETH y EJFC/USDC con liquidez.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Whitepaper & Auditoría -->
+  <section id="whitepaper" class="section">
+    <div class="container">
+      <h2>Whitepaper & Auditoría</h2>
+      <div class="grid2">
+        <div class="card">
+          <h3>Whitepaper</h3>
+          <p class="muted">Descarga el documento técnico con tokenomics, reglas y calendario.</p>
+          <a class="btn primary" href="assets/whitepaper/Capitoken-Whitepaper-ES.pdf" target="_blank" rel="noreferrer">Descargar (ES)</a>
+          <a class="btn ghost" href="assets/whitepaper/Capitoken-Whitepaper-EN.pdf" target="_blank" rel="noreferrer">Download (EN)</a>
+        </div>
+        <div class="card">
+          <h3>Auditoría</h3>
+          <p class="muted">Informe independiente de seguridad del contrato smart. (Próximamente)</p>
+          <a class="btn small" href="#" aria-disabled="true">Ver informe (soon)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <div class="container">
+      <h2>FAQ</h2>
+      <div class="faq">
+        <details>
+          <summary>¿Cuál es el supply y los decimales?</summary>
+          <div>Supply fijo: 100,000,000,000 CAPI. Decimales: 8.</div>
+        </details>
+        <details>
+          <summary>¿Cómo funcionan los incentivos?</summary>
+          <div>Día 1: x30 por token comprado (recompensa bloqueada 365 días). Día 30: x1. Día 31–365: +5% por compra.</div>
+        </details>
+        <details>
+          <summary>¿Hay bloqueo o vesting para la comunidad?</summary>
+          <div>El 97% se libera mensualmente (12/12) de forma trustless. Recompensas bloqueadas 365 días.</div>
+        </details>
+        <details>
+          <summary>¿Cuándo renuncian a la propiedad?</summary>
+          <div>Al finalizar el set up inicial (liquidez, listados y verificación), la propiedad será renunciada para asegurar descentralización.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© <span id="y"></span> Capitoken • Hecho para la comunidad</div>
+      <div class="socials">
+        <a href="#" aria-label="X/Twitter">X</a>
+        <a href="#" aria-label="Telegram">TG</a>
+        <a href="#" aria-label="Discord">DS</a>
+        <a href="#" aria-label="GitHub">GH</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
