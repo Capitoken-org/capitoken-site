@@ -1,12 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Capitoken — Community-first memecoin</title>
+  <title>Capitoken — Memecoin de la comunidad</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css" />
+  <!-- Librerías solo-frontend (no necesitas build): -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="bg">
@@ -14,34 +17,132 @@
     <div class="glow glow-2"></div>
   </div>
 
+  <!-- NAV -->
   <header class="container nav">
     <div class="brand">
       <img src="assets/img/logo-capitoken.jpg" alt="Capitoken" />
       <span>Capitoken</span>
     </div>
     <nav class="links">
+      <a href="#comprar">Comprar</a>
       <a href="#tokenomics">Tokenomics</a>
-      <a href="#roadmap">Roadmap</a>
+      <a href="#mercado">Mercado</a>
+      <a href="#actividad">Actividad</a>
       <a href="#faq">FAQ</a>
       <a href="#audit" class="pill">Audit</a>
+      <button id="btnConnect" class="btn btn-small">Conectar</button>
+      <span id="shortAcc" class="badge"></span>
     </nav>
   </header>
 
+  <!-- HERO -->
   <main class="container">
-    <!-- HERO -->
     <section class="hero">
-      <h1><span class="muted">The community-first</span> memecoin</h1>
+      <h1><span class="muted">La memecoin</span> de la comunidad</h1>
       <p class="lead">
-        Fixed supply, transparent incentives, and a trustless launch schedule. Built for holders, not for bots.
+        Supply fijo, incentivos transparentes y calendario trustless. Diseñada para holders, no para bots.
       </p>
       <div class="cta">
-        <a class="btn btn-primary" href="#tokenomics">See Tokenomics</a>
-        <a class="btn" href="../dev/index.html">Coming Soon (public)</a>
+        <a class="btn btn-primary" href="#comprar">Comprar ahora</a>
+        <a class="btn" href="../dev/index.html">Coming Soon</a>
       </div>
+
       <div class="metrics">
-        <div class="metric"><span class="k">100B</span><small>Max supply</small></div>
-        <div class="metric"><span class="k">8</span><small>Decimals</small></div>
-        <div class="metric"><span class="k">97%</span><small>Community</small></div>
+        <div class="metric">
+          <span class="k" id="mx">100B</span>
+          <small>Max supply</small>
+        </div>
+        <div class="metric">
+          <span class="k" id="circ">—</span>
+          <small>Circulante</small>
+        </div>
+        <div class="metric">
+          <span class="k" id="unl">—</span>
+          <small>Desbloqueado comunidad</small>
+        </div>
+        <div class="metric">
+          <span class="k" id="day">—</span>
+          <small>Día incentivo</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPRAR -->
+    <section id="comprar" class="card">
+      <h2>Compra</h2>
+      <p class="muted">Elige DEX para pagar con tu token preferido.</p>
+
+      <div class="dex-grid">
+        <a class="dex" target="_blank" rel="noreferrer" id="uEth">ETH → CAPI</a>
+        <a class="dex" target="_blank" rel="noreferrer" id="uUsdc">USDC → CAPI</a>
+        <a class="dex" target="_blank" rel="noreferrer" id="uUsdt">USDT → CAPI</a>
+        <a class="dex" target="_blank" rel="noreferrer" id="uDai">DAI → CAPI</a>
+      </div>
+
+      <div class="buy-actions">
+        <div class="col">
+          <label class="muted">Monto en ETH (compra directa)</label>
+          <input id="ethAmount" placeholder="0.05" />
+          <button class="btn btn-primary" id="btnBuy">Comprar (contrato)</button>
+          <div class="tiny muted">* Usa la compra directa sólo si el contrato la habilita.</div>
+          <div id="msg" class="msg"></div>
+        </div>
+        <div class="col">
+          <label class="muted">Tus recompensas bloqueadas</label>
+          <div class="highlight" id="locked">— CAPI</div>
+          <button class="btn" id="btnClaim">Reclamar (si desbloqueado)</button>
+        </div>
+        <div class="col">
+          <label class="muted">Calculadora de incentivo (hoy)</label>
+          <input id="calcIn" placeholder="Tokens comprados" />
+          <div class="tiny">Recompensa hoy: <b id="calcOut">—</b> CAPI</div>
+          <div class="tiny">Después día 30: +5% mensual hasta día 365</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MERCADO -->
+    <section id="mercado" class="card">
+      <h2>Mercado</h2>
+      <div class="market-grid">
+        <div class="mcard">
+          <div class="label">Precio (USD)</div>
+          <div class="value" id="priceUsd">—</div>
+          <div class="tiny muted">Fuente: par Uniswap (si configuras)</div>
+        </div>
+        <div class="mcard">
+          <div class="label">Market Cap (USD)</div>
+          <div class="value" id="mcUsd">—</div>
+          <div class="tiny muted">Circulante × precio</div>
+        </div>
+        <div class="mcard">
+          <div class="label">Siguiente cambio de día</div>
+          <div class="value" id="nextDay">—</div>
+          <div class="tiny muted">Incentivo: <span id="incLabel">—</span></div>
+        </div>
+      </div>
+
+      <canvas id="priceChart" height="90"></canvas>
+    </section>
+
+    <!-- ACTIVIDAD -->
+    <section id="actividad" class="card">
+      <h2>Actividad reciente</h2>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Comprador</th>
+              <th>ETH</th>
+              <th>Tokens</th>
+              <th>Rewards</th>
+              <th>Tx</th>
+            </tr>
+          </thead>
+          <tbody id="txBody">
+            <tr><td colspan="5" class="muted">Sin eventos aún.</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -49,68 +150,51 @@
     <section id="tokenomics" class="card">
       <h2>Tokenomics</h2>
       <ul class="list">
-        <li><b>Supply:</b> 100,000,000,000 CAPI (8 decimals)</li>
-        <li><b>Distribution:</b> 2% devs • 1% marketing • 97% community (ventas + rewards)</li>
-        <li><b>Incentives:</b> Días 1–30 (x30 → x1), luego +5% hasta día 365</li>
-        <li><b>Rewards:</b> bloqueadas 365 días (claim al año)</li>
-        <li><b>Anti-bot/whale:</b> 1 año (cooldowns, maxTx 1%, maxWallet 7%)</li>
-        <li><b>Vesting comunidad:</b> liberación mensual 12/12 • trustless</li>
-        <li><b>Owner:</b> renunciado después del despliegue</li>
+        <li><b>Supply:</b> 100,000,000,000 CAPI (8 decimales)</li>
+        <li><b>Distribución:</b> 2% devs • 1% marketing • 97% comunidad (ventas + rewards)</li>
+        <li><b>Incentivos:</b> Días 1–30 (x30 → x1), luego +5% hasta día 365</li>
+        <li><b>Recompensas:</b> bloqueo 365 días (claim al año)</li>
+        <li><b>Anti-bot/whale:</b> cooldown progresivo 1h/6h/24h, maxTx 1%, maxWallet 7% (primer año)</li>
+        <li><b>Vesting comunidad:</b> 12 liberaciones mensuales (trustless)</li>
+        <li><b>Owner:</b> renunciado tras el despliegue</li>
       </ul>
-    </section>
-
-    <!-- ROADMAP -->
-    <section id="roadmap" class="card">
-      <h2>Roadmap</h2>
-      <div class="grid-3">
-        <div class="step">
-          <h3>Fase 1</h3>
-          <p>ERC-20 + DEX + on-ramp (opcional) + auditoría</p>
-        </div>
-        <div class="step">
-          <h3>Fase 2</h3>
-          <p>Listados en agregadores (CMC / CG) • campañas</p>
-        </div>
-        <div class="step">
-          <h3>Fase 3</h3>
-          <p>CEX Tier-2/Tier-1 • Market making • Partners</p>
-        </div>
-      </div>
     </section>
 
     <!-- FAQ -->
     <section id="faq" class="card">
       <h2>FAQ</h2>
       <details>
-        <summary>¿Habrá venta privada o pre-sale?</summary>
-        <p>No. El lanzamiento es abierto y trustless. Sin ventajas ocultas.</p>
-      </details>
-      <details>
-        <summary>¿Dónde compro CAPI?</summary>
-        <p>Inicialmente en DEX (Uniswap). Más adelante, CEX.</p>
+        <summary>¿Cómo veo el contrato en Etherscan?</summary>
+        <p>Publicaremos aquí el enlace tras el despliegue.</p>
       </details>
       <details>
         <summary>¿Por qué 8 decimales?</summary>
-        <p>Para favorecer percepción de precio accesible sin inflar supply artificialmente.</p>
+        <p>Favorece percepción de precio accesible sin inflar el supply.</p>
+      </details>
+      <details>
+        <summary>¿Cómo se calcula la recompensa?</summary>
+        <p>Día <b>1</b>: x30 por token comprado; día <b>30</b>: x1. A partir de día <b>31</b>, +5% mensual hasta día 365 (recompensas bloqueadas 365 días).</p>
       </details>
     </section>
 
     <!-- AUDIT -->
     <section id="audit" class="card">
-      <h2>Audit</h2>
-      <p>Publicaremos aquí el reporte y su hash on-chain tras el despliegue.</p>
+      <h2>Auditoría</h2>
+      <p>Publicaremos el PDF y su hash on-chain cuando esté listo.</p>
       <div class="actions">
-        <a class="btn" href="#" aria-disabled="true">Whitepaper (soon)</a>
-        <a class="btn" href="#" aria-disabled="true">Contract (soon)</a>
+        <a class="btn" href="#" aria-disabled="true">Whitepaper (pronto)</a>
+        <a class="btn" href="#" aria-disabled="true">Contrato (pronto)</a>
       </div>
     </section>
   </main>
 
   <footer class="container footer">
-    © <span id="y"></span> Capitoken • Built for the community
+    © <span id="y"></span> Capitoken • Contrato sin owner • Hecho para la comunidad
   </footer>
 
+  <!-- Config & lógica -->
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/abi.js"></script>
   <script src="assets/js/site.js"></script>
 </body>
 </html>
-
