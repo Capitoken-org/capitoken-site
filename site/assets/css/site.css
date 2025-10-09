@@ -80,3 +80,15 @@ details summary{cursor:pointer;font-weight:600}
   .dex-grid{grid-template-columns:repeat(2,1fr)}
   .buy-actions{grid-template-columns:1fr}
 }
+/* === Wallet bar (append) === */
+.wallet-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wbtn{
+  width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);display:inline-grid;place-items:center;cursor:pointer;padding:4px
+}
+.wbtn svg{width:20px;height:20px}
+.wbtn:hover{filter:brightness(1.06)}
+.badge{font-size:.82rem;opacity:.8}
+
+/* Botón Connect pequeño (para usar tu mismo sistema visual) */
+.btn-small{padding:8px 12px;font-weight:600;border-radius:10px}
