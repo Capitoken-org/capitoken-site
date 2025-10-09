@@ -18,23 +18,25 @@ body{
 }
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}
 .brand img{height:36px;width:auto;border-radius:6px}
-.links a{color:var(--muted);text-decoration:none;margin-left:16px}
+.links{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.links a{color:var(--muted);text-decoration:none}
 .links a:hover{color:var(--text)}
-.pill{padding:.35rem .7rem;border:1px solid var(--border);border-radius:999px}
+.btn{border:1px solid var(--border);background:transparent;color:var(--text);
+  padding:.7rem 1rem;border-radius:12px;text-decoration:none;cursor:pointer}
+.btn-small{padding:.45rem .8rem}
+.btn[aria-disabled="true"]{opacity:.6;pointer-events:none}
+.btn-primary{background:var(--primary);border-color:transparent;color:#07140e;font-weight:700}
+.btn-primary:hover{filter:brightness(1.05)}
+.badge{background:#0e241f;border:1px solid var(--border);padding:.35rem .6rem;border-radius:999px}
 
 .hero{text-align:center;padding:40px 0 20px}
 .hero h1{font-size:clamp(28px,5vw,48px);margin:10px 0 8px}
 .hero .muted{color:var(--muted);font-weight:600;margin-right:.35em}
 .lead{color:var(--muted);max-width:720px;margin:0 auto 22px}
 .cta{display:flex;gap:12px;justify-content:center;margin-bottom:28px}
-.btn{border:1px solid var(--border);background:transparent;color:var(--text);
-  padding:.8rem 1.1rem;border-radius:12px;text-decoration:none}
-.btn[aria-disabled="true"]{opacity:.6;pointer-events:none}
-.btn-primary{background:var(--primary);border-color:transparent;color:#07140e;font-weight:700}
-.btn-primary:hover{filter:brightness(1.05)}
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:640px;margin:0 auto}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .metric{background:linear-gradient(180deg,#0e241f,#0a1b16);border:1px solid var(--border);
-  border-radius:16px;padding:14px 10px}
+  border-radius:16px;padding:14px 10px;text-align:center}
 .metric .k{display:block;font-weight:800;font-size:22px}
 .metric small{color:var(--muted)}
 
@@ -44,14 +46,38 @@ body{
 }
 .card h2{margin:0 0 10px}
 .list{margin:0;padding-left:18px;color:var(--text)}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.step{background:#0c201a;border:1px solid var(--border);border-radius:12px;padding:14px}
+
+.dex-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
+.dex{display:block;text-align:center;padding:12px;border-radius:12px;background:#0d231d;border:1px solid var(--border);text-decoration:none;color:var(--text)}
+.dex:hover{filter:brightness(1.05)}
+
+.buy-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.col{background:#0c201a;border:1px solid var(--border);border-radius:12px;padding:14px}
+.col input{width:100%;padding:.7rem;border-radius:10px;border:1px solid var(--border);background:#0a1b16;color:var(--text);margin:.4rem 0}
+.highlight{font-size:20px;font-weight:800;margin:.4rem 0}
+.msg{margin-top:.4rem;font-size:.9rem;color:#a9f5ce}
+.tiny{font-size:.9rem}
+.muted{color:var(--muted)}
+
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:10px}
+.mcard{background:#0c201a;border:1px solid var(--border);border-radius:12px;padding:12px}
+.mcard .label{color:var(--muted);font-size:.9rem}
+.mcard .value{font-size:22px;font-weight:800}
+
+.table-wrap{overflow:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th,.tbl td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+.tbl a{color:var(--text)}
+
 details{border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:10px;background:#0c201a}
 details summary{cursor:pointer;font-weight:600}
 .actions{display:flex;gap:10px;margin-top:10px}
 .footer{color:var(--muted);text-align:center;padding:24px 0 50px}
-@media (max-width:800px){
-  .grid-3{grid-template-columns:1fr}
-  .metrics{grid-template-columns:repeat(3,1fr)}
+
+@media (max-width:980px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .market-grid{grid-template-columns:1fr}
+  .dex-grid{grid-template-columns:repeat(2,1fr)}
+  .buy-actions{grid-template-columns:1fr}
 }
 
