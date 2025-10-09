@@ -1,2 +1,4 @@
-# capitoken-site
-Capitoken Web
+# Capitoken — Coming Soon (dev)
+
+Estructura mínima para el “Coming Soon”:
+
