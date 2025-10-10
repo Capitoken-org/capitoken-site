@@ -5,10 +5,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Capitoken • Coming Soon</title>
+
+  <!-- Favicon / Logo -->
   <link rel="icon" href="../assets/img/logo-capitoken.jpg" />
+
+  <!-- Tu CSS existente -->
   <link rel="stylesheet" href="../assets/css/style.css" />
 
-  <!-- Ethers + WalletConnect (UMD) -->
+  <!-- Dependencias Web3 (no tocan tu lógica) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@walletconnect/ethereum-provider@2/dist/index.umd.js"></script>
 </head>
@@ -26,12 +30,12 @@
 
       <nav class="links">
         <a href="#mercado">Mercado</a>
-        <a href="#">Whitepaper</a>
-        <a href="#">Contrato</a>
+        <a href="#whitepaper">Whitepaper</a>
+        <a href="#contract">Contrato</a>
 
-        <!-- Wallet bar -->
+        <!-- Barra de wallets (no interfiere con lo existente) -->
         <div class="wallet-bar">
-          <button class="wbtn" id="w-mm" title="MetaMask / Trust / Brave (ext)">
+          <button class="wbtn" id="w-mm" title="MetaMask / Brave / Trust (ext)">
             <svg viewBox="0 0 32 32"><path fill="#f6851b" d="M27 5 18 10l2-3 7-2z"/><path fill="#c95e11" d="M5 5l9 5-2-3-7-2z"/></svg>
           </button>
           <button class="wbtn" id="w-tw" title="Trust / Rainbow / OKX (WalletConnect)">
@@ -46,11 +50,12 @@
       </nav>
     </header>
 
-    <!-- Tarjeta Coming Soon -->
+    <!-- Tarjeta Coming Soon (tu mismo diseño) -->
     <main class="card">
       <h1>Capitoken is <span class="accent">Coming Soon</span></h1>
       <p class="lead">The memecoin of the future is almost here. Stay tuned!</p>
 
+      <!-- Contador (IDs que usa tu JS actual) -->
       <section class="grid" aria-label="Cuenta regresiva">
         <div class="kpi">
           <div class="n" id="d">0</div>
@@ -71,34 +76,22 @@
       </section>
 
       <div class="actions">
-        <button id="btnBuyDemo" class="btn">Whitepaper (soon)</button>
-        <button class="btn alt">Contract (soon)</button>
+        <a href="#whitepaper" class="btn">Whitepaper (soon)</a>
+        <a href="#contract" class="btn alt">Contract (soon)</a>
       </div>
 
       <p class="footer">© <span id="yyyy"></span> Capitoken</p>
       <script>document.getElementById('yyyy').textContent = new Date().getFullYear();</script>
     </main>
 
-    <!-- ======= NUEVO: Mercado / DEX ======= -->
+    <!-- ====== NUEVO: Mercado / DEX ====== -->
     <section id="mercado" class="market">
       <h2>Mercado</h2>
       <div class="grid">
-        <div class="mcard">
-          <div class="label">Precio (USD)</div>
-          <div class="value" id="priceUsd">—</div>
-        </div>
-        <div class="mcard">
-          <div class="label">Market Cap (USD)</div>
-          <div class="value" id="mcUsd">—</div>
-        </div>
-        <div class="mcard">
-          <div class="label">Liq. CAPI/USDC</div>
-          <div class="value" id="liqUsdc">—</div>
-        </div>
-        <div class="mcard">
-          <div class="label">Liq. CAPI/WETH</div>
-          <div class="value" id="liqWeth">—</div>
-        </div>
+        <div class="mcard"><div class="label">Precio (USD)</div><div class="value" id="priceUsd">—</div></div>
+        <div class="mcard"><div class="label">Market Cap (USD)</div><div class="value" id="mcUsd">—</div></div>
+        <div class="mcard"><div class="label">Liq. CAPI/USDC</div><div class="value" id="liqUsdc">—</div></div>
+        <div class="mcard"><div class="label">Liq. CAPI/WETH</div><div class="value" id="liqWeth">—</div></div>
       </div>
 
       <div class="dex-grid" style="margin-top:14px">
@@ -108,16 +101,18 @@
         <a class="dex" id="uDai"  target="_blank" rel="noreferrer">DAI → CAPI</a>
       </div>
     </section>
+
+    <!-- Anclas informativas (vacías por ahora) -->
+    <section id="whitepaper"></section>
+    <section id="contract"></section>
   </div>
 
-  <!-- Scripts de tu contador (si tienes uno) -->
+  <!-- Tu JS existente (contador, etc.) -->
   <script src="../assets/js/site.js"></script>
 
-  <!-- Config & Wallets -->
+  <!-- Config / Wallets / DEX (módulos nuevos, no tocan tu site.js) -->
   <script src="../assets/js/capi-config.js"></script>
   <script src="../assets/js/capi-wallets.js"></script>
-
-  <!-- DEX / Mercado (nuevo) -->
   <script src="../assets/js/capi-dex.js"></script>
 </body>
 </html>
