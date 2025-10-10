@@ -1,122 +1,43 @@
-// /assets/js/capi-wallets.js
-/* global ethers, WalletConnectProvider, CAPI_CONFIG */
-(() => {
-  const $ = (s) => document.querySelector(s);
-  const state = { provider:null, web3:null, signer:null, account:null, chainId:null, wc:null };
+(function (){
+  const $ = (s, r=document) => r.querySelector(s);
 
-  const short = (a) => (a ? a.slice(0, 6) + "…" + a.slice(-4) : "");
-  const setUI = () => {
-    const acc = $("#shortAcc");
-    const btn = $("#btnConnect");
-    if (acc) acc.textContent = state.account ? short(state.account) : "";
-    if (btn) btn.textContent = state.account ? "Conectado" : "Conectar";
-  };
-
-  async function ensureChain() {
-    try {
-      if (!state.provider || !CAPI_CONFIG.PREFERRED_CHAIN_HEX) return;
-      const cur = await state.provider.request({ method: "eth_chainId" });
-      if (cur !== CAPI_CONFIG.PREFERRED_CHAIN_HEX) {
-        await state.provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: CAPI_CONFIG.PREFERRED_CHAIN_HEX }]
-        });
-      }
-    } catch (e) {
-      console.warn("switch chain", e);
-    }
+  function short(addr){
+    if(!addr) return "";
+    return addr.slice(0,6)+"…"+addr.slice(-4);
   }
 
-  async function connectInjected() {
-    try {
-      if (!window.ethereum) {
-        alert("No se detectó MetaMask/Trust/Brave. Prueba WalletConnect.");
+  async function connectInjected(){
+    try{
+      if(!window.ethereum){
+        alert("No se detectó wallet inyectada (MetaMask/Trust/Brave).");
         return;
       }
-      const prov = window.ethereum;
-      const [acc] = await prov.request({ method: "eth_requestAccounts" });
-      const chainId = await prov.request({ method: "eth_chainId" });
+      const accounts = await window.ethereum.request({ method:"eth_requestAccounts" });
+      const acc = (accounts && accounts[0]) || null;
 
-      state.provider = prov;
-      state.web3 = new ethers.providers.Web3Provider(prov);
-      state.signer = state.web3.getSigner();
-      state.account = acc;
-      state.chainId = chainId;
-
-      prov.on?.("accountsChanged", (a) => { state.account = a?.[0] || null; setUI(); });
-      prov.on?.("chainChanged", (c) => { state.chainId = c; });
-
-      setUI();
-      await ensureChain();
-    } catch (e) {
-      console.warn(e);
-      alert("No se pudo conectar la wallet inyectada.");
-    }
-  }
-
-  async function connectWalletConnect() {
-    try {
-      if (!CAPI_CONFIG.WALLETCONNECT_PROJECT_ID) {
-        alert('Configura WALLETCONNECT_PROJECT_ID en "/assets/js/capi-config.js".');
-        return;
+      const chainId = await window.ethereum.request({ method:"eth_chainId" });
+      if (chainId !== window.CAPI_CONFIG.CHAIN_ID_HEX){
+        // opcional: pedir cambio de red
+        console.warn("Red distinta a la esperada:", chainId);
       }
-      const chainNum = parseInt(CAPI_CONFIG.PREFERRED_CHAIN_HEX, 16) || 1;
-      const wcProv = await WalletConnectProvider.EthereumProvider.init({
-        projectId: CAPI_CONFIG.WALLETCONNECT_PROJECT_ID,
-        chains: [chainNum],
-        showQrModal: true,
-        qrModalOptions: { themeMode: "dark" }
-      });
-      await wcProv.connect();
 
-      state.provider = wcProv;
-      state.web3 = new ethers.providers.Web3Provider(wcProv);
-      state.signer = state.web3.getSigner();
-      state.account = wcProv.accounts?.[0] || null;
-      state.chainId = "0x" + wcProv.chainId.toString(16);
-      state.wc = wcProv;
-
-      wcProv.on("accountsChanged", (a) => { state.account = a?.[0] || null; setUI(); });
-      wcProv.on("chainChanged", (c) => { state.chainId = "0x" + Number(c).toString(16); });
-      wcProv.on("disconnect", () => disconnect());
-
-      setUI();
-      await ensureChain();
-    } catch (e) {
+      // UI
+      $("#btnConnect").classList.add("small");
+      $("#btnConnect").textContent = "Conectada";
+      const badge = $("#accountBadge");
+      badge.textContent = short(acc);
+      badge.classList.remove("hide");
+    }catch(e){
       console.warn(e);
-      if (!String(e).includes("close")) alert("No se pudo conectar con WalletConnect.");
+      alert(e?.message || "No se pudo conectar la wallet");
     }
   }
 
-  async function disconnect() {
-    try { if (state.wc) await state.wc.disconnect(); } catch(e){}
-    state.provider = state.web3 = state.signer = null;
-    state.account = state.chainId = state.wc = null;
-    setUI();
-  }
+  // Exponer global y wire básico
+  window.CAPI_WALLETS = { connectInjected };
 
-  // API pública
-  window.CAPI_WALLET = {
-    getSigner: () => state.signer,
-    getProvider: () => state.web3,
-    getAccount: () => state.account,
-    isConnected: () => !!state.account,
-    connectInjected,
-    connectWalletConnect,
-    disconnect,
-    ensureChain
-  };
-
-  // Bind a los botones si existen
-  function bind() {
-    $("#btnConnect")?.addEventListener("click", () => {
-      if (window.ethereum) connectInjected();
-      else connectWalletConnect();
-    });
-    $("#w-mm")?.addEventListener("click", connectInjected);
-    $("#w-tw")?.addEventListener("click", connectWalletConnect);
-    $("#w-cbw")?.addEventListener("click", connectWalletConnect);
-  }
-  bind();
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".wallet-btn[data-w='injected'], #btnConnect");
+    if(btn){ connectInjected(); }
+  });
 })();
-
