@@ -1,118 +1,94 @@
-<!-- /site/index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Capitoken • Coming Soon</title>
 
-  <!-- Favicon / Logo -->
-  <link rel="icon" href="../assets/img/logo-capitoken.jpg" />
-
-  <!-- Tu CSS existente -->
-  <link rel="stylesheet" href="../assets/css/style.css" />
-
-  <!-- Dependencias Web3 (no tocan tu lógica) -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/ethereum-provider@2/dist/index.umd.js"></script>
+  <!-- CSS -->
+  <link rel="preload" href="./assets/css/site.css" as="style" />
+  <link rel="stylesheet" href="./assets/css/site.css" />
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="container">
+  <main class="shell">
+    <!-- Barra superior -->
     <header class="top">
-      <div class="brand">
-        <img src="../assets/img/logo-capitoken.jpg" alt="Capitoken logo" />
-        <div>
-          <strong>Capitoken</strong>
-          <small>ERC-20 • comunidad primero</small>
-        </div>
+      <div class="brand-wrap">
+        <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo" />
+        <div class="brand">Capitoken</div>
       </div>
 
-      <nav class="links">
-        <a href="#mercado">Mercado</a>
-        <a href="#whitepaper">Whitepaper</a>
-        <a href="#contract">Contrato</a>
-
-        <!-- Barra de wallets (no interfiere con lo existente) -->
-        <div class="wallet-bar">
-          <button class="wbtn" id="w-mm" title="MetaMask / Brave / Trust (ext)">
-            <svg viewBox="0 0 32 32"><path fill="#f6851b" d="M27 5 18 10l2-3 7-2z"/><path fill="#c95e11" d="M5 5l9 5-2-3-7-2z"/></svg>
-          </button>
-          <button class="wbtn" id="w-tw" title="Trust / Rainbow / OKX (WalletConnect)">
-            <svg viewBox="0 0 256 256"><path fill="#3375bb" d="M128 12c47 34 81 23 81 23v84c0 55-33 91-81 105-48-14-81-50-81-105V35s34 11 81-23z"/></svg>
-          </button>
-          <button class="wbtn" id="w-cbw" title="Coinbase Wallet (WalletConnect)">
-            <svg viewBox="0 0 256 256"><path fill="#0052ff" d="M128 16a112 112 0 1 0 0 224 112 112 0 0 0 0-224zm16 80h32v64h-32v32h-64v-32H64V96h32V64h64v32z"/></svg>
-          </button>
-          <button id="btnConnect" class="btn btn-small">Conectar</button>
-          <span id="shortAcc" class="badge"></span>
-        </div>
-      </nav>
+      <div class="wallet-area">
+        <button id="btnConnect" class="btn small">Conectar</button>
+        <span id="accountBadge" class="badge hide"></span>
+      </div>
     </header>
 
-    <!-- Tarjeta Coming Soon (tu mismo diseño) -->
-    <main class="card">
-      <h1>Capitoken is <span class="accent">Coming Soon</span></h1>
+    <!-- Hero principal -->
+    <section class="hero card">
+      <h1><span>Capitoken</span> is <em>Coming&nbsp;Soon</em></h1>
       <p class="lead">The memecoin of the future is almost here. Stay tuned!</p>
 
-      <!-- Contador (IDs que usa tu JS actual) -->
-      <section class="grid" aria-label="Cuenta regresiva">
-        <div class="kpi">
-          <div class="n" id="d">0</div>
-          <div class="l">Days</div>
-        </div>
-        <div class="kpi">
-          <div class="n" id="h">0</div>
-          <div class="l">Hours</div>
-        </div>
-        <div class="kpi">
-          <div class="n" id="m">0</div>
-          <div class="l">Minutes</div>
-        </div>
-        <div class="kpi">
-          <div class="n" id="s">0</div>
-          <div class="l">Seconds</div>
-        </div>
-      </section>
+      <!-- Contador -->
+      <div class="grid countdown" id="countdown">
+        <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Days</div></div>
+        <div class="kpi"><div class="num" id="h">–</div><div class="lbl">Hours</div></div>
+        <div class="kpi"><div class="num" id="m">–</div><div class="lbl">Minutes</div></div>
+        <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Seconds</div></div>
+      </div>
 
+      <!-- Acciones -->
       <div class="actions">
-        <a href="#whitepaper" class="btn">Whitepaper (soon)</a>
-        <a href="#contract" class="btn alt">Contract (soon)</a>
+        <a class="btn primary" href="#" aria-disabled="true">Whitepaper (soon)</a>
+        <a class="btn" href="#" aria-disabled="true">Contract (soon)</a>
       </div>
 
-      <p class="footer">© <span id="yyyy"></span> Capitoken</p>
-      <script>document.getElementById('yyyy').textContent = new Date().getFullYear();</script>
-    </main>
+      <footer class="foot">© 2025 Capitoken</footer>
+    </section>
 
-    <!-- ====== NUEVO: Mercado / DEX ====== -->
-    <section id="mercado" class="market">
+    <!-- Módulo Mercado + rutas DEX -->
+    <section class="market card">
       <h2>Mercado</h2>
-      <div class="grid">
-        <div class="mcard"><div class="label">Precio (USD)</div><div class="value" id="priceUsd">—</div></div>
-        <div class="mcard"><div class="label">Market Cap (USD)</div><div class="value" id="mcUsd">—</div></div>
-        <div class="mcard"><div class="label">Liq. CAPI/USDC</div><div class="value" id="liqUsdc">—</div></div>
-        <div class="mcard"><div class="label">Liq. CAPI/WETH</div><div class="value" id="liqWeth">—</div></div>
+      <div class="grid metrics">
+        <div class="metric"><div class="lbl">Precio (USD)</div><div class="val" id="px">–</div></div>
+        <div class="metric"><div class="lbl">Market Cap (USD)</div><div class="val" id="mc">–</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/USDC</div><div class="val" id="liq_usdc">–</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/WETH</div><div class="val" id="liq_weth">–</div></div>
       </div>
 
-      <div class="dex-grid" style="margin-top:14px">
-        <a class="dex" id="uEth"  target="_blank" rel="noreferrer">ETH → CAPI</a>
-        <a class="dex" id="uUsdc" target="_blank" rel="noreferrer">USDC → CAPI</a>
-        <a class="dex" id="uUsdt" target="_blank" rel="noreferrer">USDT → CAPI</a>
-        <a class="dex" id="uDai"  target="_blank" rel="noreferrer">DAI → CAPI</a>
+      <div class="dex-links">
+        <a id="dexEth"  class="dex" target="_blank" rel="noreferrer">ETH → CAPI</a>
+        <a id="dexUsdc" class="dex" target="_blank" rel="noreferrer">USDC → CAPI</a>
+        <a id="dexUsdt" class="dex" target="_blank" rel="noreferrer">USDT → CAPI</a>
+        <a id="dexDai"  class="dex" target="_blank" rel="noreferrer">DAI → CAPI</a>
       </div>
     </section>
 
-    <!-- Anclas informativas (vacías por ahora) -->
-    <section id="whitepaper"></section>
-    <section id="contract"></section>
-  </div>
+    <!-- Wallets populares (placeholders visuales) -->
+    <section class="wallets card">
+      <h2>Conecta tu Wallet favorita</h2>
+      <div class="wallet-grid">
+        <button class="wallet-btn" data-w="injected">
+          <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg" alt="MetaMask" />
+          <span>MetaMask / Inyectada</span>
+        </button>
+        <a class="wallet-btn ghost" href="https://trustwallet.com/" target="_blank" rel="noreferrer">
+          <img src="https://assets.trustwallet.com/assets/images/favicon.png" alt="Trust" />
+          <span>Trust Wallet</span>
+        </a>
+        <a class="wallet-btn ghost" href="https://www.coinbase.com/wallet" target="_blank" rel="noreferrer">
+          <img src="https://www.coinbase.com/assets/press/coinbase-logo-1.svg" alt="Coinbase Wallet" />
+          <span>Coinbase Wallet</span>
+        </a>
+      </div>
+      <p class="note">* De momento habilitamos la wallet inyectada del navegador. Más integraciones pronto.</p>
+    </section>
+  </main>
 
-  <!-- Tu JS existente (contador, etc.) -->
-  <script src="../assets/js/site.js"></script>
-
-  <!-- Config / Wallets / DEX (módulos nuevos, no tocan tu site.js) -->
-  <script src="../assets/js/capi-config.js"></script>
-  <script src="../assets/js/capi-wallets.js"></script>
-  <script src="../assets/js/capi-dex.js"></script>
+  <!-- JS (orden importa) -->
+  <script defer src="./assets/js/config.js"></script>
+  <script defer src="./assets/js/capi-wallets.js"></script>
+  <script defer src="./assets/js/capi-dex.js"></script>
+  <script defer src="./assets/js/site.js"></script>
 </body>
 </html>
