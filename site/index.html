@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capitoken • Landing</title>
+  <title>Capitoken • CAPI</title>
   <link rel="stylesheet" href="./assets/css/site.css" />
+  <script defer src="./assets/js/site.js"></script>
 </head>
 <body>
   <main class="shell">
@@ -23,22 +24,32 @@
     </header>
 
     <!-- HERO -->
-    <section class="hero card">
-      <h1><span>Capitoken</span> is <em>Coming Soon</em></h1>
-      <p class="lead">La memecoin accesible con reglas claras y calendario trustless.</p>
-
+    <section class="hero card fadein">
+      <h1><span>CAPI</span> is <em>Coming Soon</em></h1>
+      <p class="lead">La memecoin del capibara: divertida, justa y 100% para la comunidad.</p>
       <div class="grid countdown" id="countdown">
-        <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Days</div></div>
-        <div class="kpi"><div class="num" id="h">–</div><div class="lbl">Hours</div></div>
-        <div class="kpi"><div class="num" id="m">–</div><div class="lbl">Minutes</div></div>
-        <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Seconds</div></div>
+        <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Días</div></div>
+        <div class="kpi"><div class="num" id="h">–</div><div class="lbl">Horas</div></div>
+        <div class="kpi"><div class="num" id="m">–</div><div class="lbl">Minutos</div></div>
+        <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Segundos</div></div>
       </div>
-
       <div class="actions">
-        <a class="btn primary" href="#">Whitepaper (soon)</a>
-        <a class="btn" href="#">Contract (soon)</a>
+        <a class="btn primary" href="#">Whitepaper (Soon)</a>
+        <a class="btn" href="#">Ver Contrato</a>
       </div>
-      <footer class="foot">© 2025 Capitoken</footer>
+    </section>
+
+    <!-- WHY CAPI -->
+    <section class="why card fadein">
+      <h2>¿Por qué Capitoken?</h2>
+      <div class="why-container">
+        <img src="./assets/image/logo-capitoken.jpg" alt="Capi Story" class="why-img" />
+        <div class="why-text">
+          <p><b>CAPI</b> representa el espíritu del capibara: amistoso, social y tranquilo. Nuestra misión es construir una comunidad que crezca sin control centralizado ni ballenas que distorsionen el mercado.</p>
+          <p>El contrato no tiene owner. Las reglas están grabadas desde el día cero: <b>supply fijo</b>, <b>sin minting</b>, <b>sin rugpull</b>. Cada holder tiene el mismo punto de partida. 🐹</p>
+          <a class="btn accent" href="#community">Únete a la Comunidad</a>
+        </div>
+      </div>
     </section>
 
     <!-- MÉTRICAS -->
@@ -50,25 +61,7 @@
         <div class="metric"><div class="lbl">Circulante</div><div class="val" id="circ">—</div></div>
         <div class="metric"><div class="lbl">Holders</div><div class="val" id="holders">—</div></div>
         <div class="metric"><div class="lbl">Tx 24h</div><div class="val" id="tx24">—</div></div>
-        <div class="metric"><div class="lbl">Liq. CAPI/USDC</div><div class="val" id="liq_usdc">—</div></div>
-        <div class="metric"><div class="lbl">Liq. CAPI/WETH</div><div class="val" id="liq_weth">—</div></div>
       </div>
-      <div class="dex-links">
-        <a id="dexEth"  class="dex" target="_blank">ETH → CAPI</a>
-        <a id="dexUsdc" class="dex" target="_blank">USDC → CAPI</a>
-        <a id="dexUsdt" class="dex" target="_blank">USDT → CAPI</a>
-        <a id="dexDai"  class="dex" target="_blank">DAI → CAPI</a>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="about card fadein">
-      <h2>About Capitoken</h2>
-      <p>Capitoken nace con la visión de combinar humor (capibara), comunidad y utilidad real dentro del ecosistema DeFi. 
-         Más que una simple memecoin, es un símbolo de cooperación, transparencia y participación activa en la creación de valor.</p>
-      <p>Supply fijo <b>100,000,000,000</b> CAPI (8 decimales). 
-         Recompensas bloqueadas 365 días. Anti-bot/anti-whale durante el primer año. 
-         Liberación mensual trustless del 97% para la comunidad.</p>
     </section>
 
     <!-- TOKENOMICS -->
@@ -79,21 +72,10 @@
         <table class="token-table">
           <thead><tr><th>Distribución</th><th>%</th></tr></thead>
           <tbody>
-            <tr><td>Comunidad (ventas + recompensas)</td><td>97%</td></tr>
+            <tr><td>Comunidad</td><td>97%</td></tr>
             <tr><td>Desarrolladores</td><td>2%</td></tr>
             <tr><td>Marketing</td><td>1%</td></tr>
           </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ACTIVIDAD -->
-    <section class="activity card fadein">
-      <h2>Actividad reciente</h2>
-      <div class="table-wrap">
-        <table class="tx-table">
-          <thead><tr><th>Comprador</th><th>Tokens</th><th>Monto</th><th>Tx</th></tr></thead>
-          <tbody id="txBody"></tbody>
         </table>
       </div>
     </section>
@@ -102,30 +84,35 @@
     <section class="roadmap card fadein">
       <h2>Roadmap</h2>
       <ul class="roadmap-list">
-        <li><b>Fase 1:</b> Lanzamiento ERC-20 + DEX + on-ramp</li>
-        <li><b>Fase 2:</b> Listados en agregadores (CMC / CoinGecko) y auditoría</li>
-        <li><b>Fase 3:</b> CEX Tier-2 / Tier-1 + MM</li>
-        <li><b>Fase 4:</b> Expansión multi-chain (L2 / Solana / Tron / Avalanche)</li>
+        <li><b>Fase 1:</b> Lanzamiento ERC-20 + DEX + contrato verificado</li>
+        <li><b>Fase 2:</b> Auditoría externa + Listado CoinMarketCap / CoinGecko</li>
+        <li><b>Fase 3:</b> CEX Tier-2 / MM / adopción social</li>
+        <li><b>Fase 4:</b> Expansión multichain + NFTs del capibara</li>
       </ul>
     </section>
 
-    <!-- ON-RAMP -->
-    <section class="onramp card fadein">
-      <h2>Compra con tarjeta (On-Ramp)</h2>
-      <p>Compra ETH con tarjeta usando proveedores reconocidos y luego adquiere CAPI en DEX.</p>
-      <div class="ramp-buttons">
-        <a href="https://buy.moonpay.com" target="_blank">MoonPay</a>
-        <a href="https://global.transak.com" target="_blank">Transak</a>
-        <a href="https://ramp.network/buy" target="_blank">Ramp</a>
+    <!-- COMMUNITY -->
+    <section id="community" class="community card fadein">
+      <h2>Únete a la Comunidad</h2>
+      <p>Conecta con otros capibaras del mundo y sé parte del movimiento. Comparte, aprende y haz historia con CAPI.</p>
+      <div class="community-links">
+        <a href="https://t.me/capitoken" target="_blank" class="btn">Telegram</a>
+        <a href="https://twitter.com" target="_blank" class="btn">X (Twitter)</a>
+        <a href="https://discord.com" target="_blank" class="btn">Discord</a>
       </div>
+    </section>
+
+    <!-- DEX WIDGET -->
+    <section class="dexwidget card fadein">
+      <h2>Seguimiento en DEX</h2>
+      <iframe id="dexFrame" src="https://www.dextools.io/app/en/ether/pair-explorer" title="DEXTools CAPI" loading="lazy"></iframe>
     </section>
 
     <!-- FOOTER -->
     <footer class="foot">
-      <div>© 2025 Capitoken • Contrato sin owner • Hecho para la comunidad</div>
+      <div>© 2025 Capitoken • Contrato sin owner • Creado para la comunidad</div>
+      <button id="scrollTop" class="scroll-top">▲</button>
     </footer>
   </main>
-
-  <script defer src="./assets/js/site.js"></script>
 </body>
 </html>
