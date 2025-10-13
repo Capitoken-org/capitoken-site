@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Capitoken • CAPI</title>
-  <link rel="stylesheet" href="./assets/css/site.css" />
+  <link rel="stylesheet" href="./assets/css/site.css"/>
+  <!-- Ethers (solo lectura) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
   <script defer src="./assets/js/site.js"></script>
 </head>
 <body>
@@ -12,7 +14,7 @@
     <!-- HEADER -->
     <header class="top">
       <div class="brand-wrap">
-        <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo" />
+        <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo"/>
         <div class="brand">Capitoken</div>
       </div>
       <div class="wallet-area">
@@ -34,25 +36,25 @@
         <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Segundos</div></div>
       </div>
       <div class="actions">
-        <a class="btn primary" href="#">Whitepaper (Soon)</a>
-        <a class="btn" href="#">Ver Contrato</a>
+        <a class="btn primary" href="#" aria-disabled="true">Whitepaper (soon)</a>
+        <a class="btn" href="#" aria-disabled="true">Ver Contrato</a>
       </div>
     </section>
 
-    <!-- WHY CAPI -->
+    <!-- WHY CAPI (storytelling) -->
     <section class="why card fadein">
       <h2>¿Por qué Capitoken?</h2>
       <div class="why-container">
-        <img src="./assets/image/logo-capitoken.jpg" alt="Capi Story" class="why-img" />
+        <img src="./assets/image/logo-capitoken.jpg" alt="Capi Story" class="why-img"/>
         <div class="why-text">
-          <p><b>CAPI</b> representa el espíritu del capibara: amistoso, social y tranquilo. Nuestra misión es construir una comunidad que crezca sin control centralizado ni ballenas que distorsionen el mercado.</p>
-          <p>El contrato no tiene owner. Las reglas están grabadas desde el día cero: <b>supply fijo</b>, <b>sin minting</b>, <b>sin rugpull</b>. Cada holder tiene el mismo punto de partida. 🐹</p>
+          <p><b>CAPI</b> representa el espíritu del capibara: amistoso, social y tranquilo. La misión es construir una comunidad que crezca sin control centralizado ni ballenas que distorsionen el mercado.</p>
+          <p>Contrato sin owner, reglas fijas desde el día cero: <b>supply 100,000,000,000</b> CAPI (8 decimales), <b>sin minting</b>, recompensas bloqueadas 365 días y <b>anti-bot/anti-whale el primer año</b>. 🐹</p>
           <a class="btn accent" href="#community">Únete a la Comunidad</a>
         </div>
       </div>
     </section>
 
-    <!-- MÉTRICAS -->
+    <!-- MÉTRICAS EN VIVO (con lectura on-chain + demo) -->
     <section class="market card fadein">
       <h2>Métricas</h2>
       <div class="grid metrics">
@@ -61,21 +63,42 @@
         <div class="metric"><div class="lbl">Circulante</div><div class="val" id="circ">—</div></div>
         <div class="metric"><div class="lbl">Holders</div><div class="val" id="holders">—</div></div>
         <div class="metric"><div class="lbl">Tx 24h</div><div class="val" id="tx24">—</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/USDC</div><div class="val" id="liq_usdc">—</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/WETH</div><div class="val" id="liq_weth">—</div></div>
+      </div>
+
+      <!-- DEX Quick Links (Uniswap) -->
+      <div class="dex-links">
+        <a id="dexEth"  class="dex" target="_blank" rel="noreferrer">ETH → CAPI</a>
+        <a id="dexUsdc" class="dex" target="_blank" rel="noreferrer">USDC → CAPI</a>
+        <a id="dexUsdt" class="dex" target="_blank" rel="noreferrer">USDT → CAPI</a>
+        <a id="dexDai"  class="dex" target="_blank" rel="noreferrer">DAI → CAPI</a>
       </div>
     </section>
 
-    <!-- TOKENOMICS -->
+    <!-- TOKENOMICS 97/2/1 -->
     <section class="tokenomics card fadein">
       <h2>Tokenomics</h2>
       <div class="tokenomics-container">
-        <canvas id="tokenChart" width="260" height="260"></canvas>
+        <canvas id="tokenChart" width="260" height="260" aria-label="Distribución de Tokenomics"></canvas>
         <table class="token-table">
           <thead><tr><th>Distribución</th><th>%</th></tr></thead>
           <tbody>
-            <tr><td>Comunidad</td><td>97%</td></tr>
+            <tr><td>Comunidad (ventas + recompensas)</td><td>97%</td></tr>
             <tr><td>Desarrolladores</td><td>2%</td></tr>
             <tr><td>Marketing</td><td>1%</td></tr>
           </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ACTIVIDAD RECIENTE (dummy) -->
+    <section class="activity card fadein">
+      <h2>Actividad reciente</h2>
+      <div class="table-wrap">
+        <table class="tx-table">
+          <thead><tr><th>Comprador</th><th>Tokens</th><th>Monto</th><th>Tx</th></tr></thead>
+          <tbody id="txBody"></tbody>
         </table>
       </div>
     </section>
@@ -87,8 +110,19 @@
         <li><b>Fase 1:</b> Lanzamiento ERC-20 + DEX + contrato verificado</li>
         <li><b>Fase 2:</b> Auditoría externa + Listado CoinMarketCap / CoinGecko</li>
         <li><b>Fase 3:</b> CEX Tier-2 / MM / adopción social</li>
-        <li><b>Fase 4:</b> Expansión multichain + NFTs del capibara</li>
+        <li><b>Fase 4:</b> Expansión multichain (L2 / Solana / Tron / Avalanche)</li>
       </ul>
+    </section>
+
+    <!-- ON-RAMP (opcional) -->
+    <section class="onramp card fadein">
+      <h2>Compra con tarjeta (On-Ramp)</h2>
+      <p>Compra ETH con tarjeta con proveedores reconocidos y luego adquiere CAPI en DEX.</p>
+      <div class="ramp-buttons">
+        <a class="btn" target="_blank" rel="noreferrer" href="https://buy.moonpay.com">MoonPay</a>
+        <a class="btn" target="_blank" rel="noreferrer" href="https://global.transak.com">Transak</a>
+        <a class="btn" target="_blank" rel="noreferrer" href="https://ramp.network/buy">Ramp</a>
+      </div>
     </section>
 
     <!-- COMMUNITY -->
@@ -102,10 +136,11 @@
       </div>
     </section>
 
-    <!-- DEX WIDGET -->
-    <section class="dexwidget card fadein">
-      <h2>Seguimiento en DEX</h2>
-      <iframe id="dexFrame" src="https://www.dextools.io/app/en/ether/pair-explorer" title="DEXTools CAPI" loading="lazy"></iframe>
+    <!-- WIDGETS DEX/CMC -->
+    <section class="widgets card fadein">
+      <h2>Gráficos en Vivo</h2>
+      <iframe id="dexFrame" src="https://dexscreener.com/ethereum" title="DEX Screener" loading="lazy"></iframe>
+      <iframe id="cmcFrame" src="https://coinmarketcap.com/currencies/" title="CoinMarketCap" loading="lazy"></iframe>
     </section>
 
     <!-- FOOTER -->
