@@ -3,29 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capitoken • Coming Soon</title>
+  <title>Capitoken • Landing</title>
   <link rel="stylesheet" href="./assets/css/site.css" />
 </head>
 <body>
   <main class="shell">
-    <!-- Barra superior -->
+    <!-- Header -->
     <header class="top">
       <div class="brand-wrap">
         <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo" />
         <div class="brand">Capitoken</div>
       </div>
       <div class="wallet-area">
-        <span id="netPill" class="pill"></span>
+        <span id="netPill" class="pill">Ethereum Mainnet</span>
         <button id="btnConnect" class="btn small">Conectar</button>
         <span id="accountBadge" class="badge hide"></span>
         <button id="btnDisconnect" class="btn small subtle hide">Desconectar</button>
       </div>
     </header>
 
-    <!-- Hero principal -->
+    <!-- Hero -->
     <section class="hero card">
       <h1><span>Capitoken</span> is <em>Coming Soon</em></h1>
-      <p class="lead">The memecoin of the future is almost here. Stay tuned!</p>
+      <p class="lead">La memecoin accesible con reglas claras y calendario trustless.</p>
 
       <div class="grid countdown" id="countdown">
         <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Days</div></div>
@@ -35,53 +35,73 @@
       </div>
 
       <div class="actions">
-        <a class="btn primary" href="#">Whitepaper (soon)</a>
-        <a class="btn" href="#">Contract (soon)</a>
+        <a class="btn primary" href="#" aria-disabled="true">Whitepaper (soon)</a>
+        <a class="btn" href="#" aria-disabled="true">Contract (soon)</a>
       </div>
-
       <footer class="foot">© 2025 Capitoken</footer>
     </section>
 
-    <!-- ABOUT -->
-    <section class="about card fadein">
-      <h2>About Capitoken</h2>
-      <p>Capitoken nace con la visión de combinar humor, comunidad y utilidad real dentro del ecosistema DeFi. 
-        Más que una simple memecoin, es un símbolo de cooperación, transparencia y participación activa en la creación de valor.</p>
-      <p>Inspirado por la energía de las comunidades descentralizadas, Capitoken busca ofrecer herramientas accesibles para holders y nuevos inversores 
-        que creen en la libertad financiera y la fuerza colectiva.</p>
+    <!-- Métricas “en vivo” (simuladas por ahora) -->
+    <section class="market card">
+      <h2>Métricas</h2>
+      <div class="grid metrics">
+        <div class="metric"><div class="lbl">Precio (USD)</div><div class="val" id="px">—</div></div>
+        <div class="metric"><div class="lbl">Market Cap (USD)</div><div class="val" id="mc">—</div></div>
+        <div class="metric"><div class="lbl">Circulante (CAPI)</div><div class="val" id="circ">—</div></div>
+        <div class="metric"><div class="lbl">Holders</div><div class="val" id="holders">—</div></div>
+        <div class="metric"><div class="lbl">Tx 24h</div><div class="val" id="tx24">—</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/USDC</div><div class="val" id="liq_usdc">—</div></div>
+        <div class="metric"><div class="lbl">Liq. CAPI/WETH</div><div class="val" id="liq_weth">—</div></div>
+      </div>
+
+      <!-- Enlaces DEX -->
+      <div class="dex-links">
+        <a id="dexEth"  class="dex" target="_blank" rel="noreferrer">ETH → CAPI</a>
+        <a id="dexUsdc" class="dex" target="_blank" rel="noreferrer">USDC → CAPI</a>
+        <a id="dexUsdt" class="dex" target="_blank" rel="noreferrer">USDT → CAPI</a>
+        <a id="dexDai"  class="dex" target="_blank" rel="noreferrer">DAI → CAPI</a>
+      </div>
     </section>
 
-    <!-- TOKENOMICS -->
+    <!-- About -->
+    <section class="about card fadein">
+      <h2>About Capitoken</h2>
+      <p>Capitoken nace con la visión de combinar humor (capibara), comunidad y utilidad real dentro del ecosistema DeFi.
+        Más que una simple memecoin, es un símbolo de cooperación, transparencia y participación activa en la creación de valor.</p>
+      <p>Supply fijo <b>100,000,000,000</b> CAPI (8 decimales). Recompensas bloqueadas 365 días. Anti-bot/anti-whale durante el primer año. 
+        Liberación mensual trustless del 97% para la comunidad.</p>
+    </section>
+
+    <!-- Tokenomics (97/2/1 reales) -->
     <section class="tokenomics card fadein">
       <h2>Tokenomics</h2>
       <div class="tokenomics-container">
-        <canvas id="tokenChart" width="260" height="260"></canvas>
+        <canvas id="tokenChart" width="260" height="260" aria-label="Distribución de Tokenomics"></canvas>
         <table class="token-table">
           <thead><tr><th>Distribución</th><th>%</th></tr></thead>
           <tbody>
-            <tr><td>Presale & Launch</td><td>40%</td></tr>
-            <tr><td>Liquidity Pool</td><td>25%</td></tr>
-            <tr><td>Marketing & Partnerships</td><td>15%</td></tr>
-            <tr><td>Community Rewards</td><td>10%</td></tr>
-            <tr><td>Team & Advisors</td><td>10%</td></tr>
+            <tr><td>Comunidad (ventas + recompensas)</td><td>97%</td></tr>
+            <tr><td>Desarrolladores</td><td>2%</td></tr>
+            <tr><td>Marketing</td><td>1%</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- ROADMAP -->
-    <section class="roadmap card fadein">
-      <h2>Roadmap</h2>
-      <div class="timeline">
-        <div class="step"><div class="dot"></div><div class="content"><h3>Q4 2025 – Lanzamiento Inicial</h3><p>Publicación del whitepaper, auditoría del contrato ERC-20 y apertura de preventa.</p></div></div>
-        <div class="step"><div class="dot"></div><div class="content"><h3>Q1 2026 – DEX Listings</h3><p>Listado en Uniswap y PancakeSwap, integración de WalletConnect y marketing global.</p></div></div>
-        <div class="step"><div class="dot"></div><div class="content"><h3>Q2 2026 – Capitoken Ecosystem</h3><p>Lanzamiento del portal de staking, market tracker y dashboard de holders.</p></div></div>
-        <div class="step"><div class="dot"></div><div class="content"><h3>Q3 2026 – Expansión Internacional</h3><p>Listados en CoinMarketCap y CoinGecko, colaboraciones y nuevas asociaciones estratégicas.</p></div></div>
+    <!-- Actividad reciente (dummy) -->
+    <section class="activity card fadein">
+      <h2>Actividad reciente</h2>
+      <div class="table-wrap">
+        <table class="tx-table">
+          <thead><tr><th>Comprador</th><th>Tokens</th><th>Monto</th><th>Tx</th></tr></thead>
+          <tbody id="txBody">
+            <!-- Se llena por JS (simulada por ahora) -->
+          </tbody>
+        </table>
       </div>
     </section>
   </main>
 
-  <script defer src="./assets/js/config.js"></script>
   <script defer src="./assets/js/site.js"></script>
 </body>
 </html>
