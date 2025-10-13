@@ -11,15 +11,17 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;font-family:Inter,system-ui,Roboto,sans-serif;
+  margin:0;
+  font-family:Inter,system-ui,Roboto,sans-serif;
   color:var(--text);
   background:
     radial-gradient(800px 400px at 20% -20%, rgba(32,201,151,.22), transparent 60%),
     radial-gradient(700px 420px at 75% 120%, rgba(245,159,11,.18), transparent 65%),
-    linear-gradient(180deg, #03110e, #0b1f1b 60%, #071b17 100%);
+    linear-gradient(180deg,#03110e,#0b1f1b 60%,#071b17 100%);
 }
 img{display:block;max-width:100%;height:auto}
-a{color:var(--accent)}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent2)}
 a[aria-disabled="true"]{pointer-events:none;opacity:.5}
 
 .shell{max-width:1100px;margin:0 auto;padding:24px 18px 64px}
@@ -46,10 +48,10 @@ a[aria-disabled="true"]{pointer-events:none;opacity:.5}
 .kpi{text-align:center;padding:10px;background:rgba(255,255,255,.05);border-radius:12px}
 .kpi .num{font-size:1.6rem;font-weight:800}
 .kpi .lbl{font-size:.9rem;color:var(--muted)}
-.actions{display:flex;gap:10px;justify-content:center}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .foot{margin-top:10px;opacity:.6;text-align:center}
 
-.market h2,.about h2,.tokenomics h2,.activity h2{text-align:center;margin-top:0}
+.market h2,.about h2,.tokenomics h2,.activity h2,.roadmap h2,.onramp h2{text-align:center;margin-top:0}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:12px}
 .metric{background:rgba(255,255,255,.05);border:1px solid var(--stroke);border-radius:12px;padding:12px}
 .metric .lbl{font-size:.86rem;color:var(--muted);margin-bottom:6px}
@@ -76,6 +78,15 @@ a[aria-disabled="true"]{pointer-events:none;opacity:.5}
 
 .fadein{opacity:0;transform:translateY(25px);transition:all .8s ease}
 .fadein.visible{opacity:1;transform:translateY(0)}
+
+.roadmap-list{list-style:none;padding-left:0;margin:0}
+.roadmap-list li{padding:10px 0;border-bottom:1px solid var(--stroke)}
+.roadmap-list b{color:var(--accent)}
+
+.onramp p{text-align:center;color:var(--muted);margin-bottom:12px}
+.ramp-buttons{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.ramp-buttons a{padding:.7rem 1.1rem;border:1px solid var(--stroke);border-radius:12px;background:rgba(255,255,255,.06);color:var(--text)}
+.ramp-buttons a:hover{background:rgba(255,255,255,.12)}
 
 @media(max-width:960px){
   .metrics{grid-template-columns:repeat(2,minmax(140px,1fr))}
