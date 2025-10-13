@@ -4,9 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Capitoken • Coming Soon</title>
-
-  <!-- CSS -->
-  <link rel="preload" href="./assets/css/site.css" as="style" />
   <link rel="stylesheet" href="./assets/css/site.css" />
 </head>
 <body>
@@ -17,19 +14,19 @@
         <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo" />
         <div class="brand">Capitoken</div>
       </div>
-
       <div class="wallet-area">
+        <span id="netPill" class="pill"></span>
         <button id="btnConnect" class="btn small">Conectar</button>
         <span id="accountBadge" class="badge hide"></span>
+        <button id="btnDisconnect" class="btn small subtle hide">Desconectar</button>
       </div>
     </header>
 
     <!-- Hero principal -->
     <section class="hero card">
-      <h1><span>Capitoken</span> is <em>Coming&nbsp;Soon</em></h1>
+      <h1><span>Capitoken</span> is <em>Coming Soon</em></h1>
       <p class="lead">The memecoin of the future is almost here. Stay tuned!</p>
 
-      <!-- Contador -->
       <div class="grid countdown" id="countdown">
         <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Days</div></div>
         <div class="kpi"><div class="num" id="h">–</div><div class="lbl">Hours</div></div>
@@ -37,58 +34,54 @@
         <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Seconds</div></div>
       </div>
 
-      <!-- Acciones -->
       <div class="actions">
-        <a class="btn primary" href="#" aria-disabled="true">Whitepaper (soon)</a>
-        <a class="btn" href="#" aria-disabled="true">Contract (soon)</a>
+        <a class="btn primary" href="#">Whitepaper (soon)</a>
+        <a class="btn" href="#">Contract (soon)</a>
       </div>
 
       <footer class="foot">© 2025 Capitoken</footer>
     </section>
 
-    <!-- Módulo Mercado + rutas DEX -->
-    <section class="market card">
-      <h2>Mercado</h2>
-      <div class="grid metrics">
-        <div class="metric"><div class="lbl">Precio (USD)</div><div class="val" id="px">–</div></div>
-        <div class="metric"><div class="lbl">Market Cap (USD)</div><div class="val" id="mc">–</div></div>
-        <div class="metric"><div class="lbl">Liq. CAPI/USDC</div><div class="val" id="liq_usdc">–</div></div>
-        <div class="metric"><div class="lbl">Liq. CAPI/WETH</div><div class="val" id="liq_weth">–</div></div>
-      </div>
+    <!-- ABOUT -->
+    <section class="about card fadein">
+      <h2>About Capitoken</h2>
+      <p>Capitoken nace con la visión de combinar humor, comunidad y utilidad real dentro del ecosistema DeFi. 
+        Más que una simple memecoin, es un símbolo de cooperación, transparencia y participación activa en la creación de valor.</p>
+      <p>Inspirado por la energía de las comunidades descentralizadas, Capitoken busca ofrecer herramientas accesibles para holders y nuevos inversores 
+        que creen en la libertad financiera y la fuerza colectiva.</p>
+    </section>
 
-      <div class="dex-links">
-        <a id="dexEth"  class="dex" target="_blank" rel="noreferrer">ETH → CAPI</a>
-        <a id="dexUsdc" class="dex" target="_blank" rel="noreferrer">USDC → CAPI</a>
-        <a id="dexUsdt" class="dex" target="_blank" rel="noreferrer">USDT → CAPI</a>
-        <a id="dexDai"  class="dex" target="_blank" rel="noreferrer">DAI → CAPI</a>
+    <!-- TOKENOMICS -->
+    <section class="tokenomics card fadein">
+      <h2>Tokenomics</h2>
+      <div class="tokenomics-container">
+        <canvas id="tokenChart" width="260" height="260"></canvas>
+        <table class="token-table">
+          <thead><tr><th>Distribución</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>Presale & Launch</td><td>40%</td></tr>
+            <tr><td>Liquidity Pool</td><td>25%</td></tr>
+            <tr><td>Marketing & Partnerships</td><td>15%</td></tr>
+            <tr><td>Community Rewards</td><td>10%</td></tr>
+            <tr><td>Team & Advisors</td><td>10%</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
-    <!-- Wallets populares (placeholders visuales) -->
-    <section class="wallets card">
-      <h2>Conecta tu Wallet favorita</h2>
-      <div class="wallet-grid">
-        <button class="wallet-btn" data-w="injected">
-          <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg" alt="MetaMask" />
-          <span>MetaMask / Inyectada</span>
-        </button>
-        <a class="wallet-btn ghost" href="https://trustwallet.com/" target="_blank" rel="noreferrer">
-          <img src="https://assets.trustwallet.com/assets/images/favicon.png" alt="Trust" />
-          <span>Trust Wallet</span>
-        </a>
-        <a class="wallet-btn ghost" href="https://www.coinbase.com/wallet" target="_blank" rel="noreferrer">
-          <img src="https://www.coinbase.com/assets/press/coinbase-logo-1.svg" alt="Coinbase Wallet" />
-          <span>Coinbase Wallet</span>
-        </a>
+    <!-- ROADMAP -->
+    <section class="roadmap card fadein">
+      <h2>Roadmap</h2>
+      <div class="timeline">
+        <div class="step"><div class="dot"></div><div class="content"><h3>Q4 2025 – Lanzamiento Inicial</h3><p>Publicación del whitepaper, auditoría del contrato ERC-20 y apertura de preventa.</p></div></div>
+        <div class="step"><div class="dot"></div><div class="content"><h3>Q1 2026 – DEX Listings</h3><p>Listado en Uniswap y PancakeSwap, integración de WalletConnect y marketing global.</p></div></div>
+        <div class="step"><div class="dot"></div><div class="content"><h3>Q2 2026 – Capitoken Ecosystem</h3><p>Lanzamiento del portal de staking, market tracker y dashboard de holders.</p></div></div>
+        <div class="step"><div class="dot"></div><div class="content"><h3>Q3 2026 – Expansión Internacional</h3><p>Listados en CoinMarketCap y CoinGecko, colaboraciones y nuevas asociaciones estratégicas.</p></div></div>
       </div>
-      <p class="note">* De momento habilitamos la wallet inyectada del navegador. Más integraciones pronto.</p>
     </section>
   </main>
 
-  <!-- JS (orden importa) -->
   <script defer src="./assets/js/config.js"></script>
-  <script defer src="./assets/js/capi-wallets.js"></script>
-  <script defer src="./assets/js/capi-dex.js"></script>
   <script defer src="./assets/js/site.js"></script>
 </body>
 </html>
