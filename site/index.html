@@ -4,7 +4,16 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Capitoken • CAPI</title>
+
+  <!-- SEO básico -->
+  <meta name="description" content="Capitoken (CAPI) — la memecoin del capibara: divertida, justa y 100% para la comunidad. Supply fijo, sin minting y reglas claras.">
+  <meta property="og:title" content="Capitoken — La memecoin del capibara">
+  <meta property="og:description" content="CAPI: supply fijo 100B, 8 decimales, sin owner, incentivos y protección anti-bot/anti-whale el primer año.">
+  <meta property="og:image" content="./assets/image/logo-capitoken.jpg">
+  <meta name="theme-color" content="#20c997">
+
   <link rel="stylesheet" href="./assets/css/site.css"/>
+
   <!-- Ethers (solo lectura) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
   <!-- Chart.js para el Live Token Tracker -->
@@ -14,8 +23,8 @@
 <body>
   <main class="shell">
     <!-- HEADER -->
-    <header class="top">
-      <div class="brand-wrap">
+    <header class="top" id="top">
+      <div class="brand-wrap parallax">
         <img src="./assets/image/logo-capitoken.jpg" alt="Capitoken" class="logo"/>
         <div class="brand">Capitoken</div>
       </div>
@@ -34,7 +43,7 @@
       <p class="lead">La memecoin del capibara: divertida, justa y 100% para la comunidad.</p>
       <div class="grid countdown" id="countdown">
         <div class="kpi"><div class="num" id="d">–</div><div class="lbl">Días</div></div>
-        <div class="kpi"><div class="num" id="h">–</div><div class="lbl">Horas</div></div>
+        <div className="kpi"><div class="num" id="h">–</div><div class="lbl">Horas</div></div>
         <div class="kpi"><div class="num" id="m">–</div><div class="lbl">Minutos</div></div>
         <div class="kpi"><div class="num" id="s">–</div><div class="lbl">Segundos</div></div>
       </div>
@@ -110,23 +119,23 @@
       </div>
     </section>
 
-    <!-- ACTIVIDAD RECIENTE (dummy) -->
+    <!-- ACTIVIDAD RECIENTE (dinámica: on-chain si hay contrato, si no simulado) -->
     <section class="activity card fadein">
       <h2>Actividad reciente</h2>
       <div class="table-wrap">
         <table class="tx-table">
-          <thead><tr><th>Comprador</th><th>Tokens</th><th>Monto</th><th>Tx</th></tr></thead>
+          <thead><tr><th>Desde</th><th>Hacia</th><th>Tokens</th><th>Tx</th></tr></thead>
           <tbody id="txBody"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- UNISWAP EMBED WIDGET -->
+    <!-- UNISWAP EMBED WIDGET (lazy) -->
     <section class="swap card fadein">
       <h2>Compra CAPI en Uniswap</h2>
       <iframe
         id="uniswapWidget"
-        src="https://app.uniswap.org/#/swap?theme=dark&inputCurrency=ETH&outputCurrency=0x0000000000000000000000000000000000000000"
+        data-src="https://app.uniswap.org/#/swap?theme=dark&inputCurrency=ETH&outputCurrency=0x0000000000000000000000000000000000000000"
         title="Uniswap Swap"
         loading="lazy"
       ></iframe>
@@ -206,9 +215,22 @@
           <img src="https://avatars.githubusercontent.com/u/1885080?s=200&v=4" alt="Coinbase Wallet"/>
           <span>Coinbase Wallet</span>
         </button>
+        <button class="wallet-btn" data-wallet="walletconnect">
+          <img src="https://avatars.githubusercontent.com/u/37784886?s=200&v=4" alt="WalletConnect"/>
+          <span>WalletConnect</span>
+        </button>
       </div>
-      <p class="muted small">*Soporte funcional inicial para MetaMask (inyectada). TrustWallet y Coinbase Wallet se integrarán en siguientes tandas.</p>
+      <p class="muted small">*Soporte funcional inicial: MetaMask. TrustWallet/Coinbase/WalletConnect quedarán listos para integrar con SDKs.</p>
     </div>
+  </div>
+
+  <!-- PANEL DESARROLLADOR (activar con tecla ~) -->
+  <div id="devPanel" class="dev hide" aria-live="polite">
+    <div class="dev-head">
+      <strong>Dev Mode</strong>
+      <button id="devClear" class="btn small subtle">Limpiar</button>
+    </div>
+    <div id="devLog" class="dev-body"></div>
   </div>
 </body>
 </html>
