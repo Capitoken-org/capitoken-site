@@ -13,7 +13,42 @@
       { label:"Comunidad (ventas + recompensas)", pct:97, color:"#20c997" },
       { label:"Desarrolladores", pct:2, color:"#f59f0b" },
       { label:"Marketing", pct:1, color:"#9ca3af" }
+    ],
+    // API endpoints para precio (se intentan en orden)
+    priceAPIs: [
+      // DexScreener (ej. si supiéramos par): `https://api.dexscreener.com/latest/dex/tokens/${token}`
+      null, // placeholder, no hay par oficial aún
+      // CoinGecko simple price por id/símbolo (cuando tengamos listing)
+      null
     ]
+  };
+
+  /* ====== Dev Panel ====== */
+  let devMode = false;
+  const dev = {
+    el: null,
+    logEl: null,
+    init(){
+      this.el = $("#devPanel");
+      this.logEl = $("#devLog");
+      $("#devClear")?.addEventListener("click", ()=> this.clear());
+      // tecla "~" activa/desactiva
+      document.addEventListener("keydown",(e)=>{
+        if(e.key === "~"){
+          devMode = !devMode;
+          this.el?.classList.toggle("hide", !devMode);
+          this.log("Dev mode " + (devMode?"ON":"OFF"));
+        }
+      });
+    },
+    log(msg){
+      try { console.log("[CAPI]", msg); } catch(_) {}
+      if(!this.logEl) return;
+      const t = new Date().toLocaleTimeString();
+      this.logEl.textContent += `[${t}] ${typeof msg==='string'?msg:JSON.stringify(msg)}\n`;
+      this.logEl.scrollTop = this.logEl.scrollHeight;
+    },
+    clear(){ if(this.logEl) this.logEl.textContent = ""; }
   };
 
   /* ====== Tema (dark/light) ====== */
@@ -34,13 +69,22 @@
       $("#accountBadge").textContent = short(acc);
       $("#accountBadge").classList.remove("hide");
       $("#btnDisconnect").classList.remove("hide");
-      // cierre modal si estaba abierto
       hideWalletModal();
-    }catch(e){ alert(e?.message || "Error al conectar la wallet"); }
+      dev.log("Wallet conectada: " + acc);
+      // red
+      const ch = await window.ethereum.request({ method:"eth_chainId" });
+      dev.log("chainId: " + ch);
+    }catch(e){ alert(e?.message || "Error al conectar la wallet"); dev.log(e); }
+  }
+  function connectWalletConnect(){
+    // Placeholder: integración con SDK WalletConnect v2 en próxima tanda.
+    alert("WalletConnect se integrará con el SDK en la siguiente versión.");
+    dev.log("WalletConnect placeholder abierto");
   }
   function disconnectWallet(){
     $("#btnDisconnect").classList.add("hide");
     $("#accountBadge").classList.add("hide");
+    dev.log("Wallet desconectada");
   }
 
   /* ====== Countdown ====== */
@@ -71,6 +115,13 @@
     });
   }
 
+  /* ====== Precio (API) ====== */
+  async function fetchPriceFromAPIs(){
+    // Por ahora, sin par/listing no hay endpoint fiable; devolvemos null.
+    dev.log("Precio API: sin endpoint configurado (simulado).");
+    return null;
+  }
+
   /* ====== Métricas demo + lectura on-chain ====== */
   function updateMetricsDemo(){
     const price=0.0000027+Math.random()*0.0000005;
@@ -89,6 +140,7 @@
     if(EL.liq_usdc) EL.liq_usdc.textContent = `$${fmt(250000+Math.random()*50000,0)}`;
     if(EL.liq_weth) EL.liq_weth.textContent = `$${fmt(180000+Math.random()*40000,0)}`;
   }
+
   async function readOnChainSupply(){
     try{
       if(!cfg.tokenAddress || cfg.tokenAddress.startsWith("0x0000")) return;
@@ -106,13 +158,16 @@
       const priceTxt = $("#px")?.textContent?.replace("$","") || "0";
       const price = Number(priceTxt.split(",").join(""));
       if(price>0) $("#mc").textContent = `$${fmt(total*price,0)}`;
-    }catch(e){ console.warn("No se pudo leer on-chain supply:", e); }
+
+      dev.log({onChainSupply: total});
+    }catch(e){ console.warn("No se pudo leer on-chain supply:", e); dev.log(e); }
   }
 
-  /* ====== DEX links ====== */
+  /* ====== DEX links + Uniswap widget (lazy) ====== */
   function uniswapUrl(input, output){
+    const theme = document.body.classList.contains('light') ? 'light' : 'dark';
     const base="https://app.uniswap.org/#/swap";
-    return `${base}?theme=${document.body.classList.contains('light')?'light':'dark'}&inputCurrency=${encodeURIComponent(input)}&outputCurrency=${encodeURIComponent(output)}`;
+    return `${base}?theme=${theme}&inputCurrency=${encodeURIComponent(input)}&outputCurrency=${encodeURIComponent(output)}`;
   }
   function setDexLinksAndWidget(){
     const out = cfg.tokenAddress || "0x0000000000000000000000000000000000000000";
@@ -121,26 +176,78 @@
     $("#dexUsdt").href = uniswapUrl("0xdAC17F958D2ee523a2206206994597C13D831ec7", out);
     $("#dexDai").href  = uniswapUrl("0x6B175474E89094C44Da98b954EedeAC495271d0F", out);
     const widget=$("#uniswapWidget");
-    if(widget) widget.src = uniswapUrl("ETH", out);
+    if(widget){
+      // lazy: solo poner src cuando entra en viewport
+      if("IntersectionObserver" in window){
+        const obs = new IntersectionObserver(entries=>{
+          entries.forEach(en=>{
+            if(en.isIntersecting){
+              const ds = widget.getAttribute("data-src");
+              if(ds) widget.setAttribute("src", ds);
+              obs.disconnect();
+              dev.log("Uniswap widget lazy-loaded");
+            }
+          });
+        }, {root:null, threshold:.1});
+        obs.observe(widget);
+      }else{
+        const ds = widget.getAttribute("data-src");
+        if(ds) widget.setAttribute("src", ds);
+      }
+    }
   }
 
-  /* ====== Actividad dummy ====== */
-  function seedActivity(){
+  /* ====== Actividad: Transfer feed (on-chain si hay contrato, de lo contrario simulado) ====== */
+  async function loadRecentTransfers(){
     const body=$("#txBody"); if(!body) return;
-    const rows=[
-      {buyer:"0xAbC…1a2b",tokens:120000,amount:"0.50 ETH",tx:"0xtxhash1"},
-      {buyer:"0xF00…9988",tokens:350000,amount:"1,200 USDC",tx:"0xtxhash2"},
-      {buyer:"0x9De…77af",tokens: 98000,amount:"0.22 ETH",tx:"0xtxhash3"},
-      {buyer:"0x7aB…44cd",tokens:510000,amount:"2,000 USDT",tx:"0xtxhash4"}
-    ];
-    body.innerHTML = rows.map(r=>(
-      `<tr>
-        <td class="mono">${r.buyer}</td>
-        <td>${fmt(r.tokens,0)}</td>
-        <td>${r.amount}</td>
-        <td><a href="#" target="_blank" rel="noreferrer">${r.tx}</a></td>
-      </tr>`
-    )).join("");
+    body.innerHTML = "";
+    if(!cfg.tokenAddress || cfg.tokenAddress.startsWith("0x0000")){
+      // Simulado
+      const demo = [
+        {from:"0x7fA…1b2c", to:"0x9aD…77af", amount: 120000, tx:"0xfeed01"},
+        {from:"0xAbC…1a2b", to:"0x000…dead", amount:  98000, tx:"0xfeed02"},
+        {from:"0xF00…9988", to:"0xDee…beef", amount: 510000, tx:"0xfeed03"},
+        {from:"0x7aB…44cd", to:"0x0Aa…1234", amount:  22000, tx:"0xfeed04"},
+      ];
+      body.innerHTML = demo.map(r=>(
+        `<tr>
+          <td class="mono">${r.from}</td>
+          <td class="mono">${r.to}</td>
+          <td>${fmt(r.amount,0)}</td>
+          <td><a href="#" target="_blank" rel="noreferrer">${r.tx}</a></td>
+        </tr>`
+      )).join("");
+      dev.log("Transfer feed simulado cargado");
+      return;
+    }
+    // On-chain (cuando tengamos contrato)
+    try{
+      const provider = new ethers.JsonRpcProvider(cfg.rpcMainnet);
+      // topic Transfer(address,address,uint256)
+      const topic = ethers.id("Transfer(address,address,uint256)");
+      const latest = await provider.getBlockNumber();
+      const fromBlock = Math.max(0, latest - 5000);
+      const logs = await provider.getLogs({ address: cfg.tokenAddress, topics: [topic], fromBlock, toBlock: latest });
+      const iface = new ethers.Interface(["event Transfer(address indexed from,address indexed to,uint256 value)"]);
+      const rows = logs.slice(-10).reverse().map(l=>{
+        const { args } = iface.parseLog(l);
+        return {
+          from: short(args[0]),
+          to: short(args[1]),
+          amount: Number(args[2]) / 1e8, // 8 decimales
+          tx: l.transactionHash
+        };
+      });
+      body.innerHTML = rows.map(r=>(
+        `<tr>
+          <td class="mono">${r.from}</td>
+          <td class="mono">${r.to}</td>
+          <td>${fmt(r.amount,0)}</td>
+          <td><a href="https://etherscan.io/tx/${r.tx}" target="_blank" rel="noreferrer">${r.tx.slice(0,10)}…</a></td>
+        </tr>`
+      )).join("");
+      dev.log({transfer_count: rows.length});
+    }catch(e){ console.warn("No se pudo leer Transfer logs:", e); dev.log(e); }
   }
 
   /* ====== Live Token Tracker (Chart.js) ====== */
@@ -164,6 +271,7 @@
       },
       options: {
         responsive: true,
+        animation: { duration: 300 },
         scales: {
           x: { ticks: { display: false }, grid: { display:false } },
           y: { ticks: { color: getComputedStyle(document.body).getPropertyValue('--text') }, grid: { color: getComputedStyle(document.body).getPropertyValue('--stroke') } }
@@ -171,6 +279,7 @@
         plugins: { legend: { display:false } }
       }
     });
+    dev.log("Chart inicializado");
   }
   function pushChartPoint(){
     if(!priceChart) return;
@@ -196,6 +305,14 @@
   function setupScrollTop(){
     $("#scrollTop")?.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
   }
+  function setupParallax(){
+    const b = $(".parallax");
+    if(!b) return;
+    window.addEventListener("scroll", ()=>{
+      const y = window.scrollY || 0;
+      b.style.transform = `translateY(${Math.min(8, y*0.02)}px)`;
+    });
+  }
 
   /* ====== Modal wallets ====== */
   function showWalletModal(){ $("#walletModal").classList.remove("hide"); }
@@ -210,7 +327,8 @@
       btn.addEventListener("click", ()=>{
         const w=btn.getAttribute("data-wallet");
         if(w==="metamask"){ connectInjected(); }
-        else{ alert("Este wallet será integrado en la siguiente etapa."); }
+        else if(w==="walletconnect"){ connectWalletConnect(); }
+        else{ alert("Este wallet será integrado en la siguiente etapa."); dev.log("Wallet por integrar: "+w); }
       });
     });
   }
@@ -223,22 +341,31 @@
       toggleTheme();
       // refrescar colores del widget y chart
       setDexLinksAndWidget();
-      if(priceChart){ priceChart.options.scales.y.ticks.color = getComputedStyle(document.body).getPropertyValue('--text'); priceChart.options.scales.y.grid.color = getComputedStyle(document.body).getPropertyValue('--stroke'); priceChart.update(); }
+      if(priceChart){
+        priceChart.options.scales.y.ticks.color = getComputedStyle(document.body).getPropertyValue('--text');
+        priceChart.options.scales.y.grid.color = getComputedStyle(document.body).getPropertyValue('--stroke');
+        priceChart.update();
+      }
     });
     window.addEventListener("scroll", revealOnScroll);
     setupScrollTop();
+    setupParallax();
     wireWalletModal();
     setDexLinksAndWidget();
   }
 
-  document.addEventListener("DOMContentLoaded", ()=>{
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    dev.init(); dev.log("Booting CAPI UI…");
     initTheme();
     wire();
     startCountdown();
     drawTokenomics();
     updateMetricsDemo();
-    seedActivity();
     revealOnScroll();
+
+    // Intento de precio API (si tuviéramos endpoint)
+    const apiPrice = await fetchPriceFromAPIs();
+    if(apiPrice){ $("#px").textContent = `$${fmt(apiPrice,8)}`; dev.log({price_api: apiPrice}); }
 
     // Live tracker
     initPriceChart();
@@ -247,16 +374,21 @@
     // refrescos demo
     setInterval(updateMetricsDemo, 15000);
 
-    // on-chain supply si hay contrato
+    // on-chain supply & transfers si hay contrato
     readOnChainSupply();
+    loadRecentTransfers();
     setInterval(readOnChainSupply, 60000);
+    setInterval(loadRecentTransfers, 45000);
 
     // cambios de cuenta
     if(window.ethereum){
       window.ethereum.on?.("accountsChanged", (accs)=>{
         const acc=accs?.[0];
-        if(acc){ $("#accountBadge").textContent=short(acc); $("#accountBadge").classList.remove("hide"); $("#btnDisconnect").classList.remove("hide"); }
+        if(acc){ $("#accountBadge").textContent=short(acc); $("#accountBadge").classList.remove("hide"); $("#btnDisconnect").classList.remove("hide"); dev.log("accountsChanged:"+acc); }
         else{ disconnectWallet(); }
+      });
+      window.ethereum.on?.("chainChanged", (ch)=>{
+        dev.log("chainChanged:"+ch);
       });
     }
   });
