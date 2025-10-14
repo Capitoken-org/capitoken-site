@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="./assets/css/site.css"/>
   <!-- Ethers (solo lectura) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+  <!-- Chart.js para el Live Token Tracker -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="./assets/js/site.js"></script>
 </head>
 <body>
@@ -18,8 +20,9 @@
         <div class="brand">Capitoken</div>
       </div>
       <div class="wallet-area">
+        <button id="themeToggle" class="btn small subtle" aria-label="Cambiar tema">🌓</button>
         <span id="netPill" class="pill">Ethereum Mainnet</span>
-        <button id="btnConnect" class="btn small">Conectar</button>
+        <button id="btnWallets" class="btn small">Wallets</button>
         <span id="accountBadge" class="badge hide"></span>
         <button id="btnDisconnect" class="btn small subtle hide">Desconectar</button>
       </div>
@@ -54,7 +57,7 @@
       </div>
     </section>
 
-    <!-- MÉTRICAS EN VIVO (con lectura on-chain + demo) -->
+    <!-- MÉTRICAS EN VIVO -->
     <section class="market card fadein">
       <h2>Métricas</h2>
       <div class="grid metrics">
@@ -73,6 +76,21 @@
         <a id="dexUsdc" class="dex" target="_blank" rel="noreferrer">USDC → CAPI</a>
         <a id="dexUsdt" class="dex" target="_blank" rel="noreferrer">USDT → CAPI</a>
         <a id="dexDai"  class="dex" target="_blank" rel="noreferrer">DAI → CAPI</a>
+      </div>
+    </section>
+
+    <!-- LIVE TOKEN TRACKER (Chart.js) -->
+    <section class="tracker card fadein">
+      <h2>Live Token Tracker</h2>
+      <div class="tracker-grid">
+        <canvas id="priceChart"></canvas>
+        <div class="tracker-side">
+          <div class="tracker-kpi"><span>Precio</span><strong id="tkPrice">—</strong></div>
+          <div class="tracker-kpi"><span>Volumen 24h</span><strong id="tkVol">—</strong></div>
+          <div class="tracker-kpi"><span>Pool Liquidez</span><strong id="tkLiq">—</strong></div>
+          <div class="tracker-kpi"><span>Market Cap</span><strong id="tkMc">—</strong></div>
+          <p class="tracker-note">*Datos simulados hasta conectar el contrato y el par oficial.</p>
+        </div>
       </div>
     </section>
 
@@ -103,6 +121,18 @@
       </div>
     </section>
 
+    <!-- UNISWAP EMBED WIDGET -->
+    <section class="swap card fadein">
+      <h2>Compra CAPI en Uniswap</h2>
+      <iframe
+        id="uniswapWidget"
+        src="https://app.uniswap.org/#/swap?theme=dark&inputCurrency=ETH&outputCurrency=0x0000000000000000000000000000000000000000"
+        title="Uniswap Swap"
+        loading="lazy"
+      ></iframe>
+      <p class="muted small">*El widget apunta al contrato una vez que definamos la dirección oficial de CAPI.</p>
+    </section>
+
     <!-- ROADMAP -->
     <section class="roadmap card fadein">
       <h2>Roadmap</h2>
@@ -125,14 +155,20 @@
       </div>
     </section>
 
-    <!-- COMMUNITY -->
+    <!-- COMMUNITY 2.0 -->
     <section id="community" class="community card fadein">
       <h2>Únete a la Comunidad</h2>
       <p>Conecta con otros capibaras del mundo y sé parte del movimiento. Comparte, aprende y haz historia con CAPI.</p>
-      <div class="community-links">
-        <a href="https://t.me/capitoken" target="_blank" class="btn">Telegram</a>
-        <a href="https://twitter.com" target="_blank" class="btn">X (Twitter)</a>
-        <a href="https://discord.com" target="_blank" class="btn">Discord</a>
+      <div class="community-grid">
+        <a href="https://t.me/capitoken" target="_blank" class="social tg">Telegram</a>
+        <a href="https://twitter.com" target="_blank" class="social tw">X (Twitter)</a>
+        <a href="https://discord.com" target="_blank" class="social dc">Discord</a>
+        <a href="#" target="_blank" class="social yt" aria-disabled="true">YouTube</a>
+      </div>
+      <div class="cta-join">
+        <h3>Join the Movement</h3>
+        <p>Comparte el proyecto, invita amigos y ayúdanos a construir una comunidad sana y a largo plazo.</p>
+        <a class="btn primary" href="#top">Quiero ser parte</a>
       </div>
     </section>
 
@@ -149,5 +185,30 @@
       <button id="scrollTop" class="scroll-top">▲</button>
     </footer>
   </main>
+
+  <!-- MODAL: Wallet Selector -->
+  <div id="walletModal" class="modal hide" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="wmTitle">Conectar Wallet</h3>
+        <button id="wmClose" class="btn small subtle">✕</button>
+      </div>
+      <div class="wallet-grid">
+        <button class="wallet-btn" data-wallet="metamask">
+          <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg" alt="MetaMask"/>
+          <span>MetaMask</span>
+        </button>
+        <button class="wallet-btn" data-wallet="trust">
+          <img src="https://seeklogo.com/images/T/trust-wallet-logo-62D1B3C3ED-seeklogo.com.png" alt="TrustWallet"/>
+          <span>TrustWallet</span>
+        </button>
+        <button class="wallet-btn" data-wallet="coinbase">
+          <img src="https://avatars.githubusercontent.com/u/1885080?s=200&v=4" alt="Coinbase Wallet"/>
+          <span>Coinbase Wallet</span>
+        </button>
+      </div>
+      <p class="muted small">*Soporte funcional inicial para MetaMask (inyectada). TrustWallet y Coinbase Wallet se integrarán en siguientes tandas.</p>
+    </div>
+  </div>
 </body>
 </html>
