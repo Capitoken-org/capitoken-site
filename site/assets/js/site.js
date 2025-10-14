@@ -3,7 +3,7 @@
   const fmt = (n,d=2)=>Number(n||0).toLocaleString(undefined,{maximumFractionDigits:d});
   const short = a => a ? (a.slice(0,6)+"…"+a.slice(-4)) : "";
 
-  // CONFIG: edita cuando tengas el contrato real y tu RPC
+  // EDITA CUANDO TENGAS EL CONTRATO REAL Y RPC
   const cfg = {
     launchISO: "2025-10-17T19:17:17Z",
     chainName: "Ethereum Mainnet",
@@ -16,24 +16,34 @@
     ]
   };
 
-  /* ========== Wallet básica (inyectada) ========== */
-  async function connectWallet(){
+  /* ====== Tema (dark/light) ====== */
+  function toggleTheme(){
+    document.body.classList.toggle('light');
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  }
+  function initTheme(){
+    const saved = localStorage.getItem('theme');
+    if(saved==='light') document.body.classList.add('light');
+  }
+
+  /* ====== Wallets ====== */
+  async function connectInjected(){
     if(!window.ethereum){ alert("No se detectó wallet (MetaMask/Trust/Brave)."); return; }
     try{
       const [acc] = await window.ethereum.request({ method:"eth_requestAccounts" });
-      $("#btnConnect").textContent = "Conectada";
       $("#accountBadge").textContent = short(acc);
       $("#accountBadge").classList.remove("hide");
       $("#btnDisconnect").classList.remove("hide");
+      // cierre modal si estaba abierto
+      hideWalletModal();
     }catch(e){ alert(e?.message || "Error al conectar la wallet"); }
   }
   function disconnectWallet(){
-    $("#btnConnect").textContent = "Conectar";
     $("#btnDisconnect").classList.add("hide");
     $("#accountBadge").classList.add("hide");
   }
 
-  /* ========== Countdown lanzamiento ========== */
+  /* ====== Countdown ====== */
   function startCountdown(){
     const target = new Date(cfg.launchISO).getTime()/1000;
     const tick = ()=>{
@@ -46,7 +56,7 @@
     tick(); setInterval(tick,1000);
   }
 
-  /* ========== Tokenomics: gráfico 97/2/1 ========== */
+  /* ====== Tokenomics Chart (97/2/1) ====== */
   function drawTokenomics(){
     const c=$("#tokenChart"); if(!c) return;
     const ctx=c.getContext("2d");
@@ -61,19 +71,15 @@
     });
   }
 
-  /* ========== Métricas (demo) ========== */
+  /* ====== Métricas demo + lectura on-chain ====== */
   function updateMetricsDemo(){
     const price=0.0000027+Math.random()*0.0000005;
     const circ=12_345_678_901+Math.floor(Math.random()*5e6);
     const mc=price*circ;
     const EL = {
-      px: $("#px") || $("#priceUSD"),
-      mc: $("#mc") || $("#marketCap"),
-      circ: $("#circ") || $("#supply"),
-      holders: $("#holders"),
-      tx24: $("#tx24"),
-      liq_usdc: $("#liq_usdc"),
-      liq_weth: $("#liq_weth"),
+      px: $("#px"), mc: $("#mc"), circ: $("#circ"),
+      holders: $("#holders"), tx24: $("#tx24"),
+      liq_usdc: $("#liq_usdc"), liq_weth: $("#liq_weth")
     };
     if(EL.px) EL.px.textContent = `$${fmt(price,8)}`;
     if(EL.mc) EL.mc.textContent = `$${fmt(mc,0)}`;
@@ -83,8 +89,6 @@
     if(EL.liq_usdc) EL.liq_usdc.textContent = `$${fmt(250000+Math.random()*50000,0)}`;
     if(EL.liq_weth) EL.liq_weth.textContent = `$${fmt(180000+Math.random()*40000,0)}`;
   }
-
-  /* ========== Métrica on-chain (totalSupply como “circulante” provisional) ========== */
   async function readOnChainSupply(){
     try{
       if(!cfg.tokenAddress || cfg.tokenAddress.startsWith("0x0000")) return;
@@ -96,38 +100,31 @@
       const c = new ethers.Contract(cfg.tokenAddress, abi, provider);
       const [supply, decimals] = await Promise.all([c.totalSupply(), c.decimals()]);
       const total = Number(supply) / 10 ** Number(decimals);
-
-      // Reutilizamos los mismos ids según existan
-      const circEl = $("#circ") || $("#supply");
+      const circEl = $("#circ");
       if(circEl) circEl.textContent = `${fmt(total,0)} CAPI`;
 
-      const priceTxt = ($("#px")||$("#priceUSD"))?.textContent?.replace("$","") || "0";
+      const priceTxt = $("#px")?.textContent?.replace("$","") || "0";
       const price = Number(priceTxt.split(",").join(""));
-      const mcEl = $("#mc") || $("#marketCap");
-      if(mcEl && price>0) mcEl.textContent = `$${fmt(total*price,0)}`;
+      if(price>0) $("#mc").textContent = `$${fmt(total*price,0)}`;
     }catch(e){ console.warn("No se pudo leer on-chain supply:", e); }
   }
 
-  /* ========== DEX links (Uniswap rutas rápidas) ========== */
+  /* ====== DEX links ====== */
   function uniswapUrl(input, output){
     const base="https://app.uniswap.org/#/swap";
-    return `${base}?inputCurrency=${encodeURIComponent(input)}&outputCurrency=${encodeURIComponent(output)}`;
+    return `${base}?theme=${document.body.classList.contains('light')?'light':'dark'}&inputCurrency=${encodeURIComponent(input)}&outputCurrency=${encodeURIComponent(output)}`;
   }
-  function setDexLinks(){
+  function setDexLinksAndWidget(){
     const out = cfg.tokenAddress || "0x0000000000000000000000000000000000000000";
-    const el = {
-      eth: $("#dexEth"),
-      usdc: $("#dexUsdc"),
-      usdt: $("#dexUsdt"),
-      dai: $("#dexDai")
-    };
-    if(el.eth)  el.eth.href  = uniswapUrl("ETH", out);
-    if(el.usdc) el.usdc.href = uniswapUrl("0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", out);
-    if(el.usdt) el.usdt.href = uniswapUrl("0xdAC17F958D2ee523a2206206994597C13D831ec7", out);
-    if(el.dai)  el.dai.href  = uniswapUrl("0x6B175474E89094C44Da98b954EedeAC495271d0F", out);
+    $("#dexEth").href  = uniswapUrl("ETH", out);
+    $("#dexUsdc").href = uniswapUrl("0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", out);
+    $("#dexUsdt").href = uniswapUrl("0xdAC17F958D2ee523a2206206994597C13D831ec7", out);
+    $("#dexDai").href  = uniswapUrl("0x6B175474E89094C44Da98b954EedeAC495271d0F", out);
+    const widget=$("#uniswapWidget");
+    if(widget) widget.src = uniswapUrl("ETH", out);
   }
 
-  /* ========== Actividad dummy (tabla) ========== */
+  /* ====== Actividad dummy ====== */
   function seedActivity(){
     const body=$("#txBody"); if(!body) return;
     const rows=[
@@ -146,7 +143,50 @@
     )).join("");
   }
 
-  /* ========== Animaciones scroll / botón subir ========== */
+  /* ====== Live Token Tracker (Chart.js) ====== */
+  let priceChart;
+  function initPriceChart(){
+    const ctx = $("#priceChart");
+    if(!ctx) return;
+    const labels = []; const data = [];
+    for(let i=59;i>=0;i--){labels.push(`${i}m`); data.push(0.0000024 + Math.random()*0.0000006);}
+    priceChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: "Precio (USD)",
+          data,
+          borderWidth: 2,
+          tension: .25,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { ticks: { display: false }, grid: { display:false } },
+          y: { ticks: { color: getComputedStyle(document.body).getPropertyValue('--text') }, grid: { color: getComputedStyle(document.body).getPropertyValue('--stroke') } }
+        },
+        plugins: { legend: { display:false } }
+      }
+    });
+  }
+  function pushChartPoint(){
+    if(!priceChart) return;
+    const next = 0.0000024 + Math.random()*0.0000006;
+    const ds = priceChart.data.datasets[0].data;
+    ds.push(next); ds.shift();
+    priceChart.update("none");
+    $("#tkPrice").textContent = `$${fmt(next,8)}`;
+    $("#tkVol").textContent = `$${fmt(50000 + Math.random()*15000,0)}`;
+    $("#tkLiq").textContent = `$${fmt(300000 + Math.random()*60000,0)}`;
+    const circTxt = $("#circ")?.textContent?.replace(" CAPI","") || "0";
+    const circ = Number(circTxt.split(",").join(""));
+    if(circ>0) $("#tkMc").textContent = `$${fmt(circ*next,0)}`;
+  }
+
+  /* ====== Animaciones y utilidades ====== */
   function revealOnScroll(){
     document.querySelectorAll('.fadein').forEach(el=>{
       if(el.getBoundingClientRect().top<window.innerHeight*0.9)
@@ -157,43 +197,66 @@
     $("#scrollTop")?.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
   }
 
-  /* ========== Wire & boot ========== */
+  /* ====== Modal wallets ====== */
+  function showWalletModal(){ $("#walletModal").classList.remove("hide"); }
+  function hideWalletModal(){ $("#walletModal").classList.add("hide"); }
+  function wireWalletModal(){
+    $("#btnWallets")?.addEventListener("click", showWalletModal);
+    $("#wmClose")?.addEventListener("click", hideWalletModal);
+    document.addEventListener("click",(e)=>{
+      if(e.target?.id==="walletModal") hideWalletModal();
+    });
+    document.querySelectorAll(".wallet-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const w=btn.getAttribute("data-wallet");
+        if(w==="metamask"){ connectInjected(); }
+        else{ alert("Este wallet será integrado en la siguiente etapa."); }
+      });
+    });
+  }
+
+  /* ====== Wire & boot ====== */
   function wire(){
-    $("#btnConnect")?.addEventListener("click", connectWallet);
     $("#btnDisconnect")?.addEventListener("click", disconnectWallet);
     $("#netPill").textContent = cfg.chainName;
+    $("#themeToggle")?.addEventListener("click", ()=>{
+      toggleTheme();
+      // refrescar colores del widget y chart
+      setDexLinksAndWidget();
+      if(priceChart){ priceChart.options.scales.y.ticks.color = getComputedStyle(document.body).getPropertyValue('--text'); priceChart.options.scales.y.grid.color = getComputedStyle(document.body).getPropertyValue('--stroke'); priceChart.update(); }
+    });
     window.addEventListener("scroll", revealOnScroll);
     setupScrollTop();
-    setDexLinks();
+    wireWalletModal();
+    setDexLinksAndWidget();
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{
+    initTheme();
     wire();
     startCountdown();
     drawTokenomics();
-    updateMetricsDemo();              // demo inmediato
+    updateMetricsDemo();
     seedActivity();
     revealOnScroll();
 
-    // refrescos periódicos (demo)
+    // Live tracker
+    initPriceChart();
+    setInterval(pushChartPoint, 5000);
+
+    // refrescos demo
     setInterval(updateMetricsDemo, 15000);
 
-    // lectura on-chain (si ya tienes dirección real del contrato)
+    // on-chain supply si hay contrato
     readOnChainSupply();
     setInterval(readOnChainSupply, 60000);
 
-    // reaccionar a cambios de cuenta (UX)
+    // cambios de cuenta
     if(window.ethereum){
       window.ethereum.on?.("accountsChanged", (accs)=>{
         const acc=accs?.[0];
-        if(acc){
-          $("#accountBadge").textContent=short(acc);
-          $("#accountBadge").classList.remove("hide");
-          $("#btnDisconnect").classList.remove("hide");
-          $("#btnConnect").textContent="Conectada";
-        }else{
-          disconnectWallet();
-        }
+        if(acc){ $("#accountBadge").textContent=short(acc); $("#accountBadge").classList.remove("hide"); $("#btnDisconnect").classList.remove("hide"); }
+        else{ disconnectWallet(); }
       });
     }
   });
