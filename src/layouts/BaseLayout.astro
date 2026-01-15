@@ -1,18 +1,24 @@
 ---
 import "../styles/global.css";
 
-const { title = "Capitoken" } = Astro.props;
+const { title = "Capitoken — Official Website" } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Capitoken official website" />
     <title>{title}</title>
   </head>
 
   <body>
     <slot />
+
+    <footer class="footer">
+      <div class="container">© {year} Capitoken. All rights reserved.</div>
+    </footer>
   </body>
 </html>

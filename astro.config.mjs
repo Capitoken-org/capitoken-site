@@ -1,13 +1,17 @@
 import { defineConfig } from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
+import path from "node:path";
 
 export default defineConfig(({ command }) => ({
   site: "https://capitoken-org.github.io",
-  // En GitHub Pages el repo se publica en /capitoken-site/
-  // En dev (Codespaces) debe ser "/" para que no de 404.
-  base: command === "build" ? "/capitoken-site/" : "/",
+  // En DEV (Codespaces) debe ser "/" para que NO pida /capitoken-site y te dé 404.
+  // En BUILD (GitHub Pages) sí debe ser "/capitoken-site".
+  base: command === "build" ? "/capitoken-site" : "/",
 
   vite: {
-    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        "@": path.resolve("./src"),
+      },
+    },
   },
 }));
