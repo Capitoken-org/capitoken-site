@@ -1,180 +1,108 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-const stats = [
-  { label: "Chain", value: "Ethereum" },
-  { label: "Status", value: "Building" },
-  { label: "Focus", value: "Community" },
-  { label: "Design", value: "Modern" },
-];
-
-const tokenomics = [
-  { title: "97% Community", desc: "Broad distribution & liquidity-first mindset." },
-  { title: "2% Operations", desc: "Sustains development, infra, and execution." },
-  { title: "1% Marketing", desc: "Growth loops, listings, and content." },
-];
-
-const roadmap = [
-  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Social channels live"] },
-  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Community onboarding"] },
-  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
-];
+const year = new Date().getFullYear();
 ---
 
 <BaseLayout title="Capitoken — Official Website">
-  <!-- HERO -->
-  <section class="pt-10 md:pt-16">
-    <div class="grid gap-10 md:grid-cols-2 md:items-center">
-      <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs ring-1 ring-white/15">
-          <span class="h-2 w-2 rounded-full bg-cyan-300"></span>
-          <span class="text-white/80">New site in progress</span>
-        </div>
-
-        <h1 class="mt-5 text-4xl font-extrabold tracking-tight md:text-6xl">
-          Capitoken is building a <span class="text-cyan-300">community-first</span> memecoin ecosystem.
-        </h1>
-
-        <p class="mt-5 text-base text-white/70 md:text-lg">
-          Turquoise-premium design, clear narrative, and verified links — built for adoption.
-        </p>
-
-        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
-          <a
-            href="#tokenomics"
-            class="rounded-2xl bg-cyan-400/20 px-6 py-3 text-sm font-semibold ring-1 ring-cyan-300/30 hover:bg-cyan-400/25"
-          >
-            Explore Tokenomics
-          </a>
-          <a
-            href="#links"
-            class="rounded-2xl bg-white/10 px-6 py-3 text-sm font-semibold ring-1 ring-white/15 hover:bg-white/15"
-          >
-            Official Links
-          </a>
-        </div>
-
-        <div class="mt-8 grid grid-cols-2 gap-3">
-          {stats.map((s) => (
-            <div class="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div class="text-xs text-white/60">{s.label}</div>
-              <div class="mt-1 text-sm font-semibold">{s.value}</div>
-            </div>
-          ))}
-        </div>
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>Capitoken</div>
       </div>
 
-      <!-- RIGHT CARD -->
-      <div class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-        <div class="rounded-2xl bg-black/40 p-5 ring-1 ring-white/10">
-          <div class="text-sm font-semibold">Launch Panel</div>
-          <div class="mt-2 text-sm text-white/70">
-            Verified contract address, DEX pair, and listings will be published here when ready.
+      <nav class="nav-links">
+        <a class="pill" href="#tokenomics">Tokenomics</a>
+        <a class="pill" href="#roadmap">Roadmap</a>
+        <a class="pill" href="#faq">FAQ</a>
+        <a class="btn" href="#links">Official Links</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="kpis">
+            <span class="kpi">Chain: Ethereum</span>
+            <span class="kpi">Status: Building</span>
+            <span class="kpi">Focus: Community-first</span>
           </div>
 
-          <div class="mt-5 grid gap-3">
-            <div class="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div class="text-xs text-white/60">Contract</div>
-              <div class="mt-1 font-mono text-xs text-white/80">TBA — verify only here</div>
-            </div>
-            <div class="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div class="text-xs text-white/60">DEX Pair</div>
-              <div class="mt-1 font-mono text-xs text-white/80">TBA</div>
-            </div>
-            <div class="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div class="text-xs text-white/60">Status</div>
-              <div class="mt-1 text-sm text-white/80">Building in public</div>
-            </div>
-          </div>
+          <h1 class="h1">Capitoken is building a community-first memecoin ecosystem.</h1>
+          <p class="sub">
+            Turquoise-premium design, clear narrative, and verified links — built for adoption.
+            This page will publish the verified contract, DEX pair, and listings when ready.
+          </p>
 
-          <div class="mt-6 text-xs text-white/50">
-            Tip: Bookmark this page. Scammers will copy names and logos.
+          <div class="kpis">
+            <a class="btn" href="#tokenomics">Explore Tokenomics</a>
+            <a class="pill" href="#links">See Official Links</a>
           </div>
+        </div>
+
+        <aside class="card panel">
+          <h3>Launch Panel</h3>
+          <p><b>Contract:</b> TBA — verify only here</p>
+          <p><b>DEX Pair:</b> TBA</p>
+          <p><b>Listings:</b> TBA</p>
+          <div style="height:12px"></div>
+          <small>Tip: Bookmark this page. Scammers will copy names and logos.</small>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tokenomics" class="section">
+      <h2>Tokenomics</h2>
+      <p>Simple, clear allocation — built for execution and growth.</p>
+
+      <div class="card grid">
+        <div class="item">
+          <h3>97% Community</h3>
+          <p>Broad distribution & liquidity-first mindset.</p>
+        </div>
+        <div class="item">
+          <h3>2% Operations</h3>
+          <p>Sustains development, infra, and execution.</p>
+        </div>
+        <div class="item">
+          <h3>1% Marketing</h3>
+          <p>Growth loops, listings, and content.</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- TOKENOMICS -->
-  <section id="tokenomics" class="mt-16 md:mt-20">
-    <div class="flex items-end justify-between gap-6">
-      <div>
-        <h2 class="text-2xl font-bold md:text-3xl">Tokenomics</h2>
-        <p class="mt-2 text-sm text-white/70 md:text-base">
-          Simple, clear allocation — built for execution and growth.
-        </p>
+    <section id="roadmap" class="section">
+      <h2>Roadmap</h2>
+      <p>Build in public, ship fast, and keep it simple.</p>
+
+      <div class="card grid">
+        <div class="item"><h3>Phase 1</h3><p>Foundation + brand + website.</p></div>
+        <div class="item"><h3>Phase 2</h3><p>Contract verification + DEX readiness.</p></div>
+        <div class="item"><h3>Phase 3</h3><p>Listings + community expansion.</p></div>
       </div>
-      <div class="hidden text-xs text-white/50 md:block">97 / 2 / 1</div>
-    </div>
+    </section>
 
-    <div class="mt-8 grid gap-4 md:grid-cols-3">
-      {tokenomics.map((t) => (
-        <div class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10 hover:bg-white/10 transition">
-          <div class="text-lg font-semibold">{t.title}</div>
-          <div class="mt-2 text-sm text-white/70">{t.desc}</div>
-          <div class="mt-4 h-1 w-16 rounded-full bg-cyan-300/60"></div>
-        </div>
-      ))}
-    </div>
-  </section>
+    <section id="faq" class="section">
+      <h2>FAQ</h2>
+      <div class="card panel">
+        <p><b>Is Capitoken live?</b> Not yet — building in public.</p>
+        <p><b>Where will verified links be posted?</b> In the Official Links section below.</p>
+      </div>
+    </section>
 
-  <!-- ROADMAP -->
-  <section id="roadmap" class="mt-16 md:mt-20">
-    <h2 class="text-2xl font-bold md:text-3xl">Roadmap</h2>
-    <p class="mt-2 text-sm text-white/70 md:text-base">
-      Focused phases with clear deliverables.
-    </p>
+    <section id="links" class="section">
+      <h2>Official Links</h2>
+      <div class="card grid">
+        <a class="item" href="#" rel="noopener">X / Twitter (TBA)</a>
+        <a class="item" href="#" rel="noopener">Telegram (TBA)</a>
+        <a class="item" href="#" rel="noopener">Docs (TBA)</a>
+      </div>
+    </section>
+  </main>
 
-    <div class="mt-8 grid gap-4 md:grid-cols-3">
-      {roadmap.map((r) => (
-        <div class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-          <div class="text-xs text-white/60">{r.phase}</div>
-          <div class="mt-1 text-lg font-semibold">{r.title}</div>
-          <ul class="mt-4 space-y-2 text-sm text-white/70">
-            {r.items.map((i) => (
-              <li class="flex gap-2">
-                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
-                <span>{i}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="mt-16 md:mt-20 mb-10">
-    <h2 class="text-2xl font-bold md:text-3xl">FAQ</h2>
-
-    <div class="mt-8 grid gap-4 md:grid-cols-2">
-      <details class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-        <summary class="cursor-pointer text-sm font-semibold">Where do I find the official contract?</summary>
-        <p class="mt-3 text-sm text-white/70">
-          We will publish the verified contract address in the Launch Panel and in Official Links.
-        </p>
-      </details>
-
-      <details class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-        <summary class="cursor-pointer text-sm font-semibold">Why a new site?</summary>
-        <p class="mt-3 text-sm text-white/70">
-          We’re moving from “coming soon” to a modern, structured site: docs, tokenomics, roadmap, and verified links.
-        </p>
-      </details>
-
-      <details class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-        <summary class="cursor-pointer text-sm font-semibold">Is this financial advice?</summary>
-        <p class="mt-3 text-sm text-white/70">
-          No. Crypto is high risk. Always do your own research.
-        </p>
-      </details>
-
-      <details class="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">
-        <summary class="cursor-pointer text-sm font-semibold">When launch?</summary>
-        <p class="mt-3 text-sm text-white/70">
-          We’ll announce dates through official channels and update the status panel here.
-        </p>
-      </details>
-    </div>
-  </section>
+  <footer class="footer">
+    <div class="container">© {year} Capitoken. All rights reserved.</div>
+  </footer>
 </BaseLayout>
