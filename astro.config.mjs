@@ -3,4 +3,7 @@ import { defineConfig } from "astro/config";
 export default defineConfig(({ command }) => ({
   site: "https://capitoken-org.github.io",
   base: command === "build" ? "/capitoken-site/" : "/",
+  build: {
+    assets: "_astro",
+  },
 }));
