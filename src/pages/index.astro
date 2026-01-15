@@ -1,50 +1,98 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const contract = "TBA — verify only here";
+const dexPair = "TBA";
+const listings = "TBA";
 ---
 
 <BaseLayout title="Capitoken — Official Website">
   <main class="container">
-    <h1>
-      Capitoken is building a community-first memecoin ecosystem.
-    </h1>
+    <section class="hero">
+      <div class="hero__kicker">Ethereum • Building • Community-first</div>
 
-    <p>
-      Turquoise-premium design, clear narrative, and verified links — built for
-      adoption. This page will publish the verified contract, DEX pair, and
-      listings when ready.
-    </p>
+      <h1>Capitoken is building a community-first memecoin ecosystem.</h1>
 
-    <p>
-      <a href="#tokenomics">Explore Tokenomics</a> ·
-      <a href="#links">See Official Links</a>
-    </p>
-
-    <section class="section">
-      <h2>Launch Panel</h2>
-      <p><strong>Contract:</strong> TBA — verify only here</p>
-      <p><strong>DEX Pair:</strong> TBA</p>
-      <p><strong>Listings:</strong> TBA</p>
-      <p>
-        Tip: Bookmark this page. Scammers will copy names and logos.
+      <p class="hero__lead">
+        Turquoise-premium design, clear narrative, and verified links — built for adoption.
+        This page will publish the verified contract, DEX pair, and listings when ready.
       </p>
+
+      <div class="actions">
+        <a class="btn btn--primary" href="#tokenomics">Explore Tokenomics</a>
+        <a class="btn" href="#links">See Official Links</a>
+      </div>
     </section>
 
-    <section id="tokenomics" class="section">
+    <section class="section">
+      <div class="grid">
+        <div class="card col-6">
+          <h3>Launch Panel</h3>
+          <p><strong>Contract:</strong> {contract}</p>
+          <p><strong>DEX Pair:</strong> {dexPair}</p>
+          <p><strong>Listings:</strong> {listings}</p>
+          <p class="small" style="margin-top:10px;">
+            Tip: Bookmark this page. Scammers will copy names and logos.
+          </p>
+        </div>
+
+        <div class="card col-6" id="roadmap">
+          <h3>Roadmap (Short)</h3>
+          <p>• Finalize verified contract + official links</p>
+          <p>• Liquidity + DEX launch</p>
+          <p>• Listings submissions (when eligible)</p>
+          <p>• Community growth loops + content</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tokenomics">
       <h2>Tokenomics</h2>
       <p>Simple, clear allocation — built for execution and growth.</p>
 
-      <p><strong>97% Community</strong><br />Broad distribution & liquidity-first mindset.</p>
-      <p><strong>2% Operations</strong><br />Sustains development, infra, and execution.</p>
-      <p><strong>1% Marketing</strong><br />Growth loops, listings, and content.</p>
+      <div class="card">
+        <div class="kv">
+          <strong>97% Community</strong>
+          <span>Broad distribution & liquidity-first mindset.</span>
+        </div>
+        <div class="kv">
+          <strong>2% Operations</strong>
+          <span>Sustains development, infra, and execution.</span>
+        </div>
+        <div class="kv">
+          <strong>1% Marketing</strong>
+          <span>Growth loops, listings, and content.</span>
+        </div>
+      </div>
     </section>
 
-    <section id="links" class="section">
-      <h2>Official Links</h2>
+    <section class="section" id="faq">
+      <h2>FAQ</h2>
+      <div class="grid">
+        <div class="card col-6">
+          <h3>Where do I verify the contract?</h3>
+          <p>Only on this page. Everything else should be treated as unverified until published here.</p>
+        </div>
+        <div class="card col-6">
+          <h3>When launch?</h3>
+          <p>TBA. This page will be updated with verified on-chain info once ready.</p>
+        </div>
+      </div>
+    </section>
 
-      <div class="card-grid">
-        <a class="item" href="#" rel="noopener">X / Twitter (TBA)</a>
-        <a class="item" href="#" rel="noopener">Telegram (TBA)</a>
-        <a class="item" href="#" rel="noopener">Docs (TBA)</a>
+    <section class="section" id="links">
+      <h2>Official Links</h2>
+      <div class="grid">
+        <div class="card col-12">
+          <p>
+            <a class="btn" href="#" rel="noopener">X / Twitter (TBA)</a>
+            <a class="btn" href="#" rel="noopener">Telegram (TBA)</a>
+            <a class="btn" href="#" rel="noopener">Docs (TBA)</a>
+          </p>
+          <p class="small" style="margin-top:10px;">
+            Replace TBA links only when the official accounts are live.
+          </p>
+        </div>
       </div>
     </section>
   </main>
