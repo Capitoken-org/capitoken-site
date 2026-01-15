@@ -1,16 +1,18 @@
 {
   "name": "capitoken-site",
-  "type": "module",
   "version": "0.0.1",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host --port 4321",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "astro preview"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.9",
-    "tailwindcss": "^4.1.18"
+    "astro": "^5.16.9"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0"
   }
 }
