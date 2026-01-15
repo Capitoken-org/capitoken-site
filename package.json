@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host --port 4321",
-    "build": "astro build",
+    "build": "astro build && node scripts/rename-assets.js",
     "preview": "astro preview"
   },
   "dependencies": {
