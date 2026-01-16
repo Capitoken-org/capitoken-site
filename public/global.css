@@ -704,3 +704,64 @@ hr.hr{ margin: 26px 0; }
   opacity: .55;
   pointer-events: none;
 }
+
+/* =========================================================
+   PATCH v9 — Launch Panel layout hardening (prevents "stuck" boxes
+   and prevents later sections from inheriting grid layout)
+   Paste at END of public/global.css
+   ========================================================= */
+
+#launchpanel .launch-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: start;
+}
+@media (min-width: 920px){
+  #launchpanel .launch-grid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+#launchpanel .launch-grid > .span-all{
+  grid-column: 1 / -1;
+}
+
+/* Force vertical separation even if card styles change elsewhere */
+#launchpanel .launch-grid > .card{
+  margin: 0 !important;
+}
+#launchpanel .launch-grid > .card + .card{
+  /* (grid already handles gap, but this is a safety net) */
+}
+
+/* Route chips */
+#launchpanel .route-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px;
+}
+#launchpanel .route-actions .route-btn{
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:800;
+  line-height:1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+#launchpanel .route-actions .route-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.06);
+}
+
+/* Small helpers used in the section */
+#launchpanel .pill{ display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); }
+#launchpanel .pill-dot{ width:8px; height:8px; border-radius:999px; background: var(--brand-gold, #e9902c); box-shadow: 0 0 0 3px rgba(233,144,44,0.18); }
+#launchpanel .stats{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+@media (min-width: 920px){ #launchpanel .stats{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
+#launchpanel .stat{ padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.03); }
+#launchpanel .stat .k{ font-size:12px; color: rgba(242,245,244,0.72); margin-bottom:4px; }
+#launchpanel .stat .v{ font-size:14px; font-weight:800; }
