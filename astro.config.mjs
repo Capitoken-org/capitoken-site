@@ -1,7 +1,8 @@
 import { defineConfig } from "astro/config";
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   site: "https://capitoken-org.github.io",
-  base: command === "build" ? "/capitoken-site/" : "/",
+  base: "/capitoken-site",
+  output: "static",
   trailingSlash: "always",
-}));
+});
