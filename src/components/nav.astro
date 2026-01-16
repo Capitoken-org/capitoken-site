@@ -1,12 +1,10 @@
 ---
 const base = import.meta.env.BASE_URL || "/";
+
 const withBase = (p: string) => {
   const clean = p.startsWith("/") ? p.slice(1) : p;
   return `${base}${clean}`;
 };
-
-const pathname = Astro.url.pathname;
-const isHome = pathname === base || pathname === "/" || pathname.startsWith(base);
 
 const LINKS = [
   { label: "Home", href: "/" },
@@ -30,11 +28,16 @@ function fixHref(href: string) {
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="brand" href={withBase("/")}>
-    <img class="brand__logo" src={withBase("/logo/capitoken-white.png")} alt="Capitoken" width="26" height="26" />
-    <span class="brand__text">Capitoken</span>
-</a>
-
+    <a class="brand" href={fixHref("/")}>
+      <img
+        class="brand__logo"
+        src={withBase("/logo/capitoken-white.png")}
+        alt="Capitoken"
+        width="26"
+        height="26"
+      />
+      <span class="brand__text">Capitoken</span>
+    </a>
 
     <div class="nav__links">
       {LINKS.map((l) => (
