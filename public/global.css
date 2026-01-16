@@ -591,3 +591,26 @@ hr.hr{ margin: 26px 0; }
   font-weight: 900;
   letter-spacing: 0.2px;
 }
+
+/* =========================================================
+   PATCH v6 — More spacing between Contract / DEX Pair cards
+   Paste at END of public/global.css
+   ========================================================= */
+
+#launchpanel .launch-grid{
+  gap: 26px !important;          /* bigger gap so cards don't feel glued */
+  align-items: start !important;
+}
+
+/* Extra safety if something collapses gaps */
+#launchpanel .launch-grid > .card{
+  margin: 0 !important;
+}
+#launchpanel .launch-grid > .card:not(:first-child){
+  margin-top: 26px !important;   /* applies when grid collapses to 1 col */
+}
+
+/* Make Launch Panel section breathe a bit more */
+#launchpanel{
+  padding-top: 10px;
+}
