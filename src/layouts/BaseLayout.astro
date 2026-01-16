@@ -1,88 +1,78 @@
 ---
-import "../styles/global.css";
 import Nav from "../components/nav.astro";
 
 const {
   title = "Capitoken (CAPI) — Official Website",
   description = "Capitoken official website — verified links, launch panel, tokenomics, and community updates.",
+  ogTitle = title,
+  ogDescription = description,
+  canonicalPath = Astro.url.pathname,
+  noindex = false,
 } = Astro.props;
 
-const year = new Date().getFullYear();
-
-// Site + base (important for GitHub Pages)
-const site = Astro.site?.toString() ?? "https://capitoken-org.github.io";
-const base = import.meta.env.BASE_URL; // "/" in dev, "/capitoken-site/" in build
-
-const canonical = new URL(Astro.url.pathname.replace(base, "/"), `${site}${base}`).toString();
-const ogImage = `${site}${base}og.png`;
+const BASE = import.meta.env.BASE_URL; // e.g. /capitoken-site/
+const canonical = new URL(canonicalPath, Astro.url).href;
+const ogImage = new URL(`${BASE}og.png`, Astro.url).href;
+const favicon = `${BASE}favicon.svg`;
+const css = `${BASE}global.css`;
 
 // GA4
-const GA4_ID = "G-KK8HRNV8ZZ";
+const GA4_ID = "G-KK8HRNV8ZZ"; // <-- change if needed
 ---
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#023125" />
 
-    <!-- Open Graph -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    {noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
+    <link rel="canonical" href={canonical} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+
+    <!-- Global CSS (GitHub Pages safe) -->
+    <link rel="stylesheet" href={css} />
+
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Capitoken" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-
-    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
-
-    <title>{title}</title>
 
     <!-- Google Analytics 4 (GA4) -->
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ window.dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', '{GA4_ID_PLACEHOLDER}');
+    <script is:inline define:vars={{ GA4_ID }}>
+      // GA4 loader is kept inline to avoid bundling issues on GH Pages.
+      // This runs only in the browser.
+      (function(){
+        var id = GA4_ID;
+        if (!id || id.indexOf("G-") !== 0) return;
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ window.dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", id, { anonymize_ip: true });
+      })();
     </script>
   </head>
-
   <body>
     <Nav />
-    <main class="container">
+    <main class="wrap">
       <slot />
+      <footer class="footer">
+        © {new Date().getFullYear()} Capitoken. All rights reserved.
+      </footer>
     </main>
-
-    <footer class="footer">
-      <div class="container">
-        © {year} Capitoken. All rights reserved.
-      </div>
-    </footer>
-
-    <!-- Patch GA4 placeholder safely (avoids Astro parsing issues) -->
-    <script is:inline>
-      try {
-        const GA4 = "{GA4_ID_DYNAMIC}";
-        // No-op placeholder; replaced below.
-      } catch(e) {}
-    </script>
-
-    <script is:inline define:vars={{ GA4_ID }}>
-      // Replace placeholder string with real GA4 id at runtime
-      // (keeps the inline script simple and avoids linter noise)
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ window.dataLayer.push(arguments); }
-      gtag('config', GA4_ID, { anonymize_ip: true });
-    </script>
   </body>
 </html>
