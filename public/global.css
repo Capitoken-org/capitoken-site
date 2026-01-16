@@ -614,3 +614,46 @@ hr.hr{ margin: 26px 0; }
 #launchpanel{
   padding-top: 10px;
 }
+
+/* =========================================================
+   PATCH v7 — Launch Panel: spacing + route buttons (safe)
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* 1) Fix: cards glued together inside Launch Panel */
+#launchpanel .card{
+  margin-bottom: 18px; /* forces vertical separation even if grid/gap fails */
+}
+#launchpanel .card:last-child{
+  margin-bottom: 0;
+}
+
+/* 2) Fix: route buttons spacing + premium chip style (uses existing .btn) */
+#launchpanel .route-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#launchpanel .route-actions .btn{
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateZ(0);
+}
+
+#launchpanel .route-actions .btn:hover{
+  transform: translateY(-1px);
+}
+
+/* optional: make them look like “chips” if your .btn is too big */
+#launchpanel .route-actions .btn.route-btn{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+#launchpanel .route-actions .btn.route-btn:hover{
+  border-color: rgba(255,255,255,0.22);
+}
