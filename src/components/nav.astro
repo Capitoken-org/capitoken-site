@@ -1,4 +1,6 @@
 ---
+const base = import.meta.env.BASE_URL; // "/" en dev, "/capitoken-site/" en build
+
 const LINKS = [
   { label: "Launch", href: "#launch" },
   { label: "Tokenomics", href: "#tokenomics" },
@@ -7,14 +9,19 @@ const LINKS = [
   { label: "FAQ", href: "#faq" },
 ];
 
-const isHome = Astro.url.pathname === "/" || Astro.url.pathname.startsWith(base);
-const base = import.meta.env.BASE_URL; // "/" en dev, "/capitoken-site/" en build
+// Home detection:
+// - "/" en dev
+// - "/capitoken-site/" en GitHub Pages
+const pathname = Astro.url.pathname;
+const isHome = pathname === base || pathname === "/" || pathname === base.replace(/\/$/, "");
 
-function fixHref(href) {
+function fixHref(href: string) {
   // Anchor links se quedan tal cual
   if (href.startsWith("#")) return href;
+
   // Links absolutos (http) se dejan
   if (href.startsWith("http")) return href;
+
   // Forzar base en rutas internas
   const clean = href.startsWith("/") ? href.slice(1) : href;
   return `${base}${clean}`.replace(/\/{2,}/g, "/");
@@ -23,14 +30,17 @@ function fixHref(href) {
 
 <header class="nav">
   <div class="nav__inner">
-    <a class="brand" href={isHome ? `${base}` : `${base}`}>
+    <!-- Brand siempre vuelve al HOME bajo BASE_URL -->
+    <a class="brand" href={base}>
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Capitoken</span>
     </a>
 
     <nav class="nav__links" aria-label="Primary">
       {LINKS.map((l) => (
-        <a href={fixHref(l.href)}>{l.label}</a>
+        <a href={fixHref(l.href)} class={l.href.startsWith("#") && !isHome ? "is-disabled" : ""}>
+          {l.label}
+        </a>
       ))}
     </nav>
   </div>
