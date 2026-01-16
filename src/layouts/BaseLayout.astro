@@ -1,21 +1,33 @@
 ---
 import "../styles/global.css";
 import Nav from "../components/nav.astro";
-const { title = "Capitoken (CAPI)", description = "Capitoken official website — verified links, launch panel, tokenomics, and community updates." } = Astro.props;
+
+const {
+  title = "Capitoken (CAPI)",
+  description = "Capitoken official website — verified links, launch panel, tokenomics, and community updates.",
+} = Astro.props;
+
+// Base URL (supports GitHub Pages base path like /capitoken-site/)
+const BASE = import.meta.env.BASE_URL;
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" type="image/png" sizes="32x32" href={`${import.meta.env.BASE_URL}icons/favicon-32x32.png`} />
-    <link rel="icon" type="image/png" sizes="16x16" href={`${import.meta.env.BASE_URL}icons/favicon-16x16.png`} />
-    <link rel="apple-touch-icon" sizes="180x180" href={`${import.meta.env.BASE_URL}icons/apple-touch-icon.png`} />
-    <link rel="manifest" href={`${import.meta.env.BASE_URL}site.webmanifest`} />
 
+    <!-- Theme -->
+    <meta name="theme-color" content="#050c0a" />
 
+    <!-- Favicons / PWA -->
+    <link rel="icon" type="image/png" sizes="32x32" href={`${BASE}icons/favicon-32x32.png`} />
+    <link rel="icon" type="image/png" sizes="16x16" href={`${BASE}icons/favicon-16x16.png`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${BASE}icons/apple-touch-icon.png`} />
+    <link rel="manifest" href={`${BASE}site.webmanifest`} />
   </head>
+
   <body>
     <Nav />
     <main>
