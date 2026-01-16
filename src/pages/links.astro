@@ -1,13 +1,35 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const OFFICIAL_LINKS = [
-  { name: "Website", value: "https://capitoken-org.github.io/capitoken-site/" },
-  { name: "Contract", value: "TBA — published here only" },
-  { name: "DEX Pair", value: "TBA" },
-  { name: "X (Twitter)", value: "TBA" },
-  { name: "Telegram", value: "TBA" },
-  { name: "GitHub", value: "https://github.com/Capitoken-org" },
+// Single source of truth (edit here when ready)
+const OFFICIAL = {
+  website: "https://capitoken-org.github.io/capitoken-site/",
+  contract: "TBA",          // paste 0x... when published
+  dexPair: "TBA",           // paste pair/pool address when published
+  x: "TBA",                 // https://x.com/<handle> or https://twitter.com/<handle>
+  telegram: "TBA",          // https://t.me/<channel>
+  github: "https://github.com/Capitoken-org",
+};
+
+function isUrl(v: string) {
+  return /^https?:\/\/.+/i.test(v);
+}
+
+function isAddress(v: string) {
+  return /^0x[a-fA-F0-9]{40}$/.test(v);
+}
+
+function shortAddr(a: string) {
+  return `${a.slice(0, 6)}…${a.slice(-4)}`;
+}
+
+const rows = [
+  { name: "Website", value: OFFICIAL.website, type: "url" },
+  { name: "Contract", value: OFFICIAL.contract, type: "address" },
+  { name: "DEX Pair / Pool", value: OFFICIAL.dexPair, type: "address" },
+  { name: "X (Twitter)", value: OFFICIAL.x, type: "url" },
+  { name: "Telegram", value: OFFICIAL.telegram, type: "url" },
+  { name: "GitHub", value: OFFICIAL.github, type: "url" },
 ];
 ---
 
@@ -15,34 +37,124 @@ const OFFICIAL_LINKS = [
   title="Capitoken — Official Links"
   description="Official Capitoken links. Single source of truth. Anything not listed here is not official."
 >
-  <main class="container">
-    <section class="hero">
-      <div class="pill">
-        <span class="pill__dot"></span>
-        <span>Single source of truth</span>
-      </div>
+  <section class="hero">
+    <div class="hero__kicker">
+      <span class="pill__dot" aria-hidden="true"></span>
+      Single source of truth
+    </div>
 
-      <h1>Official Capitoken Links</h1>
+    <h1>Official Links</h1>
 
-      <p class="hero__lead">
-        This page lists the <strong>only official links</strong> for Capitoken.
-        If it’s not published here, it is not official.
-      </p>
-    </section>
+    <p class="hero__lead">
+      This page lists the <strong>only official links</strong> for Capitoken.
+      If it’s not published here, it is not official.
+    </p>
 
-    <section class="section">
-      <div class="card">
-        {OFFICIAL_LINKS.map((l) => (
+    <div class="actions">
+      <a class="btn btn--primary" href="./verify">Open /verify</a>
+      <a class="btn" href="./">Back to Home</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="card">
+      {rows.map((l) => {
+        const v = l.value || "TBA";
+        const urlish = isUrl(v);
+        const addrish = isAddress(v);
+
+        const display =
+          addrish ? shortAddr(v) : v;
+
+        return (
           <div class="kv">
             <strong>{l.name}</strong>
-            <span class="mono">{l.value}</span>
+
+            <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;">
+              {urlish ? (
+                <a href={v} target="_blank" rel="noopener noreferrer" style="color: var(--text); text-decoration: underline;">
+                  {display}
+                </a>
+              ) : (
+                <span>{display}</span>
+              )}
+
+              {(addrish || urlish) ? (
+                <button
+                  class="btn"
+                  type="button"
+                  style="padding:7px 10px; font-size:12px;"
+                  data-copy={v}
+                >
+                  Copy
+                </button>
+              ) : null}
+            </span>
           </div>
-        ))}
+        );
+      })}
+    </div>
+
+    <p class="small" style="margin-top:12px;">
+      Bookmark this page. Scammers will copy names, logos, and URLs.
+      Always verify the domain and compare with this list.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Quick verification checklist</h2>
+    <div class="grid" style="margin-top:14px;">
+      <div class="card col-6">
+        <h3>1) Verify the URL</h3>
+        <p class="small">Only trust the official domain listed on this page.</p>
       </div>
 
-      <p class="small" style="margin-top:12px;">
-        Bookmark this page. Scammers will copy names, logos, and URLs.
-      </p>
-    </section>
-  </main>
+      <div class="card col-6">
+        <h3>2) Verify the contract</h3>
+        <p class="small">Only use the contract address published here (never from DMs).</p>
+      </div>
+
+      <div class="card col-6">
+        <h3>3) Verify the DEX pair</h3>
+        <p class="small">If a pair/pool address is published, cross-check it before swapping.</p>
+      </div>
+
+      <div class="card col-6">
+        <h3>4) When in doubt</h3>
+        <p class="small">Go back to /verify. If it’s not there, it’s not official.</p>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+      }
+    }
+
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-copy]");
+      if (!btn) return;
+      const v = btn.getAttribute("data-copy");
+      if (!v) return;
+
+      const ok = await copyToClipboard(v);
+      const prev = btn.textContent;
+      btn.textContent = ok ? "Copied" : "Failed";
+      setTimeout(() => (btn.textContent = prev), 900);
+    });
+  </script>
 </BaseLayout>

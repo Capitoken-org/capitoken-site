@@ -9,12 +9,13 @@ const {
 
 const year = new Date().getFullYear();
 
-// Site + base (important for GitHub Pages)
+// GitHub Pages base handling
 const site = Astro.site?.toString() ?? "https://capitoken-org.github.io";
 const base = import.meta.env.BASE_URL; // "/" in dev, "/capitoken-site/" in build
 
-const canonical = new URL(Astro.url.pathname.replace(base, "/"), `${site}${base}`).toString();
-const ogImage = `${site}${base}og.png`;
+// Canonical + OG URLs (robust)
+const canonical = new URL(Astro.url.pathname, `${site}${base}`).toString();
+const ogImage = new URL("og.png", `${site}${base}`).toString();
 
 // GA4
 const GA4_ID = "G-KK8HRNV8ZZ";
@@ -48,11 +49,11 @@ const GA4_ID = "G-KK8HRNV8ZZ";
 
     <!-- Google Analytics 4 (GA4) -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>
-    <script>
+    <script is:inline>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
+      function gtag(){ window.dataLayer.push(arguments); }
       gtag('js', new Date());
-      gtag('config', '{GA4_ID}', { anonymize_ip: true });
+      gtag('config', {JSON.stringify(GA4_ID)}, { anonymize_ip: true });
     </script>
   </head>
 

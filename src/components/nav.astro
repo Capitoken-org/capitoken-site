@@ -3,19 +3,15 @@ const LINKS = [
   { label: "Launch", href: "#launch" },
   { label: "Tokenomics", href: "#tokenomics" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Links", href: "/capitoken-site/links" }, // en build queda bajo /capitoken-site/
+  { label: "Links", href: "links" }, // relative -> fixHref le pone BASE_URL
   { label: "FAQ", href: "#faq" },
 ];
 
-const isHome = Astro.url.pathname === "/" || Astro.url.pathname.endsWith("/capitoken-site/") || Astro.url.pathname.endsWith("/capitoken-site");
-const base = import.meta.env.BASE_URL; // "/" en dev, "/capitoken-site/" en build
+const base = import.meta.env.BASE_URL; // "/" dev, "/capitoken-site/" build
 
 function fixHref(href: string) {
-  // Anchor links se quedan tal cual
   if (href.startsWith("#")) return href;
-  // Links absolutos (http) se dejan
   if (href.startsWith("http")) return href;
-  // Forzar base en rutas internas
   const clean = href.startsWith("/") ? href.slice(1) : href;
   return `${base}${clean}`.replace(/\/{2,}/g, "/");
 }
@@ -23,7 +19,7 @@ function fixHref(href: string) {
 
 <header class="nav">
   <div class="nav__inner">
-    <a class="brand" href={isHome ? `${base}` : `${base}`}>
+    <a class="brand" href={base}>
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Capitoken</span>
     </a>
