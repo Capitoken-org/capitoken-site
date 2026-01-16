@@ -273,3 +273,39 @@ h3{margin:0 0 6px;font-size:18px}
   border-top:1px solid rgba(255,255,255,0.06);
   color:rgba(242,245,244,0.65);
 }
+/* =========================================================
+   PATCH v1 — Fix spacing, bleed, and oversized boxes
+   Drop this at END of public/global.css
+   ========================================================= */
+
+/* More consistent gutters on all screens */
+:root{
+  --gutter: 24px;
+}
+
+.container{
+  width: min(var(--container), calc(100% - (var(--gutter) * 2)));
+}
+
+/* Slightly more breathing room on large screens */
+@media (min-width: 1200px){
+  :root{ --gutter: 32px; }
+}
+
+/* Global section spacing feels more premium */
+section{ padding: 34px 0; }
+.section{ padding: 34px 0; }
+
+/* Improve readability (avoid ultra-wide text lines) */
+.hero__lead{ max-width: 70ch; }
+
+/* Cards: prevent "flat wide slabs" */
+.card{
+  padding: 20px;
+}
+
+/* If you have any rows that render as “very wide short boxes”,
+   give them natural height with internal spacing */
+.kv{
+  padding: 12px 0;
+}
