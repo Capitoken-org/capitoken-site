@@ -1,117 +1,111 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const stats = [
-  { label: "Chain", value: "Ethereum" },
-  { label: "Status", value: "Building" },
-  { label: "Focus", value: "Community-first" },
-  { label: "Design", value: "Turquoise-premium" },
+const LAUNCH = {
+  status: "Building in public",
+  contract: "TBA — verify only here",
+  dexPair: "TBA",
+  chain: "Ethereum",
+};
+
+// Links oficiales (rellenas cuando estén listos)
+const OFFICIAL = [
+  { label: "X (Twitter)", href: "TBA" },
+  { label: "Telegram", href: "TBA" },
+  { label: "GitHub", href: "https://github.com/Capitoken-org" },
+  { label: "Website", href: "https://capitoken-org.github.io/capitoken-site/" },
 ];
 
-const tokenomics = [
-  { title: "97% Community", desc: "Broad distribution & liquidity-first mindset." },
-  { title: "2% Operations", desc: "Sustains development, infra, and execution." },
-  { title: "1% Marketing", desc: "Growth loops, listings, and content." },
+const TOKENOMICS = [
+  { k: "Community", v: "97%" },
+  { k: "Operations", v: "2%" },
+  { k: "Marketing", v: "1%" },
 ];
 
-const roadmap = [
+const ROADMAP = [
   { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Social channels live"] },
   { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Community onboarding"] },
   { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
 ];
 ---
 
-<BaseLayout title="Capitoken — Official Website">
-  <!-- NAV -->
-  <header class="nav">
+<BaseLayout
+  title="Capitoken — Official Website"
+  description="Capitoken official website — verified links, tokenomics, roadmap, and launch panel."
+  ogImage="og.png"
+>
+  <div class="nav">
     <div class="nav__inner">
-      <a class="brand" href="#top">
+      <a class="brand" href="./">
         <span class="brand__dot"></span>
         <span class="brand__name">Capitoken</span>
       </a>
 
-      <nav class="nav__links">
+      <div class="nav__links">
+        <a href="#launch">Launch</a>
         <a href="#tokenomics">Tokenomics</a>
         <a href="#roadmap">Roadmap</a>
+        <a href="#links">Official Links</a>
         <a href="#faq">FAQ</a>
-        <a href="#links">Links</a>
-      </nav>
+      </div>
     </div>
-  </header>
+  </div>
 
-  <main id="top" class="container">
+  <main class="container">
     <!-- HERO -->
     <section class="hero">
       <div class="hero__kicker">
-        <span class="hero__kicker-dot"></span>
-        <span>New site in progress</span>
+        <span class="brand__dot" style="width:10px;height:10px;"></span>
+        Verified info only on this website
       </div>
 
       <h1>
-        Capitoken is building a <span class="accent">community-first</span> memecoin ecosystem.
+        Capitoken is building a <span style="color: var(--accent2)">community-first</span> memecoin ecosystem.
       </h1>
 
       <p class="hero__lead">
         Turquoise-premium design, clear narrative, and verified links — built for adoption.
-        This page will publish the verified contract, DEX pair, and listings when ready.
       </p>
 
       <div class="actions">
-        <a class="btn btn--primary" href="#tokenomics">Explore Tokenomics</a>
-        <a class="btn" href="#links">See Official Links</a>
+        <a class="btn btn--primary" href="#launch">Launch Panel</a>
+        <a class="btn" href="#links">Official Links</a>
       </div>
 
-      <div class="kpi-grid">
-        {stats.map((s) => (
-          <div class="kpi">
-            <div class="kpi__label">{s.label}</div>
-            <div class="kpi__value">{s.value}</div>
-          </div>
-        ))}
-      </div>
+      <p class="small" style="margin-top:14px;">
+        Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
+      </p>
     </section>
 
-    <!-- LAUNCH PANEL -->
-    <section class="section">
+    <!-- LAUNCH -->
+    <section id="launch" class="section">
       <h2>Launch Panel</h2>
-      <p class="small">Verified contract address, DEX pair, and listings will be published here when ready.</p>
+      <p>Single source of truth for contract, pair, and status.</p>
 
-      <div class="card-grid">
-        <div class="item">
-          <div class="item__label">Contract</div>
-          <div class="item__value mono">TBA — verify only here</div>
-        </div>
-        <div class="item">
-          <div class="item__label">DEX Pair</div>
-          <div class="item__value mono">TBA</div>
-        </div>
-        <div class="item">
-          <div class="item__label">Listings</div>
-          <div class="item__value mono">TBA</div>
+      <div class="grid" style="margin-top:12px;">
+        <div class="card col-12">
+          <div class="kv"><strong>Status</strong><span>{LAUNCH.status}</span></div>
+          <div class="kv"><strong>Chain</strong><span>{LAUNCH.chain}</span></div>
+          <div class="kv"><strong>Contract</strong><span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">{LAUNCH.contract}</span></div>
+          <div class="kv"><strong>DEX Pair</strong><span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">{LAUNCH.dexPair}</span></div>
         </div>
       </div>
 
-      <p class="small" style="margin-top: 12px;">
-        Tip: Bookmark this page. Scammers will copy names and logos.
+      <p class="small" style="margin-top:12px;">
+        If it’s not listed here, it’s not official. Always cross-check the URL.
       </p>
     </section>
 
     <!-- TOKENOMICS -->
     <section id="tokenomics" class="section">
-      <div class="section__head">
-        <div>
-          <h2>Tokenomics</h2>
-          <p>Simple, clear allocation — built for execution and growth.</p>
-        </div>
-        <div class="pill">97 / 2 / 1</div>
-      </div>
+      <h2>Tokenomics</h2>
+      <p>Simple allocation — 97 / 2 / 1.</p>
 
-      <div class="card-grid">
-        {tokenomics.map((t) => (
-          <div class="item">
-            <div class="item__title">{t.title}</div>
-            <div class="item__desc">{t.desc}</div>
-            <div class="bar"></div>
+      <div class="card" style="margin-top:12px;">
+        {TOKENOMICS.map((row) => (
+          <div class="kv">
+            <strong>{row.k}</strong>
+            <span>{row.v}</span>
           </div>
         ))}
       </div>
@@ -122,14 +116,14 @@ const roadmap = [
       <h2>Roadmap</h2>
       <p>Focused phases with clear deliverables.</p>
 
-      <div class="card-grid">
-        {roadmap.map((r) => (
-          <div class="item">
-            <div class="item__label">{r.phase}</div>
-            <div class="item__title">{r.title}</div>
-            <ul class="list">
+      <div class="grid" style="margin-top:12px;">
+        {ROADMAP.map((r) => (
+          <div class="card col-6">
+            <div class="small">{r.phase}</div>
+            <h3 style="margin-top:6px;">{r.title}</h3>
+            <ul style="margin:10px 0 0 18px; color: var(--muted); line-height: 1.6;">
               {r.items.map((i) => (
-                <li><span class="dot"></span><span>{i}</span></li>
+                <li>{i}</li>
               ))}
             </ul>
           </div>
@@ -137,41 +131,57 @@ const roadmap = [
       </div>
     </section>
 
+    <!-- OFFICIAL LINKS -->
+    <section id="links" class="section">
+      <h2>Official Links</h2>
+      <p>Only these links are official. Anything else is a scam.</p>
+
+      <div class="grid" style="margin-top:12px;">
+        <div class="card col-12">
+          {OFFICIAL.map((l) => (
+            <div class="kv">
+              <strong>{l.label}</strong>
+              <span>
+                {l.href === "TBA" ? (
+                  "TBA"
+                ) : (
+                  <a href={l.href} target="_blank" rel="noopener noreferrer">{l.href}</a>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px;">
+        Tip: Bookmark this page. Always verify the domain: capitoken-org.github.io/capitoken-site/
+      </p>
+    </section>
+
     <!-- FAQ -->
     <section id="faq" class="section">
       <h2>FAQ</h2>
 
-      <div class="faq-grid">
-        <details class="faq">
-          <summary>Where do I find the official contract?</summary>
-          <p>We will publish the verified contract address in the Launch Panel and in Official Links.</p>
-        </details>
+      <div class="grid" style="margin-top:12px;">
+        <div class="card col-6">
+          <h3>Where do I find the official contract?</h3>
+          <p>We publish it in the Launch Panel and Official Links only.</p>
+        </div>
 
-        <details class="faq">
-          <summary>Why a new site?</summary>
-          <p>We’re moving from “coming soon” to a modern, structured site: docs, tokenomics, roadmap, and verified links.</p>
-        </details>
+        <div class="card col-6">
+          <h3>Is this financial advice?</h3>
+          <p>No. Crypto is high risk. Do your own research.</p>
+        </div>
 
-        <details class="faq">
-          <summary>Is this financial advice?</summary>
-          <p>No. Crypto is high risk. Always do your own research.</p>
-        </details>
+        <div class="card col-6">
+          <h3>When launch?</h3>
+          <p>Dates will be announced on official channels and reflected on this site.</p>
+        </div>
 
-        <details class="faq">
-          <summary>When launch?</summary>
-          <p>We’ll announce dates through official channels and update the status panel here.</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- LINKS -->
-    <section id="links" class="section">
-      <h2>Official Links</h2>
-
-      <div class="card-grid">
-        <a class="item link" href="#" rel="noopener">X / Twitter (TBA)</a>
-        <a class="item link" href="#" rel="noopener">Telegram (TBA)</a>
-        <a class="item link" href="#" rel="noopener">Docs (TBA)</a>
+        <div class="card col-6">
+          <h3>How to avoid scams?</h3>
+          <p>Verify the URL, contract, and links only here. If it’s not here, ignore it.</p>
+        </div>
       </div>
     </section>
   </main>

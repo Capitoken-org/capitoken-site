@@ -1,18 +1,55 @@
-<!doctype html>
-<html lang="en">
+---
+const {
+  title = "Capitoken — Official Website",
+  description = "Capitoken official website — verified links, tokenomics, and launch info.",
+  ogImage = "og.png", // archivo en /public (puedes reemplazar luego)
+  lang = "en",
+} = Astro.props;
+
+// URL actual (incluye el base correctamente en build)
+const url = Astro.url;
+const canonical = url.toString();
+
+const year = new Date().getFullYear();
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Capitoken official website." />
-    <title>Capitoken — Official Website</title>
 
-    <!-- Stable CSS for GitHub Pages -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- CSS estable (NO _astro / NO hashing) -->
     <link rel="stylesheet" href="./global.css" />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${url.origin}/${ogImage}`} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${url.origin}/${ogImage}`} />
+
+    <!-- Favicons -->
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   </head>
 
   <body>
     <slot />
+
+    <footer class="footer">
+      <div class="container">
+        © {year} Capitoken. All rights reserved.
+      </div>
+    </footer>
   </body>
 </html>
