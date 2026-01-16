@@ -1,31 +1,19 @@
 ---
-const title = "Capitoken (CAPI) — Official Website";
-const description =
-  "Capitoken official website — verified links, launch panel, tokenomics, and community updates.";
-
-const rawBase = import.meta.env.BASE_URL || "/";
-const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-
-// Para links absolutos de assets en GH Pages (evita 404 por falta de slash)
-const cssHref = `${base}global.css`;
-const faviconHref = `${base}favicon.svg`;
+import "../styles/global.css";
+import Nav from "../components/nav.astro";
+const { title = "Capitoken (CAPI)", description = "Capitoken official website — verified links, launch panel, tokenomics, and community updates." } = Astro.props;
 ---
-
-<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content={description} />
     <title>{title}</title>
-
-    <!-- IMPORTANT: en GH Pages debe incluir BASE_URL con slash -->
-    <link rel="stylesheet" href={`${BASE}global.css`} />
-
-    <!-- favicon -->
-    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+    <meta name="description" content={description} />
   </head>
   <body>
-    <slot />
+    <Nav />
+    <main>
+      <slot />
+    </main>
   </body>
 </html>
