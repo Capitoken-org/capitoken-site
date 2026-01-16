@@ -410,3 +410,138 @@ html{ scroll-behavior:smooth; }
 .route-chips .chip:hover{
   border-color: rgba(255,255,255,0.18);
 }
+/* =========================================================
+   PATCH v4 — spacing polish + copy/toast + verify page
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* Prevent boxes from looking "stuck" together */
+.grid{ gap: 18px; }
+hr.hr{ margin: 26px 0; }
+
+/* Launch panel */
+.launch-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 14px;
+}
+@media (max-width: 900px){
+  .launch-grid{ grid-template-columns: 1fr; }
+}
+.launch-card{
+  min-height: 190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.launch-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.launch-actions .btn{ min-width: 150px; }
+
+.route-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+.route-chips .chip{
+  display:inline-flex;
+  align-items:center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 12px;
+  text-decoration:none;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.route-chips .chip:hover{
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+
+/* Shared: address block */
+.addr{
+  word-break: break-all;
+}
+
+/* Nice metric typography */
+.metric{
+  margin-top:6px;
+  font-weight: 950;
+  font-size: 20px;
+}
+
+/* Head row for cards */
+.card__head{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* Toast */
+.toast{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(10,12,12,0.82);
+  color: var(--text);
+  font-weight: 800;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events:none;
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 9999;
+}
+.toast--show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Verify page layout */
+.verify-head{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.verify-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.links-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.links-row{
+  display:grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 10px;
+  align-items:center;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+@media (max-width: 900px){
+  .links-row{
+    grid-template-columns: 1fr;
+  }
+}
