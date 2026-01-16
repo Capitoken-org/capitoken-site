@@ -657,3 +657,50 @@ hr.hr{ margin: 26px 0; }
 #launchpanel .route-actions .btn.route-btn:hover{
   border-color: rgba(255,255,255,0.22);
 }
+
+/* =========================================================
+   PATCH v8 — Launch Panel spacing + animated route chips
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* 1) Guarantee visible separation between the two big cards */
+#launchpanel .launch-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px !important;
+}
+@media (min-width: 920px){
+  #launchpanel .launch-grid{
+    grid-template-columns: 1fr 1fr;
+    gap: 22px !important;
+  }
+}
+
+/* 2) Route buttons: consistent spacing + subtle lift */
+#launchpanel .route-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+#launchpanel .route-actions .btn.route-btn{
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+#launchpanel .route-actions .btn.route-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.06);
+}
+
+/* 3) Disabled state until TOKEN_ADDRESS exists */
+#launchpanel .route-actions .btn.is-disabled{
+  opacity: .55;
+  pointer-events: none;
+}

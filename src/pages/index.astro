@@ -43,7 +43,7 @@ function shortAddr(a: string) {
     <div class="hero__kicker">
       <span class="pill__dot" aria-hidden="true"></span>
       Verified info only on this website
-    </div>
+    <</div>
 
     <h1>
       Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
@@ -58,17 +58,17 @@ function shortAddr(a: string) {
       <a class="btn btn--primary" href="#launchpanel">Launch Panel</a>
       <a class="btn" href="#community">Community</a>
       <a class="btn" href="#tokenomics">Tokenomics</a>
-    </div>
+    <</div>
 
     <div class="grid" style="margin-top: 18px;">
       {stats.map((s) => (
         <div class="card col-3">
-          <div class="small">{s.label}</div>
-          <div style="margin-top:6px; font-weight:800;">{s.value}</div>
-        </div>
+          <div class="small">{s.label}<</div>
+          <div style="margin-top:6px; font-weight:800;">{s.value}<</div>
+        <</div>
       ))}
-    </div>
-  </div>
+    <</div>
+  <</div>
   </section>
 
   <hr class="hr" />
@@ -83,16 +83,16 @@ function shortAddr(a: string) {
     <div class="launch-grid">
       <div class="card launch-card">
         <div>
-          <div class="small">Contract</div>
+          <div class="small">Contract<</div>
 
           <div class="mono addr" id="tokenAddr" style="margin-top:6px; font-weight:800;">
             {TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA — verify only here"}
-          </div>
+          <</div>
 
           <div class="launch-actions">
             <button class="btn btn--primary" id="btnCopyToken" type="button" disabled={!TOKEN_ADDRESS}>Copy</button>
             <a class="btn" href="/verify/" rel="noreferrer">Verify</a>
-          </div>
+          <</div>
 
           <div class="launch-actions" style="margin-top:10px;">
             <button class="btn" id="btnConnect" type="button">Connect Wallet</button>
@@ -101,80 +101,80 @@ function shortAddr(a: string) {
               <span class="pill__dot" aria-hidden="true"></span>
               <span class="mono" id="acct">—</span>
             </span>
-          </div>
+          <</div>
 
           <p class="small" style="margin-top:12px;">
             Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
           </p>
-        </div>
-      </div>
+        <</div>
+      <</div>
 
       <div class="card launch-card">
         <div>
-          <div class="small">DEX Pair</div>
+          <div class="small">DEX Pair<</div>
 
           <div class="mono addr" id="pairAddr" style="margin-top:6px; font-weight:800;">
             {DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA"}
-          </div>
+          <</div>
 
           <div class="launch-actions">
             <button class="btn btn--primary" id="btnCopyPair" type="button" disabled={!DEX_PAIR_ADDRESS}>Copy</button>
             <a class="btn" href="/verify/" rel="noreferrer">Verify</a>
-          </div>
+          <</div>
 
-          <div class="small" style="margin-top:10px;">Quick Uniswap routes (V2)</div>
+          <div class="small" style="margin-top:10px;">Quick Uniswap routes (V2)<</div>
 
           <div class="route-actions">
            <a class="btn route-btn" href="#" rel="nofollow noopener">WETH → CAPI</a>
            <a class="btn route-btn" href="#" rel="nofollow noopener">CAPI → WETH</a>
-              /div>
+              </div>
 
-          </div>
-        </div>
-      </div>
-    </div>
+          <</div>
+        <</div>
+      <</div>
+    <</div>
 
     <!-- Below: Live snapshot + activity -->
     <div class="grid" style="margin-top: 16px;">
       <div class="card col-12">
         <div class="card__head">
           <div>
-            <div style="font-weight:900;">Live Market Snapshot</div>
-            <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
-          </div>
+            <div style="font-weight:900;">Live Market Snapshot<</div>
+            <div class="small">Auto-populates via DexScreener once contract/pair is verified.<</div>
+          <</div>
           <span class="pill">
             <span class="pill__dot" aria-hidden="true"></span>
             Ethereum Mainnet
           </span>
-        </div>
+        <</div>
 
         <div class="grid" style="margin-top:14px;">
           <div class="card card--sub col-3">
-            <div class="small">Price</div>
-            <div class="metric" id="m_price">TBA</div>
-          </div>
+            <div class="small">Price<</div>
+            <div class="metric" id="m_price">TBA<</div>
+          <</div>
           <div class="card card--sub col-3">
-            <div class="small">Market Cap (est.)</div>
-            <div class="metric" id="m_mc">TBA</div>
-          </div>
+            <div class="small">Market Cap (est.)<</div>
+            <div class="metric" id="m_mc">TBA<</div>
+          <</div>
           <div class="card card--sub col-3">
-            <div class="small">Liquidity</div>
-            <div class="metric" id="m_liq">TBA</div>
-          </div>
+            <div class="small">Liquidity<</div>
+            <div class="metric" id="m_liq">TBA<</div>
+          <</div>
           <div class="card card--sub col-3">
-            <div class="small">24h Volume</div>
-            <div class="metric" id="m_vol">TBA</div>
-          </div>
-        </div>
+            <div class="small">24h Volume<</div>
+            <div class="metric" id="m_vol">TBA<</div>
+          <</div>
+        <</div>
 
         <p class="small" style="margin-top:12px;">
           If it’s not listed here, it’s not official. Always cross-check the URL.
         </p>
-      </div>
+      <</div>
 
       <div class="card col-12">
-        <div style="font-weight:900;">Recent Activity</div>
-        <div class="small">Shows recent activity (placeholder until contract is published).</div>
+        <div style="font-weight:900;">Recent Activity<</div>
+        <div class="small">Shows recent activity (placeholder until contract is published).<</div>
 
         <div style="margin-top:12px; overflow:auto;">
           <table class="table" aria-label="Recent activity table">
@@ -195,12 +195,12 @@ function shortAddr(a: string) {
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
+        <</div>
+      <</div>
+    <</div>
 
-    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-  </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"><</div>
+  <</div>
 </section>
 
 <hr class="hr" />
@@ -218,16 +218,16 @@ function shortAddr(a: string) {
         <div class="card col-6">
           <h3>{t.title}</h3>
           <p>{t.desc}</p>
-          <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div>
-        </div>
+          <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"><</div>
+        <</div>
       ))}
       <div class="card col-12">
-        <div class="kv"><strong>Community</strong><span>97%</span></div>
-        <div class="kv"><strong>Operations</strong><span>2%</span></div>
-        <div class="kv"><strong>Marketing</strong><span>1%</span></div>
-      </div>
-    </div>
-  </div>
+        <div class="kv"><strong>Community</strong><span>97%</span><</div>
+        <div class="kv"><strong>Operations</strong><span>2%</span><</div>
+        <div class="kv"><strong>Marketing</strong><span>1%</span><</div>
+      <</div>
+    <</div>
+  <</div>
   </section>
 
   <hr class="hr" />
@@ -241,15 +241,15 @@ function shortAddr(a: string) {
     <div class="grid" style="margin-top:14px;">
       {roadmap.map((r) => (
         <div class="card col-6">
-          <div class="small">{r.phase}</div>
-          <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+          <div class="small">{r.phase}<</div>
+          <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}<</div>
           <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
             {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
           </ul>
-        </div>
+        <</div>
       ))}
-    </div>
-  </div>
+    <</div>
+  <</div>
   </section>
 
   <hr class="hr" />
@@ -267,14 +267,14 @@ function shortAddr(a: string) {
         <h3>Today’s prompt</h3>
         <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p>
         <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
-      </div>
+      <</div>
       <div class="card col-6">
         <h3>Build in public</h3>
         <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p>
         <a class="btn" href="#launchpanel">Back to Launch Panel</a>
-      </div>
-    </div>
-  </div>
+      <</div>
+    <</div>
+  <</div>
   </section>
 
   <hr class="hr" />
@@ -303,10 +303,10 @@ function shortAddr(a: string) {
              href={`https://twitter.com/${X_HANDLE}`}>
              Tweets by {X_HANDLE}
           </a>
-        </div>
-      </div>
-    </div>
-  </div>
+        <</div>
+      <</div>
+    <</div>
+  <</div>
   </section>
 
   <hr class="hr" />
@@ -320,24 +320,24 @@ function shortAddr(a: string) {
       <div class="card col-6">
         <h3>Where is the official contract?</h3>
         <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
-      </div>
+      <</div>
 
       <div class="card col-6">
         <h3>Is this financial advice?</h3>
         <p class="small">No. Crypto is high risk. Always do your own research.</p>
-      </div>
+      <</div>
 
       <div class="card col-6">
         <h3>Why verify only here?</h3>
         <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
-      </div>
+      <</div>
 
       <div class="card col-6">
         <h3>When live market data?</h3>
         <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
-      </div>
-    </div>
-  </div>
+      <</div>
+    <</div>
+  <</div>
   </section>
 
   <!-- X widget loader -->
@@ -345,13 +345,6 @@ function shortAddr(a: string) {
 
   <!-- Live + Wallet script -->
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
-    const TOKENS = {
-      ETH: "ETH",
-      USDC: "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      DAI:  "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    };
-
     const $ = (s) => document.querySelector(s);
 
     
@@ -394,17 +387,30 @@ function short(a){
     }
 
     function uniswapUrl(input, output){
+      // Uniswap app (works for V2/V3 routing; you can still trade on V2 pools)
       const base = "https://app.uniswap.org/#/swap";
       const p = new URLSearchParams({ inputCurrency: input, outputCurrency: output });
       return `${base}?${p.toString()}`;
     }
 
     function setDexLinks(){
-      const out = TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
-      $("#dexEth").href  = uniswapUrl(TOKENS.ETH, out);
-      $("#dexUsdc").href = uniswapUrl(TOKENS.USDC, out);
-      $("#dexUsdt").href = uniswapUrl(TOKENS.USDT, out);
-      $("#dexDai").href  = uniswapUrl(TOKENS.DAI, out);
+      const a1 = $("#dexWethToCapi");
+      const a2 = $("#dexCapiToWeth");
+
+      // Until TOKEN_ADDRESS exists, keep buttons inert (no broken links)
+      if(!TOKEN_ADDRESS){
+        [a1,a2].forEach(a=>{
+          if(!a) return;
+          a.href = "#";
+          a.setAttribute("aria-disabled","true");
+          a.classList.add("is-disabled");
+        });
+        return;
+      }
+
+      // Note: Uniswap uses ETH as the native input currency parameter.
+      if(a1) a1.href = uniswapUrl("ETH", TOKEN_ADDRESS);     // WETH → CAPI (label)
+      if(a2) a2.href = uniswapUrl(TOKEN_ADDRESS, "ETH");     // CAPI → WETH (label)
     }
 
     async function connectInjected(){
