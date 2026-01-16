@@ -1,0 +1,158 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { PROJECT, TOKEN } from "../lib/token";
+
+// FORM: pon aquí tu Formspree/Google Form cuando lo tengas
+const FEEDBACK_FORM_URL = "TBA";
+
+// X timeline (cuando exista)
+const X_HANDLE = "TBA"; // ejemplo: "capitoken"
+const TELEGRAM_CHANNEL = "TBA"; // ejemplo: "capitokenchannel"
+
+// Giscus (comentarios via GitHub Discussions)
+// Requiere que habilites Discussions en el repo y configures giscus.app.
+// Dejo placeholders listos.
+const GISCUS = {
+  repo: "Capitoken-org/capitoken-site",
+  repoId: "TBA",
+  category: "General",
+  categoryId: "TBA",
+};
+---
+
+<BaseLayout
+  title="Capitoken — Community"
+  description="Community hub: updates, feedback, and official social embeds. Verified sources only."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill"><span class="pill__dot"></span><span>Community Hub</span></div>
+      <h1>Community</h1>
+      <p class="hero__lead">
+        We build in public. Share ideas, follow updates, and verify everything on <a href="./verify">/verify</a>.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>How we listen</h2>
+      <div class="card">
+        <div class="kv">
+          <strong>Official verify link</strong>
+          <span class="mono">{PROJECT.verifyUrl}</span>
+        </div>
+        <div class="kv">
+          <strong>Feedback form</strong>
+          <span class="mono">{FEEDBACK_FORM_URL}</span>
+        </div>
+        <div class="kv">
+          <strong>Rule</strong>
+          <span>If it’s not published on this website, it’s not official.</span>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px;">
+        Next step: set a feedback form (Formspree/Google Form). We can also track submissions in GA4.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Social feed</h2>
+      <p>Embeds are shown when official handles are published.</p>
+
+      <div class="grid3">
+        <div class="panel">
+          <div class="panel__k">X (Twitter)</div>
+          <div class="panel__v">
+            {X_HANDLE === "TBA" ? "TBA" : `@${X_HANDLE}`}
+          </div>
+          <div class="small" style="margin-top:10px;">
+            {X_HANDLE === "TBA" ? "Publish the official X handle to activate embed." : ""}
+          </div>
+          <div id="x-embed" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__k">Telegram</div>
+          <div class="panel__v">
+            {TELEGRAM_CHANNEL === "TBA" ? "TBA" : TELEGRAM_CHANNEL}
+          </div>
+          <div class="small" style="margin-top:10px;">
+            {TELEGRAM_CHANNEL === "TBA" ? "Publish the official channel to activate widget." : ""}
+          </div>
+          <div id="tg-embed" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__k">Comments</div>
+          <div class="panel__v">GitHub Discussions (Giscus)</div>
+          <div class="small" style="margin-top:10px;">
+            This is the safest, spam-resistant comment system for a static site.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Comments</h2>
+      <p>Community discussion thread (powered by GitHub Discussions).</p>
+      <div class="card">
+        <div id="giscus"></div>
+        <p class="small" style="margin-top:12px;">
+          If Giscus is not configured yet, this will remain empty until repoId/categoryId are added.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    const X_HANDLE = {JSON.stringify(X_HANDLE)};
+    const TG = {JSON.stringify(TELEGRAM_CHANNEL)};
+    const G = {JSON.stringify(GISCUS)};
+
+    // X embed
+    if (X_HANDLE && X_HANDLE !== "TBA") {
+      const el = document.getElementById("x-embed");
+      el.innerHTML = `
+        <a class="twitter-timeline"
+           data-height="420"
+           data-theme="dark"
+           href="https://twitter.com/${X_HANDLE}?ref_src=twsrc%5Etfw">
+           Tweets by ${X_HANDLE}
+        </a>`;
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = "https://platform.twitter.com/widgets.js";
+      document.body.appendChild(s);
+    }
+
+    // Telegram widget (channel must be public)
+    if (TG && TG !== "TBA") {
+      const el = document.getElementById("tg-embed");
+      el.innerHTML = `
+        <script async src="https://telegram.org/js/telegram-widget.js?22"
+          data-telegram-post="${TG}/1"
+          data-width="100%"
+          data-dark="1"></script>`;
+    }
+
+    // Giscus embed
+    if (G.repoId && G.repoId !== "TBA" && G.categoryId && G.categoryId !== "TBA") {
+      const gc = document.createElement("script");
+      gc.src = "https://giscus.app/client.js";
+      gc.async = true;
+      gc.crossOrigin = "anonymous";
+      gc.setAttribute("data-repo", G.repo);
+      gc.setAttribute("data-repo-id", G.repoId);
+      gc.setAttribute("data-category", G.category);
+      gc.setAttribute("data-category-id", G.categoryId);
+      gc.setAttribute("data-mapping", "pathname");
+      gc.setAttribute("data-strict", "0");
+      gc.setAttribute("data-reactions-enabled", "1");
+      gc.setAttribute("data-emit-metadata", "0");
+      gc.setAttribute("data-input-position", "top");
+      gc.setAttribute("data-theme", "dark");
+      gc.setAttribute("data-lang", "en");
+      document.getElementById("giscus").appendChild(gc);
+    }
+  </script>
+</BaseLayout>

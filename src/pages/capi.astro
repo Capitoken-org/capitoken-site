@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("capi-daily"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const shareBase = "https://capitoken-org.github.io/capitoken-site/verify";
+---
+
+<BaseLayout
+  title="Capitoken — Capi Daily"
+  description="Daily updates narrated by Capi (Capibara). Build in public, community-first."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill"><span class="pill__dot"></span><span>Capi Daily</span></div>
+      <h1>Capi Daily</h1>
+      <p class="hero__lead">
+        Short daily updates from Capi. Always verify official info on <a href="./verify">/verify</a>.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="kv">
+          <strong>Verification link</strong>
+          <span class="mono">{shareBase}</span>
+        </div>
+      </div>
+    </section>
+
+    {posts.map((p) => {
+      const date = p.data.date.toISOString().slice(0, 10);
+      const text = encodeURIComponent(`Capi Daily — ${p.data.title}\n\nVerify: ${shareBase}`);
+      const xShare = `https://twitter.com/intent/tweet?text=${text}`;
+      return (
+        <section class="section">
+          <h2>{p.data.title}</h2>
+          <p class="small">{date} • {p.data.tags.join(" • ")}</p>
+          <div class="card">
+            <div set:html={p.body} />
+            <div style="margin-top:14px;">
+              <a class="btn btn--primary" href={xShare} target="_blank" rel="noopener noreferrer">
+                Share on X
+              </a>
+            </div>
+          </div>
+        </section>
+      );
+    })}
+  </main>
+</BaseLayout>

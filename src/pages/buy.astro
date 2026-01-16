@@ -1,0 +1,102 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { PROJECT, TOKEN, isAddress } from "../lib/token";
+
+const TOKEN_ADDR = TOKEN.address;
+
+// Uniswap swap link (se activa cuando TOKEN_ADDR sea 0x...)
+const uniswapUrl = isAddress(TOKEN_ADDR)
+  ? `https://app.uniswap.org/#/swap?outputCurrency=${TOKEN_ADDR}`
+  : "TBA";
+---
+
+<BaseLayout
+  title="Capitoken — Buy / Swap"
+  description="Buy / swap Capitoken safely. Verify contract and official links."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill"><span class="pill__dot"></span><span>Buy / Swap</span></div>
+      <h1>Buy / Swap</h1>
+      <p class="hero__lead">
+        Only use official links. Verify the contract on <a href="./verify">/verify</a> before swapping.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="kv">
+          <strong>Network</strong>
+          <span>{PROJECT.chain}</span>
+        </div>
+        <div class="kv">
+          <strong>Token contract</strong>
+          <span class="mono">{TOKEN_ADDR}</span>
+        </div>
+        <div class="kv">
+          <strong>Uniswap</strong>
+          <span class="mono">{uniswapUrl}</span>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:14px;">
+        {
+          uniswapUrl === "TBA"
+            ? <a class="btn btn--primary" href="./verify">Contract not published yet — Verify</a>
+            : <a class="btn btn--primary" href={uniswapUrl} target="_blank" rel="noopener noreferrer">Swap on Uniswap</a>
+        }
+        <button class="btn" id="add-metamask">Add to MetaMask</button>
+        <a class="btn" href="./links">Official Links</a>
+      </div>
+
+      <p class="small" style="margin-top:14px;">
+        Anti-scam rule: do not trust screenshots or DMs. Always verify the domain + contract.
+      </p>
+    </section>
+  </main>
+
+  <script is:inline>
+    const TOKEN = {
+      address: {JSON.stringify(TOKEN_ADDR)},
+      symbol: {JSON.stringify(TOKEN.symbol)},
+      decimals: {JSON.stringify(TOKEN.decimals)},
+      // Optional logo image (add later): public/token.png
+      image: "https://capitoken-org.github.io/capitoken-site/token.png",
+    };
+
+    const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
+
+    const btn = document.getElementById("add-metamask");
+    btn.addEventListener("click", async () => {
+      try {
+        if (!window.ethereum) {
+          alert("No Web3 wallet detected. Install MetaMask or use a Web3-enabled browser.");
+          return;
+        }
+        if (!isAddr(TOKEN.address)) {
+          alert("Token contract is not published yet. Check /verify.");
+          return;
+        }
+
+        // MetaMask: watch asset
+        const ok = await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: TOKEN.address,
+              symbol: TOKEN.symbol,
+              decimals: TOKEN.decimals,
+              image: TOKEN.image,
+            },
+          },
+        });
+
+        if (ok) alert("Token added to wallet.");
+      } catch (e) {
+        console.error(e);
+        alert("Could not add token. Verify contract and try again.");
+      }
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,188 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { PROJECT, TOKEN, isAddress, tokenReady } from "../lib/token";
+
+const TOKEN_ADDR = TOKEN.address;
+const PAIR_ADDR = TOKEN.pairOrPoolAddress;
+
+// APIs (Dexscreener es lo más directo para DEX)
+const dexByToken = (addr) => `https://api.dexscreener.com/latest/dex/tokens/${addr}`;
+const dexByPair = (addr) => `https://api.dexscreener.com/latest/dex/pairs/ethereum/${addr}`;
+
+// UI helper
+function fmtNum(n) {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  const num = Number(n);
+  if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+  if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
+  return num.toFixed(2);
+}
+
+function fmtUsd(n) {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  const num = Number(n);
+  if (num < 0.01) return "$" + num.toFixed(6);
+  if (num < 1) return "$" + num.toFixed(4);
+  return "$" + num.toFixed(2);
+}
+---
+
+<BaseLayout
+  title="Capitoken — Live Dashboard"
+  description="Live token dashboard for Capitoken. Verified sources only."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill"><span class="pill__dot"></span><span>Live Dashboard</span></div>
+      <h1>Live Dashboard</h1>
+      <p class="hero__lead">
+        Real-time market data will appear here after launch. Always verify official info on
+        <a href="./verify">/verify</a>.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="kv">
+          <strong>Network</strong>
+          <span>{PROJECT.chain}</span>
+        </div>
+        <div class="kv">
+          <strong>Token contract</strong>
+          <span class="mono">{TOKEN_ADDR}</span>
+        </div>
+        <div class="kv">
+          <strong>Pair/Pool</strong>
+          <span class="mono">{PAIR_ADDR}</span>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px;">
+        Data source: DexScreener (DEX markets). If not available yet, this page will show TBA.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <div>
+          <h2>Market Snapshot</h2>
+          <p>Price, liquidity, 24h volume, and price change (when available).</p>
+        </div>
+      </div>
+
+      <div id="live-state" class="card">
+        <div class="kv"><strong>Status</strong><span>Loading…</span></div>
+      </div>
+
+      <div id="live-grid" class="grid3" style="margin-top:14px; display:none;">
+        <div class="panel"><div class="panel__k">Price</div><div class="panel__v" id="price">—</div></div>
+        <div class="panel"><div class="panel__k">Liquidity</div><div class="panel__v" id="liquidity">—</div></div>
+        <div class="panel"><div class="panel__k">24h Volume</div><div class="panel__v" id="volume">—</div></div>
+
+        <div class="panel"><div class="panel__k">24h Change</div><div class="panel__v" id="change">—</div></div>
+        <div class="panel"><div class="panel__k">DEX</div><div class="panel__v" id="dex">—</div></div>
+        <div class="panel"><div class="panel__k">Pair</div><div class="panel__v mono" id="pair">—</div></div>
+      </div>
+
+      <div class="actions" style="margin-top:14px;">
+        <a class="btn" href="./buy">Buy / Swap</a>
+        <a class="btn" href="./links">Official Links</a>
+        <a class="btn btn--primary" href="./verify">Verify</a>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    const TOKEN_ADDR = {JSON.stringify(TOKEN_ADDR)};
+    const PAIR_ADDR = {JSON.stringify(PAIR_ADDR)};
+
+    const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
+
+    const fmtUsd = (n) => {
+      const num = Number(n);
+      if (!Number.isFinite(num)) return "—";
+      if (num < 0.01) return "$" + num.toFixed(6);
+      if (num < 1) return "$" + num.toFixed(4);
+      return "$" + num.toFixed(2);
+    };
+
+    const fmtNum = (n) => {
+      const num = Number(n);
+      if (!Number.isFinite(num)) return "—";
+      if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+      if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+      if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+      if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
+      return num.toFixed(2);
+    };
+
+    const state = document.getElementById("live-state");
+    const grid = document.getElementById("live-grid");
+
+    const setStatus = (msg) => {
+      state.innerHTML = `<div class="kv"><strong>Status</strong><span>${msg}</span></div>`;
+    };
+
+    const setData = (d) => {
+      document.getElementById("price").textContent = fmtUsd(d.priceUsd);
+      document.getElementById("liquidity").textContent = "$" + fmtNum(d.liquidityUsd);
+      document.getElementById("volume").textContent = "$" + fmtNum(d.volume24hUsd);
+      document.getElementById("change").textContent = (d.change24hPct ?? "—") + (d.change24hPct !== null ? "%" : "");
+      document.getElementById("dex").textContent = d.dex ?? "—";
+      document.getElementById("pair").textContent = d.pair ?? "—";
+      grid.style.display = "";
+    };
+
+    async function fetchDex() {
+      // If no addresses yet
+      if (!isAddr(TOKEN_ADDR) && !isAddr(PAIR_ADDR)) {
+        setStatus("TBA — contract/pair not published yet. Check /verify.");
+        return;
+      }
+
+      try {
+        setStatus("Fetching live data…");
+
+        let url = null;
+        if (isAddr(PAIR_ADDR)) {
+          url = `https://api.dexscreener.com/latest/dex/pairs/ethereum/${PAIR_ADDR}`;
+        } else {
+          url = `https://api.dexscreener.com/latest/dex/tokens/${TOKEN_ADDR}`;
+        }
+
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("DexScreener HTTP " + res.status);
+        const json = await res.json();
+
+        const pairs = json.pairs || [];
+        if (!pairs.length) {
+          setStatus("No market data found yet (pair not indexed). Check later.");
+          return;
+        }
+
+        // choose highest liquidity pair
+        pairs.sort((a,b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
+        const p = pairs[0];
+
+        setStatus("Live data loaded.");
+        setData({
+          priceUsd: p.priceUsd,
+          liquidityUsd: p.liquidity?.usd,
+          volume24hUsd: p.volume?.h24,
+          change24hPct: p.priceChange?.h24 ?? null,
+          dex: p.dexId || "—",
+          pair: p.pairAddress || "—",
+        });
+      } catch (e) {
+        setStatus("Live data unavailable (API/CORS). Try again soon.");
+        console.error(e);
+      }
+    }
+
+    fetchDex();
+    // Optional auto-refresh every 60s
+    setInterval(fetchDex, 60000);
+  </script>
+</BaseLayout>
