@@ -1,15 +1,15 @@
 ---
-const base = import.meta.env.BASE_URL || "/";
+const BASE = import.meta.env.BASE_URL || "/";
 
-const withBase = (p: string) => {
-  const clean = p.startsWith("/") ? p.slice(1) : p;
-  return `${base}${clean}`;
+const withBase = (p) => {
+  const clean = String(p || "").replace(/^\//, "");
+  return `${BASE}${clean}`;
 };
 
 const LINKS = [
   { label: "Home", href: "/" },
-  { label: "Launch", href: "/#launch" },
-  { label: "Tokenomics", href: "/tokenomics" },
+  { label: "Launch", href: "/#launchpanel" },
+  { label: "Tokenomics", href: "/#tokenomics" },
   { label: "Roadmap", href: "/#roadmap" },
   { label: "FAQ", href: "/#faq" },
   { label: "Links", href: "/links" },
@@ -17,24 +17,29 @@ const LINKS = [
   { label: "Checklist", href: "/checklist" },
 ];
 
-function fixHref(href: string) {
+function fixHref(href) {
+  if (!href) return "#";
   if (href.startsWith("#")) return href;
   if (href.startsWith("http")) return href;
 
   const clean = href.startsWith("/") ? href.slice(1) : href;
-  return `${base}${clean}`.replace(/\/{2,}/g, "/");
+  return `${BASE}${clean}`.replace(/\/{2,}/g, "/");
 }
 ---
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="brand" href={fixHref("/")}>
+    <a class="brand" href={fixHref("/")}
+      aria-label="Capitoken Home"
+    >
       <img
         class="brand__logo"
         src={withBase("/logo/capitoken-white.png")}
         alt="Capitoken"
         width="26"
         height="26"
+        loading="eager"
+        decoding="async"
       />
       <span class="brand__text">Capitoken</span>
     </a>
