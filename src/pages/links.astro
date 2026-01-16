@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const OFFICIAL_LINKS = [
+  { name: "Website", value: "https://capitoken-org.github.io/capitoken-site/" },
+  { name: "Contract", value: "TBA — published here only" },
+  { name: "DEX Pair", value: "TBA" },
+  { name: "X (Twitter)", value: "TBA" },
+  { name: "Telegram", value: "TBA" },
+  { name: "GitHub", value: "https://github.com/Capitoken-org" },
+];
+---
+
+<BaseLayout
+  title="Capitoken — Official Links"
+  description="Official Capitoken links. Single source of truth. Anything not listed here is not official."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill">
+        <span class="pill__dot"></span>
+        <span>Single source of truth</span>
+      </div>
+
+      <h1>Official Capitoken Links</h1>
+
+      <p class="hero__lead">
+        This page lists the <strong>only official links</strong> for Capitoken.
+        If it’s not published here, it is not official.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        {OFFICIAL_LINKS.map((l) => (
+          <div class="kv">
+            <strong>{l.name}</strong>
+            <span class="mono">{l.value}</span>
+          </div>
+        ))}
+      </div>
+
+      <p class="small" style="margin-top:12px;">
+        Bookmark this page. Scammers will copy names, logos, and URLs.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,9 @@
+{
+  "name": "Capitoken",
+  "short_name": "Capitoken",
+  "start_url": "/capitoken-site/",
+  "display": "standalone",
+  "background_color": "#070a0f",
+  "theme_color": "#070a0f",
+  "icons": []
+}
