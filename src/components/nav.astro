@@ -3,23 +3,27 @@ const LINKS = [
   { label: "Launch", href: "#launch" },
   { label: "Tokenomics", href: "#tokenomics" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Links", href: "links/" },
+  { label: "Links", href: "/links" }, // en build queda bajo /capitoken-site/
   { label: "FAQ", href: "#faq" },
 ];
 
-const base = import.meta.env.BASE_URL;
+const isHome = Astro.url.pathname === "/" || Astro.url.pathname.startsWith(base);
+const base = import.meta.env.BASE_URL; // "/" en dev, "/capitoken-site/" en build
 
-function fixHref(href: string) {
+function fixHref(href) {
+  // Anchor links se quedan tal cual
   if (href.startsWith("#")) return href;
+  // Links absolutos (http) se dejan
   if (href.startsWith("http")) return href;
-  const clean = href.replace(/^\//, "");
+  // Forzar base en rutas internas
+  const clean = href.startsWith("/") ? href.slice(1) : href;
   return `${base}${clean}`.replace(/\/{2,}/g, "/");
 }
 ---
 
 <header class="nav">
-  <div class="container nav__inner">
-    <a class="brand" href={base}>
+  <div class="nav__inner">
+    <a class="brand" href={isHome ? `${base}` : `${base}`}>
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Capitoken</span>
     </a>
