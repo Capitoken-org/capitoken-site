@@ -545,3 +545,34 @@ hr.hr{ margin: 26px 0; }
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   PATCH v5 — Fix “cards stuck together” in Launch Panel
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* Force spacing even if col-* rules interfere */
+#launchpanel .launch-grid{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 18px !important;
+}
+
+@media (max-width: 900px){
+  #launchpanel .launch-grid{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* If some layout still stacks them, ensure vertical separation */
+#launchpanel .launch-grid > .card + .card{
+  margin-top: 0 !important; /* grid gap already handles it */
+}
+
+/* Also add breathing room between blocks inside the panel */
+#launchpanel .card{
+  margin-bottom: 0;
+}
+#launchpanel .grid{
+  gap: 18px;
+}
