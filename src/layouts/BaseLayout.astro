@@ -1,0 +1,16 @@
+---
+import "../styles/global.css";
+import Nav from "../components/nav.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{Astro.props.title}</title>
+  </head>
+  <body>
+    <Nav />
+    <slot />
+  </body>
+</html>
