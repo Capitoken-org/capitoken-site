@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const CHECKLIST = [
+  {
+    title: "Identity & Official Channels",
+    items: [
+      "Official domain verified (bookmark it).",
+      "Official Links page published (/links).",
+      "Verify page published (/verify).",
+      "X (Twitter) and Telegram created and linked (TBA until ready).",
+    ],
+  },
+  {
+    title: "Contract & Launch Readiness",
+    items: [
+      "Contract address published in Launch Panel + /verify (only when final).",
+      "DEX Pair published (only when final).",
+      "Liquidity / launch steps documented (internal runbook).",
+      "Block explorers links prepared (Etherscan, etc.).",
+    ],
+  },
+  {
+    title: "Security & Anti-Scam Hardening",
+    items: [
+      "Single source of truth messaging on home + /links + /verify.",
+      "Never trust screenshots: verify domain + contract on this site.",
+      "Pinned posts prepared for X/Telegram pointing to /verify.",
+    ],
+  },
+  {
+    title: "Marketing & Media",
+    items: [
+      "OG image in place (og.png) for clean social sharing.",
+      "Brand assets: logo, icon, banners ready.",
+      "First announcement thread and FAQ prepared.",
+    ],
+  },
+  {
+    title: "Analytics & Monitoring",
+    items: [
+      "GA4 installed and receiving page_view events.",
+      "Dashboards/alerts prepared for traffic spikes.",
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Capitoken — Pre-Launch Checklist"
+  description="Public pre-launch checklist for Capitoken: verify links, launch readiness, security, and analytics."
+>
+  <main class="container">
+    <section class="hero">
+      <div class="pill">
+        <span class="pill__dot"></span>
+        <span>Pre-launch readiness</span>
+      </div>
+
+      <h1>Public Pre-Launch Checklist</h1>
+
+      <p class="hero__lead">
+        This checklist helps the community verify progress and avoid scams. If it’s not published on this website,
+        it’s not official.
+      </p>
+    </section>
+
+    {CHECKLIST.map((b) => (
+      <section class="section">
+        <h2>{b.title}</h2>
+        <div class="card">
+          <ul class="list">
+            {b.items.map((i) => (
+              <li><span class="dot"></span><span>{i}</span></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))}
+  </main>
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+const path = Astro.url.pathname || "/";
+const isHome = path.endsWith("/capitoken-site/") || path === "/" || path.endsWith("/capitoken-site");
+
+const homePrefix = isHome ? "./" : "../"; // para que desde /links apunte a la home real
+
+const LINKS = [
+  { label: "Home", href: isHome ? "./" : "../" },
+  { label: "Launch", href: `${homePrefix}#launch` },
+  { label: "Tokenomics", href: `${homePrefix}#tokenomics` },
+  { label: "Roadmap", href: `${homePrefix}#roadmap` },
+  { label: "FAQ", href: `${homePrefix}#faq` },
+  { label: "Links", href: isHome ? "./links" : "./links" },
+  { label: "Verify", href: isHome ? "./verify" : "./verify" },
+  { label: "Checklist", href: isHome ? "./checklist" : "./checklist" },
+];
+---
+
+<div class="nav">
+  <div class="nav__inner">
+    <a class="brand" href={isHome ? "./" : "../"}>
+      <span class="brand__dot"></span>
+      <span class="brand__name">Capitoken</span>
+    </a>
+
+    <div class="nav__links">
+      {LINKS.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
+    </div>
+  </div>
+</div>

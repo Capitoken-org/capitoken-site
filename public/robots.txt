@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemap placeholder (lo activamos luego si generamos sitemap)
 Sitemap: https://capitoken-org.github.io/capitoken-site/sitemap.xml

@@ -1,4 +1,6 @@
 ---
+import Nav from "../components/Nav.astro";
+
 const {
   title = "Capitoken — Official Website",
   description = "Capitoken official website — verified links, tokenomics, roadmap, and launch panel.",
@@ -7,6 +9,9 @@ const {
 
 const canonical = Astro.url.toString();
 const year = new Date().getFullYear();
+
+// OG image (debe existir como public/og.png)
+const ogImageAbs = "https://capitoken-org.github.io/capitoken-site/og.png";
 ---
 
 <!DOCTYPE html>
@@ -28,16 +33,18 @@ const year = new Date().getFullYear();
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
 
-    <!-- Open Graph (sin imagen aún) -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
 
-    <!-- Twitter Card (sin imagen aún) -->
-    <meta name="twitter:card" content="summary" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
 
     <!-- ========================= -->
     <!-- Google Analytics 4 (GA4) -->
@@ -47,13 +54,12 @@ const year = new Date().getFullYear();
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-KK8HRNV8ZZ', {
-        anonymize_ip: true
-      });
+      gtag('config', 'G-KK8HRNV8ZZ', { anonymize_ip: true });
     </script>
   </head>
 
   <body>
+    <Nav />
     <slot />
 
     <footer class="footer">
