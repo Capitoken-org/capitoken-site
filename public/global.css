@@ -309,3 +309,48 @@ section{ padding: 34px 0; }
 .kv{
   padding: 12px 0;
 }
+
+/* =========================================================
+   PATCH v2 — Premium layout + subtle motion (safe)
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* Smooth scrolling for nav anchors */
+html{ scroll-behavior:smooth; }
+
+/* Hero breathes more like a premium landing */
+.hero{ padding-top: 34px; padding-bottom: 18px; }
+.hero__kicker{ margin-bottom: 10px; }
+
+/* Prevent ultra-wide lines */
+.hero h1{ max-width: 20ch; }
+.hero__lead{ max-width: 70ch; }
+
+/* Lighter "sub-card" for cards inside other cards */
+.card--sub{
+  background: rgba(255,255,255,0.035);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: none;
+  padding: 16px;
+}
+
+/* Slightly larger gaps so boxes don't feel stretched */
+.grid{ gap: 16px; }
+
+/* Subtle entrance animation (no JS needed) */
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(10px); filter: blur(2px); }
+  to{ opacity:1; transform:translateY(0); filter: blur(0); }
+}
+.reveal{ animation: fadeUp .55s ease-out both; }
+.reveal--2{ animation-delay: .10s; }
+.reveal--3{ animation-delay: .20s; }
+
+/* Hover lift for interactive feel */
+.card{
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.14);
+  }

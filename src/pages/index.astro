@@ -39,6 +39,7 @@ function shortAddr(a: string) {
 <BaseLayout title={TITLE} description={DESC}>
   <!-- HERO -->
   <section class="hero" id="launch">
+    <div class="container reveal reveal--2">
     <div class="hero__kicker">
       <span class="pill__dot" aria-hidden="true"></span>
       Verified info only on this website
@@ -61,23 +62,25 @@ function shortAddr(a: string) {
 
     <div class="grid" style="margin-top: 18px;">
       {stats.map((s) => (
-        <div class="card col-6">
+        <div class="card col-3">
           <div class="small">{s.label}</div>
           <div style="margin-top:6px; font-weight:800;">{s.value}</div>
         </div>
       ))}
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- LAUNCH PANEL -->
   <section class="section" id="launchpanel">
+    <div class="container reveal reveal--3">
     <h2>Launch Panel</h2>
     <p class="small">Single source of truth for contract, DEX pair, and status.</p>
 
     <div class="grid" style="margin-top: 14px;">
-      <div class="card col-6">
+      <div class="card col-3">
         <div class="small">Contract</div>
         <div class="mono" style="margin-top:6px; font-weight:700;">
           {TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA — verify only here"}
@@ -97,7 +100,7 @@ function shortAddr(a: string) {
         </p>
       </div>
 
-      <div class="card col-6">
+      <div class="card col-3">
         <div class="small">DEX Pair</div>
         <div class="mono" style="margin-top:6px; font-weight:700;">
           {DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA"}
@@ -127,19 +130,19 @@ function shortAddr(a: string) {
         </div>
 
         <div class="grid" style="margin-top:14px;">
-          <div class="card col-6">
+          <div class="card col-3">
             <div class="small">Price</div>
             <div style="margin-top:6px; font-weight:900; font-size:20px;" id="m_price">TBA</div>
           </div>
-          <div class="card col-6">
+          <div class="card card--sub col-6">
             <div class="small">Market Cap (est.)</div>
             <div style="margin-top:6px; font-weight:900; font-size:20px;" id="m_mc">TBA</div>
           </div>
-          <div class="card col-6">
+          <div class="card card--sub col-6">
             <div class="small">Liquidity</div>
             <div style="margin-top:6px; font-weight:900; font-size:20px;" id="m_liq">TBA</div>
           </div>
-          <div class="card col-6">
+          <div class="card card--sub col-6">
             <div class="small">24h Volume</div>
             <div style="margin-top:6px; font-weight:900; font-size:20px;" id="m_vol">TBA</div>
           </div>
@@ -176,12 +179,14 @@ function shortAddr(a: string) {
         </div>
       </div>
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- TOKENOMICS -->
   <section class="section" id="tokenomics">
+    <div class="container reveal">
     <h2>Tokenomics</h2>
     <p>Simple allocation — 97 / 2 / 1.</p>
 
@@ -199,12 +204,14 @@ function shortAddr(a: string) {
         <div class="kv"><strong>Marketing</strong><span>1%</span></div>
       </div>
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- ROADMAP -->
   <section class="section" id="roadmap">
+    <div class="container reveal">
     <h2>Roadmap</h2>
     <p>Focused phases with clear deliverables.</p>
 
@@ -219,12 +226,14 @@ function shortAddr(a: string) {
         </div>
       ))}
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- DAILY CAPI / NARRATIVE -->
   <section class="section" id="daily">
+    <div class="container reveal">
     <h2>Daily Capi</h2>
     <p>
       Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
@@ -242,12 +251,14 @@ function shortAddr(a: string) {
         <a class="btn" href="#launchpanel">Back to Launch Panel</a>
       </div>
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- COMMUNITY -->
   <section class="section" id="community">
+    <div class="container reveal">
     <h2>Community</h2>
     <p>
       Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
@@ -272,12 +283,14 @@ function shortAddr(a: string) {
         </div>
       </div>
     </div>
+  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- FAQ -->
   <section class="section" id="faq">
+    <div class="container reveal">
     <h2>FAQ</h2>
 
     <div class="grid" style="margin-top:14px;">
@@ -301,6 +314,7 @@ function shortAddr(a: string) {
         <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
       </div>
     </div>
+  </div>
   </section>
 
   <!-- X widget loader -->
