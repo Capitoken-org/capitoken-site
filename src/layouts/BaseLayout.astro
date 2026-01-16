@@ -1,5 +1,5 @@
 ---
-import Nav from "../components/Nav.astro";
+import Nav from "../components/nav.astro";
 
 const {
   title = "Capitoken — Official Website",
@@ -10,10 +10,7 @@ const {
 const canonical = Astro.url.toString();
 const year = new Date().getFullYear();
 
-// OG image (debe existir como public/og.png)
 const ogImageAbs = "https://capitoken-org.github.io/capitoken-site/og.png";
-
-// GA4 Measurement ID
 const GA4_ID = "G-KK8HRNV8ZZ";
 ---
 
@@ -49,11 +46,8 @@ const GA4_ID = "G-KK8HRNV8ZZ";
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageAbs} />
 
-    <!-- ========================= -->
-    <!-- Google Analytics 4 (GA4) -->
-    <!-- ========================= -->
+    <!-- GA4 -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>
-
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){ window.dataLayer.push(arguments); }
