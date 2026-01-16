@@ -787,3 +787,33 @@ hr.hr{ margin: 26px 0; }
 #launchpanel .card{
   overflow: hidden;
 }
+
+/* =========================================================
+   PATCH v11 — HARD spacing between Launch Panel boxes (max priority)
+   Paste at END of public/global.css
+   ========================================================= */
+
+/* If cards exist, force separation with very strong selectors */
+#launchpanel .card{
+  margin: 0 !important;
+}
+#launchpanel .card:not(:first-child){
+  margin-top: 18px !important;
+}
+
+/* If something wraps cards (common in your layout), force wrapper to be a vertical stack */
+#launchpanel .launch-stack,
+#launchpanel .launch-grid,
+#launchpanel .launch-col{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+/* Safety: in case your cards are actually .panel instead of .card */
+#launchpanel .panel{
+  margin: 0 !important;
+}
+#launchpanel .panel:not(:first-child){
+  margin-top: 18px !important;
+}
