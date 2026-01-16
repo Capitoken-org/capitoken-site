@@ -354,3 +354,59 @@ html{ scroll-behavior:smooth; }
   transform: translateY(-2px);
   border-color: rgba(255,255,255,0.14);
   }
+
+  /* =========================================================
+   PATCH v3 — Launch Panel layout fix (fills space, looks pro)
+   Paste at END of public/global.css
+   ========================================================= */
+
+.launch-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+@media (max-width: 900px){
+  .launch-grid{ grid-template-columns: 1fr; }
+}
+
+/* Make the two main cards feel like “panels”, not tiny boxes */
+.launch-card{
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Buttons: consistent width, better rhythm */
+.launch-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.launch-actions .btn{
+  min-width: 160px;
+}
+
+/* Quick routes: chips */
+.route-chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.route-chips .chip{
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  font-weight: 600;
+  font-size: 12px;
+}
+.route-chips .chip:hover{
+  border-color: rgba(255,255,255,0.18);
+}
