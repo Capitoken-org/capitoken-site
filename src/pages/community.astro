@@ -1,193 +1,45 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import Layout from "../layouts/BaseLayout.astro";
 
-const TITLE = "Capitoken — Community";
-const DESC =
-  "Community hub: official social widgets, feedback loop, and verified ways to participate.";
-
-const base = import.meta.env.BASE_URL;
-
-// Edit when you have official URLs:
-const X_URL = "TBA";          // e.g. "https://x.com/Capitoken"
-const TELEGRAM_URL = "TBA";   // e.g. "https://t.me/capitoken"
-const DISCORD_URL = "TBA";    // e.g. "https://discord.gg/..."
-const GITHUB_URL = "https://github.com/Capitoken-org";
+const BASE = import.meta.env.BASE_URL;
+const title = "Community — Capitoken";
+const description = "Official Capitoken community hub — verified social links, feedback, and updates.";
 ---
 
-<BaseLayout title={TITLE} description={DESC}>
-  <section class="hero">
-    <div class="hero__kicker">
-      <span class="pill__dot" aria-hidden="true"></span>
-      Community hub
-    </div>
+<Layout title={title} description={description}>
+  <main class="container">
+    <section class="hero">
+      <div class="pill">Verified info only on this website</div>
+      <h1>Community</h1>
+      <p class="lead">This page is designed to be safe on GitHub Pages (no server-side browser APIs). Use it for official updates and listening to the community.</p>
+    </section>
 
-    <h1>Community</h1>
-    <p class="hero__lead">
-      This page is the official community entry point. Social widgets + feedback loop will live here.
-      If a link is not listed here, it’s not official.
-    </p>
-
-    <div class="actions">
-      <a class="btn btn--primary" href={`${base}links/`}>Official Links</a>
-      <a class="btn" href={`${base}`}>Back to Home</a>
-    </div>
-  </section>
-
-  <section class="section">
-    <h2>Join</h2>
-
-    <div class="grid" style="margin-top:14px;">
-      <div class="card col-6">
-        <h3>X (Twitter)</h3>
-        <p class="small">Official announcements + daily updates.</p>
-        <a class="btn btn--primary" id="btnX" href="#" target="_blank" rel="noreferrer">Open X</a>
+    <section class="grid-2">
+      <div class="card">
+        <h2>Listen + Engage</h2>
+        <ul class="list">
+          <li><strong>X (Twitter):</strong> publish daily updates and threads.</li>
+          <li><strong>Telegram:</strong> real-time chat, announcements, moderation.</li>
+          <li><strong>GitHub:</strong> transparency, docs, and site source.</li>
+        </ul>
+        <p class="muted">Tip: Only trust social links published on the <a href={`links`}>Links</a> page.</p>
       </div>
 
-      <div class="card col-6">
-        <h3>Telegram / Discord</h3>
-        <p class="small">Community chat + coordination.</p>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-          <a class="btn" id="btnTg" href="#" target="_blank" rel="noreferrer">Telegram</a>
-          <a class="btn" id="btnDc" href="#" target="_blank" rel="noreferrer">Discord</a>
-        </div>
+      <div class="card">
+        <h2>Feedback (fast)</h2>
+        <p class="muted">Send ideas, bug reports, or listing requests. This uses a simple mailto to avoid server code.</p>
+        <a class="btn" href="mailto:team@capitoken.org?subject=Capitoken%20Feedback&body=Message%3A%0A%0ALinks%20or%20screenshots%3A%0A">Send email</a>
+        <p class="micro muted">Replace <code>team@capitoken.org</code> when you have the official mailbox.</p>
       </div>
+    </section>
 
-      <div class="card col-12">
-        <h3>GitHub</h3>
-        <p class="small">Source + issues + build in public.</p>
-        <a class="btn" href={GITHUB_URL} target="_blank" rel="noreferrer">Open GitHub</a>
-      </div>
-    </div>
+    <section class="card">
+      <h2>Live feed (X)</h2>
+      <p class="muted">When you have the official X handle, replace the timeline URL below.</p>
 
-    <p class="small" style="margin-top:12px;">
-      Security: scammers will DM fake links. Always verify against <a href={`${base}links/`}>/links</a>.
-    </p>
-  </section>
-
-  <section class="section">
-    <h2>Live social embed</h2>
-    <p class="small">
-      The embed shows only after the official X URL is set. Some browsers/extensions may block embeds — the link still works.
-    </p>
-
-    <div class="card" id="embedCard" style="margin-top:14px;">
-      <div id="embedPlaceholder" class="small">Embed is currently disabled (X URL is TBA).</div>
-
-      <div id="xEmbed" style="display:none; margin-top:12px;">
-        <a class="twitter-timeline" data-theme="dark" data-tweet-limit="3" href="#">
-          Tweets by Capitoken
-        </a>
-      </div>
-    </div>
-
-    <!-- X widgets loader (safe for static) -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-  </section>
-
-  <section class="section">
-    <h2>Feedback loop</h2>
-    <p class="small">
-      This is a simple “public inbox” style form. (Next iteration: connect to Formspree/Discord webhook/your backend.)
-    </p>
-
-    <div class="grid" style="margin-top:14px;">
-      <div class="card col-12">
-        <form id="feedbackForm">
-          <div class="grid" style="gap:12px;">
-            <div class="col-6">
-              <label class="small" for="name">Name (optional)</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Anonymous"
-                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
-              />
-            </div>
-
-            <div class="col-6">
-              <label class="small" for="contact">Contact (optional)</label>
-              <input
-                id="contact"
-                name="contact"
-                type="text"
-                placeholder="X handle / email"
-                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="small" for="message">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                rows="5"
-                placeholder="Ideas, feedback, concerns, suggestions…"
-                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
-              ></textarea>
-            </div>
-
-            <div class="col-12" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-              <button class="btn btn--primary" type="submit">Generate email draft</button>
-              <span class="small" id="formNote">No data is sent automatically yet.</span>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- Client-only JS (IMPORTANT: no browser APIs in frontmatter) -->
-  <script type="module" define:vars={{ X_URL, TELEGRAM_URL, DISCORD_URL }}>
-    const $ = (s) => document.querySelector(s);
-
-    function setLink(id, url) {
-      const el = $(id);
-      if (!el) return;
-      if (!url || url === "TBA") {
-        el.setAttribute("aria-disabled", "true");
-        el.classList.add("btn--ghost");
-        el.href = "#";
-        return;
-      }
-      el.removeAttribute("aria-disabled");
-      el.href = url;
-    }
-
-    // Top buttons
-    setLink("#btnX", X_URL);
-    setLink("#btnTg", TELEGRAM_URL);
-    setLink("#btnDc", DISCORD_URL);
-
-    // Embed enable
-    if (X_URL && X_URL !== "TBA") {
-      $("#embedPlaceholder").textContent = "";
-      $("#xEmbed").style.display = "block";
-      const a = $("#xEmbed a.twitter-timeline");
-      a.href = X_URL;
-      a.textContent = `Tweets by ${X_URL.replace(/^https?:\/\/(x|twitter)\.com\//i, "")}`;
-      // widgets.js will render it
-    }
-
-    // Feedback form -> mailto draft (no backend yet)
-    $("#feedbackForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = $("#name").value?.trim() || "Anonymous";
-      const contact = $("#contact").value?.trim() || "";
-      const msg = $("#message").value?.trim() || "";
-
-      const subject = encodeURIComponent("Capitoken Community Feedback");
-      const body = encodeURIComponent(
-        `Name: ${name}\n` +
-        (contact ? `Contact: ${contact}\n` : "") +
-        `\nMessage:\n${msg}\n\n` +
-        `Sent from: ${location.href}\n`
-      );
-
-      // Change this email later when you have an official inbox
-      const to = "team@capitoken.org";
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-    });
-  </script>
-</BaseLayout>
+      <!-- Safe embed: runs on client only -->
+      <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" href="https://twitter.com/Capitoken">Tweets by Capitoken</a>
+      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </section>
+  </main>
+</Layout>
