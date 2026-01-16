@@ -2,35 +2,28 @@
 const base = import.meta.env.BASE_URL; // "/" en dev, "/capitoken-site/" en build
 
 const LINKS = [
+  { label: "Home", href: "/" },
   { label: "Launch", href: "#launch" },
   { label: "Tokenomics", href: "#tokenomics" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Links", href: "/links" }, // en build queda bajo /capitoken-site/
+  { label: "Links", href: "/links" },
+  { label: "Verify", href: "/verify" },
+  { label: "Checklist", href: "/checklist" },
   { label: "FAQ", href: "#faq" },
 ];
 
-// Home detection:
-// - "/" en dev
-// - "/capitoken-site/" en GitHub Pages
-const pathname = Astro.url.pathname;
-const isHome = pathname === base || pathname === "/" || pathname === base.replace(/\/$/, "");
+function fixHref(href) {
+  if (href.startsWith("#")) return href;        // anchors
+  if (href.startsWith("http")) return href;     // absolutos
 
-function fixHref(href: string) {
-  // Anchor links se quedan tal cual
-  if (href.startsWith("#")) return href;
-
-  // Links absolutos (http) se dejan
-  if (href.startsWith("http")) return href;
-
-  // Forzar base en rutas internas
+  // Internos: asegurar base
   const clean = href.startsWith("/") ? href.slice(1) : href;
   return `${base}${clean}`.replace(/\/{2,}/g, "/");
 }
 ---
 
 <header class="nav">
-  <div class="nav__inner">
-    <!-- Brand siempre vuelve al HOME bajo BASE_URL -->
+  <div class="nav__inner container">
     <a class="brand" href={base}>
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Capitoken</span>
@@ -38,9 +31,7 @@ function fixHref(href: string) {
 
     <nav class="nav__links" aria-label="Primary">
       {LINKS.map((l) => (
-        <a href={fixHref(l.href)} class={l.href.startsWith("#") && !isHome ? "is-disabled" : ""}>
-          {l.label}
-        </a>
+        <a href={fixHref(l.href)}>{l.label}</a>
       ))}
     </nav>
   </div>
