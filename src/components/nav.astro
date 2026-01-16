@@ -3,22 +3,22 @@ const LINKS = [
   { label: "Launch", href: "#launch" },
   { label: "Tokenomics", href: "#tokenomics" },
   { label: "Roadmap", href: "#roadmap" },
-  { label: "Links", href: "links" }, // relative -> fixHref le pone BASE_URL
+  { label: "Links", href: "links/" },
   { label: "FAQ", href: "#faq" },
 ];
 
-const base = import.meta.env.BASE_URL; // "/" dev, "/capitoken-site/" build
+const base = import.meta.env.BASE_URL;
 
 function fixHref(href: string) {
   if (href.startsWith("#")) return href;
   if (href.startsWith("http")) return href;
-  const clean = href.startsWith("/") ? href.slice(1) : href;
+  const clean = href.replace(/^\//, "");
   return `${base}${clean}`.replace(/\/{2,}/g, "/");
 }
 ---
 
 <header class="nav">
-  <div class="nav__inner">
+  <div class="container nav__inner">
     <a class="brand" href={base}>
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Capitoken</span>

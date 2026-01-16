@@ -9,13 +9,12 @@ const {
 
 const year = new Date().getFullYear();
 
-// GitHub Pages base handling
+// Site + base (important for GitHub Pages)
 const site = Astro.site?.toString() ?? "https://capitoken-org.github.io";
 const base = import.meta.env.BASE_URL; // "/" in dev, "/capitoken-site/" in build
 
-// Canonical + OG URLs (robust)
-const canonical = new URL(Astro.url.pathname, `${site}${base}`).toString();
-const ogImage = new URL("og.png", `${site}${base}`).toString();
+const canonical = new URL(Astro.url.pathname.replace(base, "/"), `${site}${base}`).toString();
+const ogImage = `${site}${base}og.png`;
 
 // GA4
 const GA4_ID = "G-KK8HRNV8ZZ";
@@ -28,6 +27,7 @@ const GA4_ID = "G-KK8HRNV8ZZ";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#023125" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -53,7 +53,7 @@ const GA4_ID = "G-KK8HRNV8ZZ";
       window.dataLayer = window.dataLayer || [];
       function gtag(){ window.dataLayer.push(arguments); }
       gtag('js', new Date());
-      gtag('config', {JSON.stringify(GA4_ID)}, { anonymize_ip: true });
+      gtag('config', '{GA4_ID_PLACEHOLDER}');
     </script>
   </head>
 
@@ -68,5 +68,21 @@ const GA4_ID = "G-KK8HRNV8ZZ";
         © {year} Capitoken. All rights reserved.
       </div>
     </footer>
+
+    <!-- Patch GA4 placeholder safely (avoids Astro parsing issues) -->
+    <script is:inline>
+      try {
+        const GA4 = "{GA4_ID_DYNAMIC}";
+        // No-op placeholder; replaced below.
+      } catch(e) {}
+    </script>
+
+    <script is:inline define:vars={{ GA4_ID }}>
+      // Replace placeholder string with real GA4 id at runtime
+      // (keeps the inline script simple and avoids linter noise)
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ window.dataLayer.push(arguments); }
+      gtag('config', GA4_ID, { anonymize_ip: true });
+    </script>
   </body>
 </html>
