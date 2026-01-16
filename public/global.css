@@ -576,3 +576,18 @@ hr.hr{ margin: 26px 0; }
 #launchpanel .grid{
   gap: 18px;
 }
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+.brand__logo{
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.brand__text{
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}

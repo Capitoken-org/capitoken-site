@@ -25,10 +25,11 @@ function fixHref(href: string) {
 
 <nav class="nav">
   <div class="container nav__inner">
-    <a class="brand" href={fixHref("/")}>
-      <span class="brand__dot"></span>
-      <span class="brand__name">Capitoken</span>
-    </a>
+    <a class="brand" href={withBase("/")}>
+    <img class="brand__logo" src={withBase("/logo/capitoken-white.png")} alt="Capitoken" width="26" height="26" />
+    <span class="brand__text">Capitoken</span>
+</a>
+
 
     <div class="nav__links">
       {LINKS.map((l) => (
