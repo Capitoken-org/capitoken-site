@@ -12,6 +12,9 @@ const year = new Date().getFullYear();
 
 // OG image (debe existir como public/og.png)
 const ogImageAbs = "https://capitoken-org.github.io/capitoken-site/og.png";
+
+// GA4 Measurement ID
+const GA4_ID = "G-KK8HRNV8ZZ";
 ---
 
 <!DOCTYPE html>
@@ -49,10 +52,11 @@ const ogImageAbs = "https://capitoken-org.github.io/capitoken-site/og.png";
     <!-- ========================= -->
     <!-- Google Analytics 4 (GA4) -->
     <!-- ========================= -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>
+
+    <script is:inline>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(){ window.dataLayer.push(arguments); }
       gtag('js', new Date());
       gtag('config', 'G-KK8HRNV8ZZ', { anonymize_ip: true });
     </script>
