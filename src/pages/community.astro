@@ -1,158 +1,193 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { PROJECT, TOKEN } from "../lib/token";
 
-// FORM: pon aquí tu Formspree/Google Form cuando lo tengas
-const FEEDBACK_FORM_URL = "TBA";
+const TITLE = "Capitoken — Community";
+const DESC =
+  "Community hub: official social widgets, feedback loop, and verified ways to participate.";
 
-// X timeline (cuando exista)
-const X_HANDLE = "TBA"; // ejemplo: "capitoken"
-const TELEGRAM_CHANNEL = "TBA"; // ejemplo: "capitokenchannel"
+const base = import.meta.env.BASE_URL;
 
-// Giscus (comentarios via GitHub Discussions)
-// Requiere que habilites Discussions en el repo y configures giscus.app.
-// Dejo placeholders listos.
-const GISCUS = {
-  repo: "Capitoken-org/capitoken-site",
-  repoId: "TBA",
-  category: "General",
-  categoryId: "TBA",
-};
+// Edit when you have official URLs:
+const X_URL = "TBA";          // e.g. "https://x.com/Capitoken"
+const TELEGRAM_URL = "TBA";   // e.g. "https://t.me/capitoken"
+const DISCORD_URL = "TBA";    // e.g. "https://discord.gg/..."
+const GITHUB_URL = "https://github.com/Capitoken-org";
 ---
 
-<BaseLayout
-  title="Capitoken — Community"
-  description="Community hub: updates, feedback, and official social embeds. Verified sources only."
->
-  <main class="container">
-    <section class="hero">
-      <div class="pill"><span class="pill__dot"></span><span>Community Hub</span></div>
-      <h1>Community</h1>
-      <p class="hero__lead">
-        We build in public. Share ideas, follow updates, and verify everything on <a href="./verify">/verify</a>.
-      </p>
-    </section>
+<BaseLayout title={TITLE} description={DESC}>
+  <section class="hero">
+    <div class="hero__kicker">
+      <span class="pill__dot" aria-hidden="true"></span>
+      Community hub
+    </div>
 
-    <section class="section">
-      <h2>How we listen</h2>
-      <div class="card">
-        <div class="kv">
-          <strong>Official verify link</strong>
-          <span class="mono">{PROJECT.verifyUrl}</span>
-        </div>
-        <div class="kv">
-          <strong>Feedback form</strong>
-          <span class="mono">{FEEDBACK_FORM_URL}</span>
-        </div>
-        <div class="kv">
-          <strong>Rule</strong>
-          <span>If it’s not published on this website, it’s not official.</span>
+    <h1>Community</h1>
+    <p class="hero__lead">
+      This page is the official community entry point. Social widgets + feedback loop will live here.
+      If a link is not listed here, it’s not official.
+    </p>
+
+    <div class="actions">
+      <a class="btn btn--primary" href={`${base}links/`}>Official Links</a>
+      <a class="btn" href={`${base}`}>Back to Home</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Join</h2>
+
+    <div class="grid" style="margin-top:14px;">
+      <div class="card col-6">
+        <h3>X (Twitter)</h3>
+        <p class="small">Official announcements + daily updates.</p>
+        <a class="btn btn--primary" id="btnX" href="#" target="_blank" rel="noreferrer">Open X</a>
+      </div>
+
+      <div class="card col-6">
+        <h3>Telegram / Discord</h3>
+        <p class="small">Community chat + coordination.</p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <a class="btn" id="btnTg" href="#" target="_blank" rel="noreferrer">Telegram</a>
+          <a class="btn" id="btnDc" href="#" target="_blank" rel="noreferrer">Discord</a>
         </div>
       </div>
 
-      <p class="small" style="margin-top:12px;">
-        Next step: set a feedback form (Formspree/Google Form). We can also track submissions in GA4.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>Social feed</h2>
-      <p>Embeds are shown when official handles are published.</p>
-
-      <div class="grid3">
-        <div class="panel">
-          <div class="panel__k">X (Twitter)</div>
-          <div class="panel__v">
-            {X_HANDLE === "TBA" ? "TBA" : `@${X_HANDLE}`}
-          </div>
-          <div class="small" style="margin-top:10px;">
-            {X_HANDLE === "TBA" ? "Publish the official X handle to activate embed." : ""}
-          </div>
-          <div id="x-embed" style="margin-top:12px;"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel__k">Telegram</div>
-          <div class="panel__v">
-            {TELEGRAM_CHANNEL === "TBA" ? "TBA" : TELEGRAM_CHANNEL}
-          </div>
-          <div class="small" style="margin-top:10px;">
-            {TELEGRAM_CHANNEL === "TBA" ? "Publish the official channel to activate widget." : ""}
-          </div>
-          <div id="tg-embed" style="margin-top:12px;"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel__k">Comments</div>
-          <div class="panel__v">GitHub Discussions (Giscus)</div>
-          <div class="small" style="margin-top:10px;">
-            This is the safest, spam-resistant comment system for a static site.
-          </div>
-        </div>
+      <div class="card col-12">
+        <h3>GitHub</h3>
+        <p class="small">Source + issues + build in public.</p>
+        <a class="btn" href={GITHUB_URL} target="_blank" rel="noreferrer">Open GitHub</a>
       </div>
-    </section>
+    </div>
 
-    <section class="section">
-      <h2>Comments</h2>
-      <p>Community discussion thread (powered by GitHub Discussions).</p>
-      <div class="card">
-        <div id="giscus"></div>
-        <p class="small" style="margin-top:12px;">
-          If Giscus is not configured yet, this will remain empty until repoId/categoryId are added.
-        </p>
+    <p class="small" style="margin-top:12px;">
+      Security: scammers will DM fake links. Always verify against <a href={`${base}links/`}>/links</a>.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Live social embed</h2>
+    <p class="small">
+      The embed shows only after the official X URL is set. Some browsers/extensions may block embeds — the link still works.
+    </p>
+
+    <div class="card" id="embedCard" style="margin-top:14px;">
+      <div id="embedPlaceholder" class="small">Embed is currently disabled (X URL is TBA).</div>
+
+      <div id="xEmbed" style="display:none; margin-top:12px;">
+        <a class="twitter-timeline" data-theme="dark" data-tweet-limit="3" href="#">
+          Tweets by Capitoken
+        </a>
       </div>
-    </section>
-  </main>
+    </div>
 
-  <script is:inline>
-    const X_HANDLE = {JSON.stringify(X_HANDLE)};
-    const TG = {JSON.stringify(TELEGRAM_CHANNEL)};
-    const G = {JSON.stringify(GISCUS)};
+    <!-- X widgets loader (safe for static) -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </section>
 
-    // X embed
-    if (X_HANDLE && X_HANDLE !== "TBA") {
-      const el = document.getElementById("x-embed");
-      el.innerHTML = `
-        <a class="twitter-timeline"
-           data-height="420"
-           data-theme="dark"
-           href="https://twitter.com/${X_HANDLE}?ref_src=twsrc%5Etfw">
-           Tweets by ${X_HANDLE}
-        </a>`;
-      const s = document.createElement("script");
-      s.async = true;
-      s.src = "https://platform.twitter.com/widgets.js";
-      document.body.appendChild(s);
+  <section class="section">
+    <h2>Feedback loop</h2>
+    <p class="small">
+      This is a simple “public inbox” style form. (Next iteration: connect to Formspree/Discord webhook/your backend.)
+    </p>
+
+    <div class="grid" style="margin-top:14px;">
+      <div class="card col-12">
+        <form id="feedbackForm">
+          <div class="grid" style="gap:12px;">
+            <div class="col-6">
+              <label class="small" for="name">Name (optional)</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Anonymous"
+                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
+              />
+            </div>
+
+            <div class="col-6">
+              <label class="small" for="contact">Contact (optional)</label>
+              <input
+                id="contact"
+                name="contact"
+                type="text"
+                placeholder="X handle / email"
+                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="small" for="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                placeholder="Ideas, feedback, concerns, suggestions…"
+                style="margin-top:8px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,248,248,0.12); background: rgba(248,248,248,0.04); color: var(--text);"
+              ></textarea>
+            </div>
+
+            <div class="col-12" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <button class="btn btn--primary" type="submit">Generate email draft</button>
+              <span class="small" id="formNote">No data is sent automatically yet.</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client-only JS (IMPORTANT: no browser APIs in frontmatter) -->
+  <script type="module" define:vars={{ X_URL, TELEGRAM_URL, DISCORD_URL }}>
+    const $ = (s) => document.querySelector(s);
+
+    function setLink(id, url) {
+      const el = $(id);
+      if (!el) return;
+      if (!url || url === "TBA") {
+        el.setAttribute("aria-disabled", "true");
+        el.classList.add("btn--ghost");
+        el.href = "#";
+        return;
+      }
+      el.removeAttribute("aria-disabled");
+      el.href = url;
     }
 
-    // Telegram widget (channel must be public)
-    if (TG && TG !== "TBA") {
-      const el = document.getElementById("tg-embed");
-      el.innerHTML = `
-        <script async src="https://telegram.org/js/telegram-widget.js?22"
-          data-telegram-post="${TG}/1"
-          data-width="100%"
-          data-dark="1"></script>`;
+    // Top buttons
+    setLink("#btnX", X_URL);
+    setLink("#btnTg", TELEGRAM_URL);
+    setLink("#btnDc", DISCORD_URL);
+
+    // Embed enable
+    if (X_URL && X_URL !== "TBA") {
+      $("#embedPlaceholder").textContent = "";
+      $("#xEmbed").style.display = "block";
+      const a = $("#xEmbed a.twitter-timeline");
+      a.href = X_URL;
+      a.textContent = `Tweets by ${X_URL.replace(/^https?:\/\/(x|twitter)\.com\//i, "")}`;
+      // widgets.js will render it
     }
 
-    // Giscus embed
-    if (G.repoId && G.repoId !== "TBA" && G.categoryId && G.categoryId !== "TBA") {
-      const gc = document.createElement("script");
-      gc.src = "https://giscus.app/client.js";
-      gc.async = true;
-      gc.crossOrigin = "anonymous";
-      gc.setAttribute("data-repo", G.repo);
-      gc.setAttribute("data-repo-id", G.repoId);
-      gc.setAttribute("data-category", G.category);
-      gc.setAttribute("data-category-id", G.categoryId);
-      gc.setAttribute("data-mapping", "pathname");
-      gc.setAttribute("data-strict", "0");
-      gc.setAttribute("data-reactions-enabled", "1");
-      gc.setAttribute("data-emit-metadata", "0");
-      gc.setAttribute("data-input-position", "top");
-      gc.setAttribute("data-theme", "dark");
-      gc.setAttribute("data-lang", "en");
-      document.getElementById("giscus").appendChild(gc);
-    }
+    // Feedback form -> mailto draft (no backend yet)
+    $("#feedbackForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = $("#name").value?.trim() || "Anonymous";
+      const contact = $("#contact").value?.trim() || "";
+      const msg = $("#message").value?.trim() || "";
+
+      const subject = encodeURIComponent("Capitoken Community Feedback");
+      const body = encodeURIComponent(
+        `Name: ${name}\n` +
+        (contact ? `Contact: ${contact}\n` : "") +
+        `\nMessage:\n${msg}\n\n` +
+        `Sent from: ${location.href}\n`
+      );
+
+      // Change this email later when you have an official inbox
+      const to = "team@capitoken.org";
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    });
   </script>
 </BaseLayout>
