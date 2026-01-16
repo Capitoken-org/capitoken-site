@@ -1,44 +1,141 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const TITLE = "Verify — Capitoken (CAPI)";
+const DESC =
+  "Verify official Capitoken contract, DEX pair, and links. If it’s not listed here, it’s not official.";
+
+// >>> EDIT HERE when you have real data <<<
+const TOKEN_ADDRESS = ""; // "0x..."
+const DEX_PAIR_ADDRESS = ""; // optional
+const X_URL = "https://twitter.com/Capitoken";
+const GITHUB_URL = "https://github.com/Capitoken-org/capitoken-site";
+// Add/replace official links below:
+const OFFICIAL_LINKS = [
+  { label: "Official Website", value: "https://capitoken-org.github.io/capitoken-site/" },
+  { label: "X / Twitter", value: X_URL },
+  { label: "GitHub", value: GITHUB_URL },
+  // { label: "Etherscan Token", value: `https://etherscan.io/token/${TOKEN_ADDRESS}` },
+  // { label: "DexScreener", value: `https://dexscreener.com/ethereum/${DEX_PAIR_ADDRESS}` },
+];
+// >>> ------------------------------ <<<
+
+function shortAddr(a){
+  if(!a) return "TBA";
+  return `${a.slice(0,6)}…${a.slice(-4)}`;
+}
 ---
 
-<BaseLayout
-  title="Capitoken — Verify"
-  description="Verify official Capitoken information. If it’s not listed here, it’s not official."
->
-  <main class="container">
-    <section class="hero">
-      <div class="pill">
-        <span class="pill__dot"></span>
-        <span>Verification page</span>
+<BaseLayout title={TITLE} description={DESC}>
+  <section class="section">
+    <div class="container reveal">
+      <div class="verify-head">
+        <div>
+          <h1 style="margin:0;">Verify</h1>
+          <p class="hero__lead" style="margin-top:10px;">
+            Single source of truth. Scammers will copy names, logos, and links.
+            If it’s not listed on this page, it’s not official.
+          </p>
+        </div>
+        <a class="btn" href="/" rel="noreferrer">Back to Home</a>
       </div>
 
-      <h1>Verify Capitoken</h1>
-
-      <p class="hero__lead">
-        Use this page to verify official Capitoken information.
-      </p>
-    </section>
-
-    <section class="section">
-      <div class="card">
-        <div class="kv">
-          <strong>Official domain</strong>
-          <span class="mono">capitoken-org.github.io/capitoken-site/</span>
+      <div class="grid" style="margin-top:16px;">
+        <div class="card col-6">
+          <div class="small">Contract (ERC-20)</div>
+          <div class="mono addr" id="v_token" style="margin-top:8px; font-weight:900;">
+            {TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA"}
+          </div>
+          <div class="verify-actions">
+            <button class="btn btn--primary" id="copyToken" type="button" disabled={!TOKEN_ADDRESS}>Copy</button>
+            <a class="btn" id="openEtherscan" href="#" target="_blank" rel="noreferrer">Open Etherscan</a>
+          </div>
+          <p class="small" style="margin-top:12px;">
+            Always confirm the URL and the exact address. Never trust DMs.
+          </p>
         </div>
-        <div class="kv">
-          <strong>Contract address</strong>
-          <span class="mono">TBA — will be published here</span>
+
+        <div class="card col-6">
+          <div class="small">DEX Pair</div>
+          <div class="mono addr" id="v_pair" style="margin-top:8px; font-weight:900;">
+            {DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA"}
+          </div>
+          <div class="verify-actions">
+            <button class="btn btn--primary" id="copyPair" type="button" disabled={!DEX_PAIR_ADDRESS}>Copy</button>
+            <a class="btn" id="openDex" href="#" target="_blank" rel="noreferrer">Open DexScreener</a>
+          </div>
+          <p class="small" style="margin-top:12px;">
+            Dex links appear only after a verified contract/pair exists.
+          </p>
         </div>
-        <div class="kv">
-          <strong>DEX pair</strong>
-          <span class="mono">TBA</span>
+
+        <div class="card col-12">
+          <div style="font-weight:900;">Official Links</div>
+          <p class="small" style="margin-top:8px;">Bookmark this page. All other links are untrusted.</p>
+
+          <div class="links-list" style="margin-top:10px;">
+            {OFFICIAL_LINKS.map((l) => (
+              <div class="links-row">
+                <div class="small">{l.label}</div>
+                <div class="mono"><a href={l.value} target="_blank" rel="noreferrer">{l.value}</a></div>
+                <button class="btn" type="button" data-copy={l.value}>Copy</button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <p class="small" style="margin-top:14px;">
-        Anti-scam rule: only trust information published on this page or the Official Links page.
-      </p>
-    </section>
-  </main>
+      <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    </div>
+  </section>
+
+  <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
+    const $ = (s) => document.querySelector(s);
+
+    const toast = (msg) => {
+      const el = $("#toast");
+      if(!el) return;
+      el.textContent = msg;
+      el.classList.add("toast--show");
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(()=> el.classList.remove("toast--show"), 1800);
+    };
+
+    async function copyText(val){
+      if(!val) return;
+      try{
+        await navigator.clipboard.writeText(val);
+        toast("Copied");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly","");
+        ta.style.position="absolute";
+        ta.style.left="-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied");
+      }
+    }
+
+    function setLinks(){
+      $("#openEtherscan").href = TOKEN_ADDRESS ? `https://etherscan.io/token/${TOKEN_ADDRESS}` : "#";
+      $("#openDex").href = DEX_PAIR_ADDRESS ? `https://dexscreener.com/ethereum/${DEX_PAIR_ADDRESS}` : "#";
+      if(!TOKEN_ADDRESS) $("#openEtherscan").setAttribute("aria-disabled","true");
+      if(!DEX_PAIR_ADDRESS) $("#openDex").setAttribute("aria-disabled","true");
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      setLinks();
+
+      $("#copyToken")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
+      $("#copyPair")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
+
+      document.querySelectorAll("[data-copy]").forEach((btn)=>{
+        btn.addEventListener("click", ()=> copyText(btn.getAttribute("data-copy")));
+      });
+    });
+  </script>
 </BaseLayout>
