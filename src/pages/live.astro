@@ -36,7 +36,7 @@ function fmtUsd(n) {
   <main class="container">
     <section class="hero">
       <div class="pill"><span class="pill__dot"></span><span>Live Dashboard</span></div>
-      <h1>Live Dashboard</h1>
+      <h1><span class="iconwrap"><img class="icon icon--lg icon-neutral" src={import.meta.env.BASE_URL + "icons/wallet.svg"} alt="" /> Live Dashboard</span></h1>
       <p class="hero__lead">
         Real-time market data will appear here after launch. Always verify official info on
         <a href="./verify">/verify</a>.
@@ -72,7 +72,11 @@ function fmtUsd(n) {
         </div>
       </div>
 
-      <div id="live-state" class="card">
+      <div class="embed" style="margin-top:14px;">
+  <iframe id="dex-embed" title="DexScreener chart (embed)" loading="lazy" referrerpolicy="no-referrer"></iframe>
+</div>
+
+<div id="live-state" class="card">
         <div class="kv"><strong>Status</strong><span>Loading…</span></div>
       </div>
 
@@ -118,6 +122,19 @@ function fmtUsd(n) {
 
     const state = document.getElementById("live-state");
     const grid = document.getElementById("live-grid");
+
+const iframe = document.getElementById("dex-embed");
+function setEmbed(){
+  if(!iframe) return;
+  // DexScreener embed: prefer pair, fallback to token
+  if (isAddr(PAIR_ADDR)) {
+    iframe.src = `https://dexscreener.com/ethereum/${PAIR_ADDR}?embed=1&theme=dark&trades=0&info=0`;
+  } else if (isAddr(TOKEN_ADDR)) {
+    iframe.src = `https://dexscreener.com/ethereum/${TOKEN_ADDR}?embed=1&theme=dark&trades=0&info=0`;
+  } else {
+    iframe.src = "about:blank";
+  }
+}
 
     const setStatus = (msg) => {
       state.innerHTML = `<div class="kv"><strong>Status</strong><span>${msg}</span></div>`;
@@ -180,6 +197,7 @@ function fmtUsd(n) {
       }
     }
 
+    setEmbed();
     fetchDex();
     // Optional auto-refresh every 60s
     setInterval(fetchDex, 60000);

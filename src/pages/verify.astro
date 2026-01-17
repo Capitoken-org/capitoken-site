@@ -38,6 +38,11 @@ const FALLBACK = {
     <link rel="stylesheet" href={`${BASE}global.css`} />
 
     <style>
+      /* Phase 8 small polish for /verify (keeps existing layout) */
+      .scorewrap{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+      .bar{height:10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);overflow:hidden}
+      .barfill{height:100%;width:0%;background:linear-gradient(90deg, rgba(241,196,15,1), rgba(46,204,113,1));transition:width .85s ease}
+
       .wrap { max-width: 920px; margin: 80px auto; padding: 0 18px; }
       .h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0 0 10px; }
       .sub { opacity:.85; margin: 0 0 18px; }
@@ -79,7 +84,7 @@ const FALLBACK = {
 
   <body>
     <div class="wrap">
-      <h1 class="h1">Verify Capitoken</h1>
+      <h1 class="h1"><span class="iconwrap"><img class="icon icon--lg icon-verified" src="${BASE}icons/shield.svg" alt="" /> Verify Capitoken</span></h1>
       <p class="sub">Single source of truth for official domain, contract and links. If anything disagrees with this page, treat it as <b>not official</b>.</p>
 
       <!-- Mirror banner -->
@@ -161,6 +166,9 @@ const FALLBACK = {
       </div>
     </div>
 
+
+    <!-- Toast (shared pattern with /) -->
+    <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;z-index:9999;"></div>
     <!-- ✅ FIX: define:vars para inyectar BASE y FALLBACK correctamente -->
     <script type="module" define:vars={{ BASE, FALLBACK }}>
       function scoreFrom(data, isOfficialHost) {
@@ -179,6 +187,45 @@ const FALLBACK = {
         if(!el) return;
         el.href = href;
         el.textContent = label ?? href;
+      }
+
+      function toast(msg){
+        const el = document.getElementById('toast');
+        if(!el) return;
+        el.textContent = msg;
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        clearTimeout(window.__toastT);
+        window.__toastT = setTimeout(()=>{
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(8px)';
+        }, 1800);
+      }
+
+      async function copyText(val){
+        if(!val) return;
+        try{
+          await navigator.clipboard.writeText(val);
+          toast('Copied');
+          return true;
+        }catch(e){
+          try{
+            const ta = document.createElement('textarea');
+            ta.value = val;
+            ta.setAttribute('readonly','');
+            ta.style.position='absolute';
+            ta.style.left='-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            toast('Copied');
+            return true;
+          }catch{
+            toast('Copy failed');
+            return false;
+          }
+        }
       }
 
       async function loadRegistry(){
@@ -249,19 +296,14 @@ const FALLBACK = {
 
         // Mirror link (always show github pages)
         setHref("mirrorLink", "https://capitoken-org.github.io/capitoken-site/", "https://capitoken-org.github.io/capitoken-site/");
-
         // Copy contract
         const copyBtn = document.getElementById("copyContract");
         if (copyBtn) {
           copyBtn.addEventListener("click", async () => {
-            try {
-              await navigator.clipboard.writeText(addr);
-              copyBtn.textContent = "Copied";
-              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-            } catch {
-              copyBtn.textContent = "Copy failed";
-              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-            }
+            copyBtn.textContent = "Copying…";
+            const ok = await copyText(addr);
+            copyBtn.textContent = "Copy";
+            if (!ok) toast("Copy failed");
           });
         }
       })();

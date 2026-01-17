@@ -38,10 +38,24 @@ const roadmap = [
   <!-- HERO -->
   <section class="hero" id="launch">
     <div class="container reveal reveal--2">
-      <div class="hero__kicker">
-        <span class="pill__dot" aria-hidden="true"></span>
-        Verified info only on this website
-      </div>
+      <div class="trust-row">
+  <div class="trust-badge" id="trustBadgeHero">
+    <span class="trust-dot" aria-hidden="true"></span>
+    <span id="trustStatusHero">Checking trust…</span>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <a class="pill" href={import.meta.env.BASE_URL + "verify/"} style="text-decoration:none;">
+      <span class="pill-dot" aria-hidden="true"></span>
+      <span class="iconwrap"><img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" /><span>Verify</span></span>
+    </a>
+    <span class="pill" id="networkPill">
+      <span class="pill-dot" aria-hidden="true"></span>
+      <span>Ethereum Mainnet</span>
+    </span>
+  </div>
+</div>
+
 
       <h1>
         Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
@@ -51,9 +65,20 @@ const roadmap = [
         Deep-green premium design, clear narrative, and verified links — built for adoption.
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
+<div class="trust-score" aria-live="polite">
+  <div class="trust-score__row">
+    <div class="small">Trust Score</div>
+    <div class="trust-score__value"><span id="trustScoreHero">—</span> / 100</div>
+  </div>
+  <div class="trust-bar" aria-hidden="true">
+    <div class="trust-bar__fill" id="trustBarFill" style="width:0%"></div>
+  </div>
+  <div class="trust-score__hint small" id="trustHintHero">Loading official registry…</div>
+</div>
+
 
       <div class="actions">
-        <a class="btn btn--primary" href="#launchpanel">Launch Panel</a>
+        <a class="btn btn--primary" href="#launchpanel"><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Launch Panel</span></span></a>
         <a class="btn" href="#community">Community</a>
         <a class="btn" href="#tokenomics">Tokenomics</a>
       </div>
@@ -74,7 +99,7 @@ const roadmap = [
   <!-- LAUNCH PANEL -->
   <section class="section" id="launchpanel">
     <div class="container reveal reveal--3">
-      <h2>Launch Panel</h2>
+      <h2><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Launch Panel</span></span></h2>
       <p class="small">Single source of truth for contract, DEX pair, and status.</p>
 
       <div class="launch-grid">
@@ -311,6 +336,70 @@ const roadmap = [
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const $ = (s) => document.querySelector(s);
 
+// Phase 8 Trust UI: reads public/official-registry.json (same source as /verify)
+const FALLBACK_REGISTRY = {
+  officialDomain: "www.capitoken.org",
+  allowedDomains: ["www.capitoken.org", "capitoken.org"],
+  network: { name: "Ethereum Mainnet", chainId: 1, explorer: "https://etherscan.io" },
+  contract: { address: "", verified: false, token: { name: "Capitoken", symbol: "CAPI", decimals: 18 } },
+  security: { mirrorNotice: "You are viewing a mirror. The official site is https://www.capitoken.org" }
+};
+
+const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? "—"; };
+const setWidth = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = String(pct) + "%"; };
+
+function scoreFrom(data, isOfficialHost) {
+  let s = 0;
+  if (data?.contract?.address) s += 35;
+  if (data?.contract?.verified) s += 25;
+  if (data?.contract?.token?.name && data?.contract?.token?.symbol) s += 10;
+  if (data?.network?.chainId === 1) s += 10;
+  if (isOfficialHost) s += 20;
+  return Math.min(100, s);
+}
+
+async function loadRegistry() {
+  const url = new URL("official-registry.json", window.location.href).toString();
+  try {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("registry fetch failed");
+    return await r.json();
+  } catch {
+    return FALLBACK_REGISTRY;
+  }
+}
+
+async function initTrustHero() {
+  const data = await loadRegistry();
+  const host = window.location.hostname;
+  const allowed = new Set((data.allowedDomains || []).map((x) => String(x).toLowerCase()));
+  const isOfficialHost = allowed.has(String(host).toLowerCase());
+
+  const score = scoreFrom(data, isOfficialHost);
+  setTxt("trustScoreHero", String(score));
+  setWidth("trustBarFill", score);
+
+  const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";
+  setTxt("trustStatusHero", status);
+
+  const hint = isOfficialHost
+    ? (data.contract?.verified ? "Etherscan verified. Always verify contract on /verify." : "Contract not verified yet. Use /verify.")
+    : (data.security?.mirrorNotice || "You are viewing a mirror. Verify on the official domain.");
+  setTxt("trustHintHero", hint);
+
+  const badge = document.getElementById("trustBadgeHero");
+  if (badge) {
+    badge.classList.remove("is-verified", "is-warn");
+    badge.classList.add(isOfficialHost ? "is-verified" : "is-warn");
+  }
+
+  const netPill = document.getElementById("networkPill");
+  if (netPill && data.network?.name) {
+    const spans = netPill.querySelectorAll("span");
+    if (spans.length) spans[spans.length - 1].textContent = data.network.name;
+  }
+}
+
     const toast = (msg) => {
       const el = $("#toast");
       if(!el) return;
@@ -459,6 +548,7 @@ const roadmap = [
     }
 
     document.addEventListener("DOMContentLoaded", async ()=>{
+      await initTrustHero();
       // Textos
       setLaunchTexts();
       setDexLinks();
@@ -476,4 +566,132 @@ const roadmap = [
       setInterval(loadDexScreener, 45000);
     });
   </script>
+
+<hr class="hr" />
+
+<!-- PHASE 9 – Trading Venues (DEX / CEX) -->
+<section class="section" id="venues">
+  <div class="container reveal">
+    <div class="section__head">
+      <h2>Trading Venues</h2>
+      <p class="small">
+        Only use official links. If a venue is not listed here, assume it is not official.
+      </p>
+    </div>
+
+    <div class="venues">
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
+            <span>DEX Enabled</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">Live once the verified pair is published.</div>
+      </div>
+
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
+            <span>CEX Listings</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  // Phase 9: Trading venues data (editable via /public/venues.json)
+  const makeEl = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, String(v));
+    }
+    for (const c of children) el.append(c);
+    return el;
+  };
+
+  const safeUrl = (u) => {
+    try { return new URL(u).toString(); } catch { return ""; }
+  };
+
+  const fallback = {
+    dex: [
+      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
+      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
+      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
+      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
+    ],
+    cex: [
+      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
+    ]
+  };
+
+  async function loadVenues(){
+    const url = new URL("venues.json", window.location.href).toString();
+    try{
+      const r = await fetch(url, { cache: "no-store" });
+      if(!r.ok) throw new Error("venues fetch failed");
+      const data = await r.json();
+      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
+      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
+    }catch{
+      return fallback;
+    }
+  }
+
+  function renderGrid(targetId, items){
+    const host = document.getElementById(targetId);
+    if(!host) return;
+
+    host.innerHTML = "";
+    items.forEach((it) => {
+      const href = safeUrl(it.url);
+      const enabled = Boolean(it.enabled) && href;
+      const a = makeEl(enabled ? "a" : "div", {
+        class: "venue-tile" + (enabled ? "" : " is-disabled"),
+        href: enabled ? href : undefined,
+        target: enabled ? "_blank" : undefined,
+        rel: enabled ? "noreferrer noopener" : undefined
+      });
+
+      const img = makeEl("img", {
+        class: "venue-icon",
+        src: it.icon || "",
+        alt: it.name || "Venue",
+        loading: "lazy",
+        referrerpolicy: "no-referrer"
+      });
+
+      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
+      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
+
+      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
+      host.append(a);
+    });
+
+    if(!items.length){
+      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const data = await loadVenues();
+    renderGrid("dexGrid", data.dex);
+    renderGrid("cexGrid", data.cex);
+  });
+</script>
+
 </BaseLayout>

@@ -2,6 +2,10 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PROJECT, TOKEN, isAddress } from "../lib/token";
 
+const BASE = import.meta.env.BASE_URL;
+const VERIFY_HREF = BASE + "verify/";
+const LINKS_HREF = BASE + "links/";
+
 const TOKEN_ADDR = TOKEN.address;
 
 // Uniswap swap link (se activa cuando TOKEN_ADDR sea 0x...)
@@ -16,14 +20,15 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
 >
   <main class="container">
     <section class="hero">
-      <div class="pill"><span class="pill__dot"></span><span>Buy / Swap</span></div>
+      <div class="pill"><span class="pill__dot"></span><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/wallet.svg"} alt="" /><span>Buy / Swap</span></span></div>
       <h1>Buy / Swap</h1>
       <p class="hero__lead">
-        Only use official links. Verify the contract on <a href="./verify">/verify</a> before swapping.
+        Only use official links. Verify the contract on <a href={VERIFY_HREF}>/verify</a> before swapping.
       </p>
     </section>
 
     <section class="section">
+      <!-- Key facts -->
       <div class="card">
         <div class="kv">
           <strong>Network</strong>
@@ -31,42 +36,207 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
         </div>
         <div class="kv">
           <strong>Token contract</strong>
-          <span class="mono">{TOKEN_ADDR}</span>
+          <span class="mono" id="tokenContractText">{TOKEN_ADDR}</span>
         </div>
         <div class="kv">
           <strong>Uniswap</strong>
-          <span class="mono">{uniswapUrl}</span>
+          <span class="mono" id="uniswapText">{uniswapUrl}</span>
+        </div>
+
+        <div class="actions" style="margin-top:14px;">
+          <button class="btn" id="copyContractBtn" type="button">Copy contract</button>
+          <button class="btn" id="copyUniswapBtn" type="button">Copy Uniswap link</button>
+          <a class="btn" href={VERIFY_HREF}>Verify</a>
+        </div>
+
+        <p class="small" style="margin-top:14px;">
+          Anti-scam rule: do not trust screenshots or DMs. Always verify the domain + contract.
+        </p>
+      </div>
+
+      <!-- Safety Checklist -->
+      <div class="card" style="margin-top:14px;">
+        <h3 style="margin:0 0 6px 0;"><span class="iconwrap"><img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/check.svg"} alt="" /><span>Safety Checklist</span></span></h3>
+        <p class="small" style="margin:0 0 10px 0;">Complete these checks before swapping.</p>
+        <div class="checklist">
+          <div class="check"><i>✓</i><div><div style="font-weight:800;">Verify the domain</div><div class="small">Only trust <span class="mono">capitoken.org</span> (or the official mirror).</div></div></div>
+          <div class="check"><i>✓</i><div><div style="font-weight:800;">Verify the contract</div><div class="small">Cross-check the token address on <a href={VERIFY_HREF}>/verify</a>.</div></div></div>
+          <div class="check"><i>✓</i><div><div style="font-weight:800;">Confirm network</div><div class="small">Ethereum Mainnet only. Avoid fake networks.</div></div></div>
         </div>
       </div>
 
+      <!-- Primary actions -->
       <div class="actions" style="margin-top:14px;">
         {
           uniswapUrl === "TBA"
-            ? <a class="btn btn--primary" href="./verify">Contract not published yet — Verify</a>
+            ? <a class="btn btn--primary" href={VERIFY_HREF}>Contract not published yet — Verify</a>
             : <a class="btn btn--primary" href={uniswapUrl} target="_blank" rel="noopener noreferrer">Swap on Uniswap</a>
         }
         <button class="btn" id="add-metamask" type="button">Add to MetaMask</button>
-        <a class="btn" href="./links">Official Links</a>
+        <a class="btn" href={LINKS_HREF}>Official Links</a>
       </div>
 
       <p class="small" style="margin-top:14px;">
-        Anti-scam rule: do not trust screenshots or DMs. Always verify the domain + contract.
+        If anything disagrees with <a href={VERIFY_HREF}>/verify</a>, treat it as <b>not official</b>.
       </p>
     </section>
   </main>
 
+  <!-- Safe Buy Modal -->
+  <div class="modal" id="safe-buy-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-close="1"></div>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="safeBuyTitle">
+      <div class="modal__head">
+        <h3 class="modal__title" id="safeBuyTitle"><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Confirm Safe Buy</span></span></h3>
+        <button class="modal__x" type="button" data-close="1">Close</button>
+      </div>
+
+      <div class="modal__body">
+        <div class="modal__row">
+          <strong>Network</strong>
+          <span>Ethereum Mainnet</span>
+        </div>
+        <div class="modal__row">
+          <strong>Token contract</strong>
+          <span class="mono" id="modal-contract">—</span>
+        </div>
+        <div class="modal__row">
+          <strong>Destination</strong>
+          <span class="mono" id="modal-dst">—</span>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label style="display:flex; gap:10px; align-items:flex-start;">
+            <input id="modal-check" type="checkbox" style="margin-top:3px;" />
+            <span class="small">
+              I verified the contract address on <a href={VERIFY_HREF}>/verify</a> and understand crypto is high risk.
+            </span>
+          </label>
+        </div>
+
+        <div class="modal__note">
+          Anti-scam rule: do not trust screenshots, DMs, or “support” messages. Verify here only.
+        </div>
+
+        <div class="modal__footer">
+          <button class="btn" type="button" data-close="1">Cancel</button>
+          <button class="btn btn--primary" id="modal-confirm" type="button" disabled>Open Uniswap</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
+
   <!-- ✅ FIX: define:vars para inyectar valores de Astro -->
-  <script type="module" define:vars={{ TOKEN_ADDR, TOKEN }}>
+  <script type="module" define:vars={{ BASE, TOKEN_ADDR, TOKEN, uniswapUrl }}>
+    const $ = (s) => document.querySelector(s);
+
+    const toast = (msg) => {
+      const el = $("#toast");
+      if(!el) return;
+      el.textContent = msg;
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(()=>{
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+      }, 1800);
+    };
+
+    async function copyText(val){
+      if(!val || val === "TBA") return toast("Nothing to copy");
+      try{
+        await navigator.clipboard.writeText(val);
+        toast("Copied");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly","");
+        ta.style.position="absolute";
+        ta.style.left="-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied");
+      }
+    }
+
     const TOKEN_META = {
       address: TOKEN_ADDR,
       symbol: TOKEN.symbol,
       decimals: TOKEN.decimals,
-      // Optional logo image (add later): public/token.png
-      image: "https://capitoken-org.github.io/capitoken-site/token.png",
+      // Prefer a local asset path under your current base
+      image: `${location.origin}${BASE}token.png`,
     };
 
     const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
 
+    // Copy buttons
+    $("#copyContractBtn")?.addEventListener("click", () => copyText(TOKEN_META.address));
+    $("#copyUniswapBtn")?.addEventListener("click", () => copyText(uniswapUrl));
+
+    // Phase 8 – Safe Buy modal
+    const modal = document.getElementById("safe-buy-modal");
+    const closeEls = modal?.querySelectorAll('[data-close="1"]') || [];
+    const check = document.getElementById("modal-check");
+    const confirmBtn = document.getElementById("modal-confirm");
+    const modalContract = document.getElementById("modal-contract");
+    const modalDst = document.getElementById("modal-dst");
+
+    let pendingUrl = null;
+
+    function openModal(url){
+      pendingUrl = url;
+      if (modalContract) modalContract.textContent = TOKEN_META.address || "TBA";
+      if (modalDst) modalDst.textContent = url || "—";
+      if (check) check.checked = false;
+      if (confirmBtn) confirmBtn.disabled = true;
+      if (modal){
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+      }
+    }
+
+    function closeModal(){
+      pendingUrl = null;
+      if (modal){
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    closeEls.forEach((el) => el.addEventListener("click", closeModal));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    check?.addEventListener("change", () => {
+      if (confirmBtn) confirmBtn.disabled = !check.checked;
+    });
+
+    confirmBtn?.addEventListener("click", () => {
+      if (!pendingUrl) return;
+      window.open(pendingUrl, "_blank", "noopener,noreferrer");
+      closeModal();
+    });
+
+    // Intercept the Uniswap button (only when url is real)
+    const primaryLink = document.querySelector("a.btn.btn--primary[href]");
+    if (primaryLink) {
+      const href = primaryLink.getAttribute("href");
+      if (href && href !== "TBA" && href.startsWith("https://")) {
+        primaryLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          openModal(href);
+        });
+      }
+    }
+
+    // MetaMask add token
     const btn = document.getElementById("add-metamask");
     btn?.addEventListener("click", async () => {
       try {
@@ -79,7 +249,6 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
           return;
         }
 
-        // MetaMask: watch asset
         const ok = await window.ethereum.request({
           method: "wallet_watchAsset",
           params: {
@@ -93,7 +262,7 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
           },
         });
 
-        if (ok) alert("Token added to wallet.");
+        if (ok) toast("Token added");
       } catch (e) {
         console.error(e);
         alert("Could not add token. Verify contract and try again.");
@@ -101,3 +270,4 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
     });
   </script>
 </BaseLayout>
+EOF
