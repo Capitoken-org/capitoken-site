@@ -284,3 +284,30 @@ h3{margin:0 0 6px;font-size:18px}
 #launchpanel > .card {
   margin: 0 !important;
 }
+/* === spacing-hotfix-v12 (Launch Panel + cards) === */
+
+/* Secciones dentro de Launch Panel: fuerza separación entre paneles apilados */
+#launchpanel > * + * {
+  margin-top: 16px !important;
+}
+
+/* Si los paneles están dentro de un wrapper, igual aplica separación */
+#launchpanel .panel + .panel,
+#launchpanel .card + .card {
+  margin-top: 16px !important;
+}
+
+/* Evita que el borde “toque” visualmente: padding extra dentro del contenedor */
+#launchpanel {
+  padding-bottom: 6px;
+}
+
+/* Chips/botones de rutas: que no queden pegados */
+#launchpanel .route-actions,
+#launchpanel .route-chips,
+#launchpanel .routes,
+#launchpanel .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

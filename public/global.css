@@ -1,335 +1,42 @@
-/* Capitoken — Global Styles (Brand palette: Deep Green + Gold) */
+/* ===== GLOBAL SPACING FIX ===== */
 
-:root{
-  --brand-green-900:#023125;
-  --brand-green-800:#0b3a2b;
-  --brand-gold:#e9902c;
-  --brand-amber:#b55d09;
-  --brand-muted:#9daaa5;
-
-  --bg:#050c0a;
-  --bg2:#07110e;
-
-  --text:#f2f5f4;
-  --muted:rgba(242,245,244,0.72);
-
-  --panel:rgba(255,255,255,0.04);
-  --panel2:rgba(255,255,255,0.06);
-  --stroke:rgba(255,255,255,0.08);
-  --stroke2:rgba(255,255,255,0.12);
-
-  --shadow:rgba(0,0,0,0.35);
-
-  /* site-wide accent */
-  --accent:var(--brand-gold);
-  --accent2:var(--brand-green-800);
-  --accent3:var(--brand-amber);
-
-  --radius-lg:18px;
-  --radius-md:14px;
-  --radius-sm:12px;
-
-  --container:1120px;
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  overflow-x:hidden;
-
-  background:
-    radial-gradient(900px 520px at 18% -10%, rgba(233,144,44,0.16), transparent 62%),
-    radial-gradient(860px 520px at 82% 112%, rgba(11,58,43,0.26), transparent 62%),
-    linear-gradient(180deg, var(--bg), var(--bg2) 55%, #050b09 100%);
+section {
+  margin-bottom: 48px;
 }
 
-img{display:block;max-width:100%;height:auto}
-a{color:var(--accent);text-decoration:none}
-a:hover{color:rgba(233,144,44,0.85)}
-a[aria-disabled="true"]{pointer-events:none;opacity:.55}
-
-.container{
-  width:min(var(--container), calc(100% - 36px));
-  margin:0 auto;
+.card,
+.panel,
+.box {
+  margin-bottom: 28px;
 }
 
-section{padding:24px 0}
-.section{padding:24px 0}
-
-/* separators */
-.hr{
-  border:none;
-  border-top:1px solid rgba(255,255,255,0.06);
-  margin:28px 0;
+/* Launch Panel vertical separation */
+.launch-panel > * + * {
+  margin-top: 28px;
 }
 
-/* Nav */
-.nav{
-  position:sticky;
-  top:0;
-  z-index:50;
-  backdrop-filter:blur(10px);
-  background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.18));
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.nav__inner{
-  height:66px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
-
-.brand{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-}
-.brand:hover{background:rgba(255,255,255,0.04)}
-.brand__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.brand__name{font-weight:700;letter-spacing:.2px}
-
-.nav__links{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-.nav__links a{
-  color:rgba(242,245,244,0.86);
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid transparent;
-}
-.nav__links a:hover{
-  background:rgba(255,255,255,0.04);
-  border-color:rgba(255,255,255,0.06);
-  color:var(--text);
-}
-
-/* Hero */
-.hero{padding-top:22px;padding-bottom:10px}
-.hero__kicker{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-.pill__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.hero h1{
-  margin:14px 0 10px;
-  font-size:clamp(38px, 4.4vw, 56px);
-  line-height:1.05;
-  letter-spacing:-0.02em;
-}
-.hero__lead{
-  max-width:760px;
-  color:var(--muted);
-  line-height:1.55;
-  margin:0 0 18px;
-}
-
-/* Actions */
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:8px;
+/* Prevent card stacking */
+.launch-panel .card + .card {
+  margin-top: 24px;
 }
 
 /* Buttons */
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:11px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.04);
-  color:var(--text);
-  font-weight:650;
-  transition:transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.btn:hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(255,255,255,0.14);
-  transform:translateY(-1px);
-}
-.btn--primary{
-  background:linear-gradient(180deg, rgba(233,144,44,1), rgba(181,93,9,1));
-  border-color:rgba(0,0,0,0.18);
-  color:#0a130f;
-  box-shadow:0 10px 26px rgba(233,144,44,0.18);
-}
-.btn--primary:hover{box-shadow:0 14px 34px rgba(233,144,44,0.22)}
-.btn--ghost{
-  background:rgba(255,255,255,0.03);
-  border-color:rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.80);
+.btn {
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
-/* Cards + grids */
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:var(--radius-lg);
-  box-shadow:0 20px 60px rgba(0,0,0,0.22);
-  padding:18px;
-}
-
-.grid{display:grid;gap:14px}
-.col-12{grid-column:span 12}
-.col-6{grid-column:span 6}
-.col-4{grid-column:span 4}
-
-@media (min-width:980px){
-  .grid{grid-template-columns:repeat(12,1fr)}
-}
-@media (max-width:979px){
-  .grid{grid-template-columns:1fr}
-  .col-12,.col-6,.col-4{grid-column:auto}
-}
-
-/* Typography helpers */
-.small{font-size:13px;color:rgba(242,245,244,0.72)}
-h2{margin:0 0 8px;font-size:28px;letter-spacing:-0.01em}
-h3{margin:0 0 6px;font-size:18px}
-
-/* Mono helpers used in index.astro */
-.mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  letter-spacing: .2px;
-}
-.pill{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-
-/* Key-value rows used in tokenomics */
-.kv{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  padding:10px 0;
-  border-top:1px solid rgba(255,255,255,0.06);
-}
-.kv:first-child{border-top:none}
-
-/* Table used in Recent Activity */
-.table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  min-width:640px;
-}
-.table th,.table td{
-  text-align:left;
-  padding:12px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.86);
-}
-.table th{
-  font-size:12px;
-  color:rgba(242,245,244,0.68);
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.table tbody tr:hover td{
-  background:rgba(255,255,255,0.03);
-}
-
-/* Footer */
-.footer{
-  margin-top:36px;
-  padding:18px 0 26px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.65);
-}
-/* ===== Launch Panel hard spacing fix ===== */
-#launchpanel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-#launchpanel > section,
-#launchpanel > .card {
-  margin: 0 !important;
-}
-/* === spacing-hotfix-v12 (Launch Panel + cards) === */
-
-/* Secciones dentro de Launch Panel: fuerza separación entre paneles apilados */
-#launchpanel > * + * {
-  margin-top: 16px !important;
-}
-
-/* Si los paneles están dentro de un wrapper, igual aplica separación */
-#launchpanel .panel + .panel,
-#launchpanel .card + .card {
-  margin-top: 16px !important;
-}
-
-/* Evita que el borde “toque” visualmente: padding extra dentro del contenedor */
-#launchpanel {
-  padding-bottom: 6px;
-}
-
-/* Chips/botones de rutas: que no queden pegados */
-#launchpanel .route-actions,
-#launchpanel .route-chips,
-#launchpanel .routes,
-#launchpanel .chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* === HARDENING: Launch Panel card spacing (prevents "pegados") === */
-/* If anything else overrides grid gaps, these rules force visible separation. */
-.launch-grid{
-  gap: 22px !important;
-  row-gap: 22px !important;
-  column-gap: 22px !important;
-}
-.launch-grid > .card{
-  margin: 0 !important;
-}
-/* Extra safety for browsers that might collapse spacing in certain layouts */
-.launch-grid > .card + .card{
-  margin-top: 22px !important;
-}
-
-/* Routes buttons spacing */
-.routes{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px !important;
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
 }

@@ -1,53 +1,28 @@
 ---
-const BASE = import.meta.env.BASE_URL || "/";
-
-const withBase = (p) => {
-  const clean = String(p || "").replace(/^\//, "");
-  return `${BASE}${clean}`;
-};
-
-const LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Launch", href: "/#launchpanel" },
-  { label: "Tokenomics", href: "/#tokenomics" },
-  { label: "Roadmap", href: "/#roadmap" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "Links", href: "/links" },
-  { label: "Verify", href: "/verify" },
-  { label: "Checklist", href: "/checklist" },
-];
-
-function fixHref(href) {
-  if (!href) return "#";
-  if (href.startsWith("#")) return href;
-  if (href.startsWith("http")) return href;
-
-  const clean = href.startsWith("/") ? href.slice(1) : href;
-  return `${BASE}${clean}`.replace(/\/{2,}/g, "/");
-}
+const BASE = import.meta.env.BASE_URL ?? "/";
+const withBase = (p) => `${BASE}${p.replace(/^\/+/, "")}`;
 ---
-
 <nav class="nav">
-  <div class="container nav__inner">
-    <a class="brand" href={fixHref("/")}
-      aria-label="Capitoken Home"
-    >
+  <div class="nav-inner">
+    <a class="brand" href={withBase("")}>
       <img
-        class="brand__logo"
-        src={withBase("/logo/capitoken-white.png")}
+        src={withBase("logo/capi-mark.png")}
         alt="Capitoken"
         width="26"
         height="26"
-        loading="eager"
-        decoding="async"
       />
-      <span class="brand__text">Capitoken</span>
+      <span>Capitoken</span>
     </a>
 
-    <div class="nav__links">
-      {LINKS.map((l) => (
-        <a href={fixHref(l.href)}>{l.label}</a>
-      ))}
-    </div>
+    <ul class="nav-links">
+      <li><a href={withBase("")}>Home</a></li>
+      <li><a href={withBase("#launch")}>Launch</a></li>
+      <li><a href={withBase("#tokenomics")}>Tokenomics</a></li>
+      <li><a href={withBase("#roadmap")}>Roadmap</a></li>
+      <li><a href={withBase("/faq")}>FAQ</a></li>
+      <li><a href={withBase("/links")}>Links</a></li>
+      <li><a href={withBase("/verify")}>Verify</a></li>
+      <li><a href={withBase("/checklist")}>Checklist</a></li>
+    </ul>
   </div>
 </nav>
