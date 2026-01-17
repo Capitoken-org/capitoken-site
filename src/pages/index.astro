@@ -6,7 +6,11 @@ const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
 
 // >>> EDITA AQUÍ cuando tengas data real <<<
-const TOKEN_ADDRESS = ""; // "0x..." (ETH mainnet)
+const TOKEN_ADDRESS = "";
+
+const BASE = import.meta.env.BASE_URL || '/';
+const withBase = (p: string) => (p.startsWith('/') ? `${BASE}${p.slice(1)}` : `${BASE}${p}`);
+ // "0x..." (ETH mainnet)
 const DEX_PAIR_ADDRESS = ""; // opcional
 const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
 // >>> ------------------------------ <<<
@@ -87,7 +91,7 @@ function shortAddr(a: string) {
 
         <div class="actions" style="margin-top:10px;">
           <button class="btn btn-primary" data-copy="contract" id="copyContractBtn">Copy</button>
-          <a class="btn" href="/capitoken-site/verify/" id="verifyContractBtn">Verify</a>
+          <a class="btn" href={withBase("/verify/")} id="verifyContractBtn">Verify</a>
         </div>
 
         <div class="actions" style="margin-top:10px;">
@@ -112,7 +116,7 @@ function shortAddr(a: string) {
 
         <div class="actions" style="margin-top:10px;">
           <button class="btn btn-primary" data-copy="pair" id="copyPairBtn">Copy</button>
-          <a class="btn" href="/capitoken-site/verify/" id="verifyPairBtn">Verify</a>
+          <a class="btn" href={withBase("/verify/")} id="verifyPairBtn">Verify</a>
         </div>
 
         <div class="small" style="margin-top:12px;">Quick Uniswap routes (V2)</div>
