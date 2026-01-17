@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+// Nota: dejé TrustPanel fuera para no romper build si aún no creaste los archivos de Fase 7.
+// Cuando lo tengas listo, lo reactivamos.
+// import TrustPanel from "../components/TrustPanel.astro";
 
 const TITLE = "Capitoken (CAPI) — Official Website";
 const DESC =
@@ -29,161 +32,163 @@ const roadmap = [
   { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
   { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
 ];
-
-function shortAddr(a: string) {
-  if (!a) return "TBA";
-  return `${a.slice(0, 6)}…${a.slice(-4)}`;
-}
 ---
 
 <BaseLayout title={TITLE} description={DESC}>
   <!-- HERO -->
   <section class="hero" id="launch">
     <div class="container reveal reveal--2">
-    <div class="hero__kicker">
-      <span class="pill__dot" aria-hidden="true"></span>
-      Verified info only on this website
+      <div class="hero__kicker">
+        <span class="pill__dot" aria-hidden="true"></span>
+        Verified info only on this website
+      </div>
+
+      <h1>
+        Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
+      </h1>
+
+      <p class="hero__lead">
+        Deep-green premium design, clear narrative, and verified links — built for adoption.
+        Live market data will appear automatically once the verified contract/pair is published.
+      </p>
+
+      <div class="actions">
+        <a class="btn btn--primary" href="#launchpanel">Launch Panel</a>
+        <a class="btn" href="#community">Community</a>
+        <a class="btn" href="#tokenomics">Tokenomics</a>
+      </div>
+
+      <div class="grid" style="margin-top: 18px;">
+        {stats.map((s) => (
+          <div class="card col-3">
+            <div class="small">{s.label}</div>
+            <div style="margin-top:6px; font-weight:800;">{s.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
-
-    <h1>
-      Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
-    </h1>
-
-    <p class="hero__lead">
-      Deep-green premium design, clear narrative, and verified links — built for adoption.
-      Live market data will appear automatically once the verified contract/pair is published.
-    </p>
-
-    <div class="actions">
-      <a class="btn btn--primary" href="#launchpanel">Launch Panel</a>
-      <a class="btn" href="#community">Community</a>
-      <a class="btn" href="#tokenomics">Tokenomics</a>
-    </div>
-
-    <div class="grid" style="margin-top: 18px;">
-      {stats.map((s) => (
-        <div class="card col-3">
-          <div class="small">{s.label}</div>
-          <div style="margin-top:6px; font-weight:800;">{s.value}</div>
-        </div>
-      ))}
-    </div>
-  </div>
   </section>
 
   <hr class="hr" />
 
   <!-- LAUNCH PANEL -->
-<section class="section" id="launchpanel">
-  <div class="container reveal reveal--3">
-    <h2>Launch Panel</h2>
-    <p class="small">Single source of truth for contract, DEX pair, and status.</p>
+  <section class="section" id="launchpanel">
+    <div class="container reveal reveal--3">
+      <h2>Launch Panel</h2>
+      <p class="small">Single source of truth for contract, DEX pair, and status.</p>
 
-    <div class="launch-grid">
-      <!-- Contract -->
-      <div class="card">
-        <div class="label">Contract</div>
-        <div class="mono" id="contractText">TBA — verify only here</div>
+      <div class="launch-grid">
+        <!-- Contract -->
+        <div class="card">
+          <div class="label">Contract</div>
+          <div class="mono" id="contractText">TBA — verify only here</div>
 
-        <div class="actions" style="margin-top:10px;">
-          <button class="btn btn-primary" data-copy="contract" id="copyContractBtn">Copy</button>
-          <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyContractBtn">Verify</a>
+          <div class="actions" style="margin-top:10px;">
+            <button class="btn btn-primary" id="copyContractBtn" type="button">Copy</button>
+            <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyContractBtn">Verify</a>
+          </div>
+
+          <div class="actions" style="margin-top:10px;">
+            <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
+            <button class="btn" id="watchTokenBtn" type="button">Watch Token</button>
+          </div>
+
+          <!-- mini pill de cuenta conectada -->
+          <div id="accountPill" class="pill" style="margin-top:12px; display:none;">
+            <span class="pill-dot"></span>
+            <span class="mono" id="acct">—</span>
+          </div>
+
+          <p class="small" style="margin-top:12px;">
+            Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
+          </p>
         </div>
 
-        <div class="actions" style="margin-top:10px;">
-          <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
-          <a class="btn" id="watchTokenBtn" href="#" rel="nofollow noopener">Watch Token</a>
+        <!-- DEX Pair -->
+        <div class="card">
+          <div class="label">DEX Pair</div>
+          <div class="mono" id="pairText">TBA</div>
+
+          <div class="actions" style="margin-top:10px;">
+            <button class="btn btn-primary" id="copyPairBtn" type="button">Copy</button>
+            <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyPairBtn">Verify</a>
+          </div>
+
+          <div class="small" style="margin-top:12px;">Quick Uniswap routes</div>
+          <div class="route-actions">
+            <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
+            <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
+          </div>
         </div>
 
-        <p class="small" style="margin-top:12px;">
-          Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
-        </p>
+        <!-- Live Market Snapshot -->
+        <div class="card span-all">
+          <div class="h3">Live Market Snapshot</div>
+          <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
+
+          <div class="pill" style="margin-top:10px;">
+            <span class="pill-dot"></span>
+            <span>Ethereum Mainnet</span>
+          </div>
+
+          <div class="stats" style="margin-top:14px;">
+            <!-- IMPORTANTE: IDs alineados con el script -->
+            <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
+            <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
+            <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
+            <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
+          </div>
+
+          <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card span-all">
+          <div class="h3">Recent Activity</div>
+          <div class="small">Shows recent activity (placeholder until contract is published).</div>
+
+          <div class="table-wrap" style="margin-top:12px;">
+            <table class="table">
+              <thead>
+                <tr><th>From</th><th>To</th><th>Amount</th><th>TX</th></tr>
+              </thead>
+              <tbody id="txBody">
+                <tr><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <!-- DEX Pair -->
-      <div class="card">
-        <div class="label">DEX Pair</div>
-        <div class="mono" id="pairText">TBA</div>
-
-        <div class="actions" style="margin-top:10px;">
-          <button class="btn btn-primary" data-copy="pair" id="copyPairBtn">Copy</button>
-          <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyPairBtn">Verify</a>
-        </div>
-
-        <div class="small" style="margin-top:12px;">Quick Uniswap routes (V2)</div>
-        <div class="route-actions">
-          <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
-          <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
-        </div>
-      </div>
-
-      <!-- Live Market Snapshot -->
-      <div class="card span-all">
-        <div class="h3">Live Market Snapshot</div>
-        <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
-
-        <div class="pill" style="margin-top:10px;">
-          <span class="pill-dot"></span>
-          <span>Ethereum Mainnet</span>
-        </div>
-
-        <div class="stats" style="margin-top:14px;">
-          <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
-          <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
-          <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
-          <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
-        </div>
-
-        <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="card span-all">
-        <div class="h3">Recent Activity</div>
-        <div class="small">Shows recent activity (placeholder until contract is published).</div>
-
-        <div class="table-wrap" style="margin-top:12px;">
-          <table class="table">
-            <thead>
-              <tr><th>From</th><th>To</th><th>Amount</th><th>TX</th></tr>
-            </thead>
-            <tbody>
-              <tr><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Cuando actives Fase 7 UI real:
+        <TrustPanel />
+      -->
     </div>
+  </section>
 
-  </div>
-</section>
-
-
-<hr class="hr" />
-
-
+  <hr class="hr" />
 
   <!-- TOKENOMICS -->
   <section class="section" id="tokenomics">
     <div class="container reveal">
-    <h2>Tokenomics</h2>
-    <p>Simple allocation — 97 / 2 / 1.</p>
+      <h2>Tokenomics</h2>
+      <p>Simple allocation — 97 / 2 / 1.</p>
 
-    <div class="grid" style="margin-top:14px;">
-      {tokenomics.map((t) => (
-        <div class="card col-6">
-          <h3>{t.title}</h3>
-          <p>{t.desc}</p>
-          <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div>
+      <div class="grid" style="margin-top:14px;">
+        {tokenomics.map((t) => (
+          <div class="card col-6">
+            <h3>{t.title}</h3>
+            <p>{t.desc}</p>
+            <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div>
+          </div>
+        ))}
+        <div class="card col-12">
+          <div class="kv"><strong>Community</strong><span>97%</span></div>
+          <div class="kv"><strong>Operations</strong><span>2%</span></div>
+          <div class="kv"><strong>Marketing</strong><span>1%</span></div>
         </div>
-      ))}
-      <div class="card col-12">
-        <div class="kv"><strong>Community</strong><span>97%</span></div>
-        <div class="kv"><strong>Operations</strong><span>2%</span></div>
-        <div class="kv"><strong>Marketing</strong><span>1%</span></div>
       </div>
     </div>
-  </div>
   </section>
 
   <hr class="hr" />
@@ -191,21 +196,21 @@ function shortAddr(a: string) {
   <!-- ROADMAP -->
   <section class="section" id="roadmap">
     <div class="container reveal">
-    <h2>Roadmap</h2>
-    <p>Focused phases with clear deliverables.</p>
+      <h2>Roadmap</h2>
+      <p>Focused phases with clear deliverables.</p>
 
-    <div class="grid" style="margin-top:14px;">
-      {roadmap.map((r) => (
-        <div class="card col-6">
-          <div class="small">{r.phase}</div>
-          <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
-          <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
-            {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
-          </ul>
-        </div>
-      ))}
+      <div class="grid" style="margin-top:14px;">
+        {roadmap.map((r) => (
+          <div class="card col-6">
+            <div class="small">{r.phase}</div>
+            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
+              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
   </section>
 
   <hr class="hr" />
@@ -213,24 +218,24 @@ function shortAddr(a: string) {
   <!-- DAILY CAPI / NARRATIVE -->
   <section class="section" id="daily">
     <div class="container reveal">
-    <h2>Daily Capi</h2>
-    <p>
-      Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
-    </p>
+      <h2>Daily Capi</h2>
+      <p>
+        Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
+      </p>
 
-    <div class="grid" style="margin-top:14px;">
-      <div class="card col-6">
-        <h3>Today’s prompt</h3>
-        <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p>
-        <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
-      </div>
-      <div class="card col-6">
-        <h3>Build in public</h3>
-        <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p>
-        <a class="btn" href="#launchpanel">Back to Launch Panel</a>
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Today’s prompt</h3>
+          <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p>
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
+        </div>
+        <div class="card col-6">
+          <h3>Build in public</h3>
+          <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p>
+          <a class="btn" href="#launchpanel">Back to Launch Panel</a>
+        </div>
       </div>
     </div>
-  </div>
   </section>
 
   <hr class="hr" />
@@ -238,31 +243,31 @@ function shortAddr(a: string) {
   <!-- COMMUNITY -->
   <section class="section" id="community">
     <div class="container reveal">
-    <h2>Community</h2>
-    <p>
-      Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
-    </p>
+      <h2>Community</h2>
+      <p>
+        Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
+      </p>
 
-    <div class="grid" style="margin-top:14px;">
-      <div class="card col-12">
-        <h3>Official X feed</h3>
-        <p class="small">If this embed is blank, your browser/extensions may block it. The link still works.</p>
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-12">
+          <h3>Official X feed</h3>
+          <p class="small">If this embed is blank, your browser/extensions may block it. The link still works.</p>
 
-        <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">
-          Open X profile
-        </a>
-
-        <div style="margin-top:14px;">
-          <a class="twitter-timeline"
-             data-theme="dark"
-             data-tweet-limit="3"
-             href={`https://twitter.com/${X_HANDLE}`}>
-             Tweets by {X_HANDLE}
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">
+            Open X profile
           </a>
+
+          <div style="margin-top:14px;">
+            <a class="twitter-timeline"
+               data-theme="dark"
+               data-tweet-limit="3"
+               href={`https://twitter.com/${X_HANDLE}`}>
+               Tweets by {X_HANDLE}
+            </a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </section>
 
   <hr class="hr" />
@@ -270,31 +275,34 @@ function shortAddr(a: string) {
   <!-- FAQ -->
   <section class="section" id="faq">
     <div class="container reveal">
-    <h2>FAQ</h2>
+      <h2>FAQ</h2>
 
-    <div class="grid" style="margin-top:14px;">
-      <div class="card col-6">
-        <h3>Where is the official contract?</h3>
-        <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
-      </div>
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Where is the official contract?</h3>
+          <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
+        </div>
 
-      <div class="card col-6">
-        <h3>Is this financial advice?</h3>
-        <p class="small">No. Crypto is high risk. Always do your own research.</p>
-      </div>
+        <div class="card col-6">
+          <h3>Is this financial advice?</h3>
+          <p class="small">No. Crypto is high risk. Always do your own research.</p>
+        </div>
 
-      <div class="card col-6">
-        <h3>Why verify only here?</h3>
-        <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
-      </div>
+        <div class="card col-6">
+          <h3>Why verify only here?</h3>
+          <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
+        </div>
 
-      <div class="card col-6">
-        <h3>When live market data?</h3>
-        <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
+        <div class="card col-6">
+          <h3>When live market data?</h3>
+          <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
+        </div>
       </div>
     </div>
-  </div>
   </section>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
 
   <!-- X widget loader -->
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -303,36 +311,39 @@ function shortAddr(a: string) {
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const $ = (s) => document.querySelector(s);
 
-    
-const toast = (msg) => {
-  const el = $("#toast");
-  if(!el) return;
-  el.textContent = msg;
-  el.classList.add("toast--show");
-  clearTimeout(window.__toastT);
-  window.__toastT = setTimeout(()=> el.classList.remove("toast--show"), 1800);
-};
+    const toast = (msg) => {
+      const el = $("#toast");
+      if(!el) return;
+      el.textContent = msg;
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(()=>{
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+      }, 1800);
+    };
 
-async function copyText(val){
-  if(!val) return;
-  try{
-    await navigator.clipboard.writeText(val);
-    toast("Copied");
-  }catch(e){
-    // fallback
-    const ta = document.createElement("textarea");
-    ta.value = val;
-    ta.setAttribute("readonly","");
-    ta.style.position="absolute";
-    ta.style.left="-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    ta.remove();
-    toast("Copied");
-  }
-}
-function short(a){
+    async function copyText(val){
+      if(!val) return;
+      try{
+        await navigator.clipboard.writeText(val);
+        toast("Copied");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly","");
+        ta.style.position="absolute";
+        ta.style.left="-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied");
+      }
+    }
+
+    function short(a){
       if(!a) return "";
       return a.slice(0,6)+"…"+a.slice(-4);
     }
@@ -343,17 +354,20 @@ function short(a){
     }
 
     function uniswapUrl(input, output){
-      // Uniswap app (works for V2/V3 routing; you can still trade on V2 pools)
       const base = "https://app.uniswap.org/#/swap";
       const p = new URLSearchParams({ inputCurrency: input, outputCurrency: output });
       return `${base}?${p.toString()}`;
+    }
+
+    function setLaunchTexts(){
+      $("#contractText").textContent = TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA — verify only here";
+      $("#pairText").textContent = DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA";
     }
 
     function setDexLinks(){
       const a1 = $("#dexWethToCapi");
       const a2 = $("#dexCapiToWeth");
 
-      // Until TOKEN_ADDRESS exists, keep buttons inert (no broken links)
       if(!TOKEN_ADDRESS){
         [a1,a2].forEach(a=>{
           if(!a) return;
@@ -364,9 +378,8 @@ function short(a){
         return;
       }
 
-      // Note: Uniswap uses ETH as the native input currency parameter.
-      if(a1) a1.href = uniswapUrl("ETH", TOKEN_ADDRESS);     // WETH → CAPI (label)
-      if(a2) a2.href = uniswapUrl(TOKEN_ADDRESS, "ETH");     // CAPI → WETH (label)
+      if(a1) a1.href = uniswapUrl("ETH", TOKEN_ADDRESS);
+      if(a2) a2.href = uniswapUrl(TOKEN_ADDRESS, "ETH");
     }
 
     async function connectInjected(){
@@ -398,10 +411,12 @@ function short(a){
               address: TOKEN_ADDRESS,
               symbol: "CAPI",
               decimals: 18,
-              image: `${location.origin}${import.meta.env.BASE_URL}logo/capitoken-white.png`,
+              // Ajusta a tu asset real en /public/assets/
+              image: `${location.origin}${import.meta.env.BASE_URL}assets/capi-logo-256.png`,
             },
           },
         });
+        toast("Token added");
       }catch(e){
         console.warn(e);
         alert("Could not add token to wallet.");
@@ -411,14 +426,12 @@ function short(a){
     async function loadDexScreener(){
       if(!TOKEN_ADDRESS) return;
 
-      // DexScreener token endpoint
       const url = `https://api.dexscreener.com/latest/dex/tokens/${TOKEN_ADDRESS}`;
       const r = await fetch(url);
       if(!r.ok) return;
       const j = await r.json();
       const pairs = j?.pairs || [];
 
-      // choose: if pair provided, match it; else take best by liquidity
       let p = null;
       if(DEX_PAIR_ADDRESS){
         p = pairs.find(x => (x?.pairAddress || "").toLowerCase() === DEX_PAIR_ADDRESS.toLowerCase()) || null;
@@ -428,15 +441,13 @@ function short(a){
       }
       if(!p) return;
 
-      $("#m_price").textContent = fmtUSD(p.priceUsd, 8);
-      $("#m_liq").textContent = fmtUSD(p?.liquidity?.usd, 0);
-      $("#m_vol").textContent = fmtUSD(p?.volume?.h24, 0);
+      $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
+      $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+      $("#mVol").textContent = fmtUSD(p?.volume?.h24, 0);
 
-      // market cap is not always provided; show fdv if present
       const mc = p?.marketCap ?? p?.fdv ?? null;
-      $("#m_mc").textContent = mc ? fmtUSD(mc, 0) : "TBA";
+      $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
-      // Recent activity placeholder → can later map buys/sells if needed
       $("#txBody").innerHTML = `
         <tr>
           <td class="mono">${short(p?.pairAddress || "TBA")}</td>
@@ -448,17 +459,19 @@ function short(a){
     }
 
     document.addEventListener("DOMContentLoaded", async ()=>{
-      
+      // Textos
+      setLaunchTexts();
+      setDexLinks();
 
-  // Copy buttons (safe: disabled until addresses exist)
-  $("#btnCopyToken")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
-  $("#btnCopyPair")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
-setDexLinks();
+      // Copy buttons
+      $("#copyContractBtn")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
+      $("#copyPairBtn")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
 
-      $("#btnConnect")?.addEventListener("click", connectInjected);
-      $("#btnWatch")?.addEventListener("click", watchToken);
+      // Wallet
+      $("#connectWalletBtn")?.addEventListener("click", connectInjected);
+      $("#watchTokenBtn")?.addEventListener("click", watchToken);
 
-      // Try live data (safe: will do nothing until TOKEN_ADDRESS is set)
+      // Live data
       await loadDexScreener();
       setInterval(loadDexScreener, 45000);
     });

@@ -45,7 +45,7 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
             ? <a class="btn btn--primary" href="./verify">Contract not published yet — Verify</a>
             : <a class="btn btn--primary" href={uniswapUrl} target="_blank" rel="noopener noreferrer">Swap on Uniswap</a>
         }
-        <button class="btn" id="add-metamask">Add to MetaMask</button>
+        <button class="btn" id="add-metamask" type="button">Add to MetaMask</button>
         <a class="btn" href="./links">Official Links</a>
       </div>
 
@@ -55,11 +55,12 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
     </section>
   </main>
 
-  <script is:inline>
-    const TOKEN = {
-      address: {JSON.stringify(TOKEN_ADDR)},
-      symbol: {JSON.stringify(TOKEN.symbol)},
-      decimals: {JSON.stringify(TOKEN.decimals)},
+  <!-- ✅ FIX: define:vars para inyectar valores de Astro -->
+  <script type="module" define:vars={{ TOKEN_ADDR, TOKEN }}>
+    const TOKEN_META = {
+      address: TOKEN_ADDR,
+      symbol: TOKEN.symbol,
+      decimals: TOKEN.decimals,
       // Optional logo image (add later): public/token.png
       image: "https://capitoken-org.github.io/capitoken-site/token.png",
     };
@@ -67,13 +68,13 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
     const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
 
     const btn = document.getElementById("add-metamask");
-    btn.addEventListener("click", async () => {
+    btn?.addEventListener("click", async () => {
       try {
         if (!window.ethereum) {
           alert("No Web3 wallet detected. Install MetaMask or use a Web3-enabled browser.");
           return;
         }
-        if (!isAddr(TOKEN.address)) {
+        if (!isAddr(TOKEN_META.address)) {
           alert("Token contract is not published yet. Check /verify.");
           return;
         }
@@ -84,10 +85,10 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
           params: {
             type: "ERC20",
             options: {
-              address: TOKEN.address,
-              symbol: TOKEN.symbol,
-              decimals: TOKEN.decimals,
-              image: TOKEN.image,
+              address: TOKEN_META.address,
+              symbol: TOKEN_META.symbol,
+              decimals: TOKEN_META.decimals,
+              image: TOKEN_META.image,
             },
           },
         });

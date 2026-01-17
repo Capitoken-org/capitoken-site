@@ -94,10 +94,8 @@ function fmtUsd(n) {
     </section>
   </main>
 
-  <script is:inline>
-    const TOKEN_ADDR = {JSON.stringify(TOKEN_ADDR)};
-    const PAIR_ADDR = {JSON.stringify(PAIR_ADDR)};
-
+  <!-- ✅ FIX: usar define:vars para inyectar variables de Astro al script -->
+  <script type="module" define:vars={{ TOKEN_ADDR, PAIR_ADDR }}>
     const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
 
     const fmtUsd = (n) => {
@@ -129,7 +127,8 @@ function fmtUsd(n) {
       document.getElementById("price").textContent = fmtUsd(d.priceUsd);
       document.getElementById("liquidity").textContent = "$" + fmtNum(d.liquidityUsd);
       document.getElementById("volume").textContent = "$" + fmtNum(d.volume24hUsd);
-      document.getElementById("change").textContent = (d.change24hPct ?? "—") + (d.change24hPct !== null ? "%" : "");
+      document.getElementById("change").textContent =
+        (d.change24hPct ?? "—") + (d.change24hPct !== null ? "%" : "");
       document.getElementById("dex").textContent = d.dex ?? "—";
       document.getElementById("pair").textContent = d.pair ?? "—";
       grid.style.display = "";
@@ -163,7 +162,7 @@ function fmtUsd(n) {
         }
 
         // choose highest liquidity pair
-        pairs.sort((a,b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
+        pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
         const p = pairs[0];
 
         setStatus("Live data loaded.");

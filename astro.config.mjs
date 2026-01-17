@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://capitoken-org.github.io",
+  site: "https://www.capitoken.org",
   base: "/capitoken-site/",
   trailingSlash: "always",
 });

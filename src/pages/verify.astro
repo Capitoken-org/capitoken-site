@@ -1,141 +1,270 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+/**
+ * Capitoken /verify — Single Source of Truth + Trust Logic
+ * - Works with Astro base path (e.g., /capitoken-site/)
+ * - Reads official registry from: /official-registry.json (served from public/)
+ * - Shows mirror warning if hostname is not allowed
+ */
 
-const TITLE = "Verify — Capitoken (CAPI)";
-const DESC =
-  "Verify official Capitoken contract, DEX pair, and links. If it’s not listed here, it’s not official.";
-
-// >>> EDIT HERE when you have real data <<<
-const TOKEN_ADDRESS = ""; // "0x..."
-const DEX_PAIR_ADDRESS = ""; // optional
-const X_URL = "https://twitter.com/Capitoken";
-const GITHUB_URL = "https://github.com/Capitoken-org/capitoken-site";
-// Add/replace official links below:
-const OFFICIAL_LINKS = [
-  { label: "Official Website", value: "https://capitoken-org.github.io/capitoken-site/" },
-  { label: "X / Twitter", value: X_URL },
-  { label: "GitHub", value: GITHUB_URL },
-  // { label: "Etherscan Token", value: `https://etherscan.io/token/${TOKEN_ADDRESS}` },
-  // { label: "DexScreener", value: `https://dexscreener.com/ethereum/${DEX_PAIR_ADDRESS}` },
-];
-// >>> ------------------------------ <<<
-
-function shortAddr(a){
-  if(!a) return "TBA";
-  return `${a.slice(0,6)}…${a.slice(-4)}`;
-}
+const BASE = import.meta.env.BASE_URL; // respects astro.config.mjs "base"
+const FALLBACK = {
+  project: "Capitoken",
+  version: "1.0.0",
+  updatedAt: "2026-01-17",
+  officialDomain: "www.capitoken.org",
+  allowedDomains: ["www.capitoken.org", "capitoken.org"],
+  officialRepo: "https://github.com/capitoken-org/capitoken-site",
+  network: { name: "Ethereum Mainnet", chainId: 1, explorer: "https://etherscan.io" },
+  contract: {
+    address: "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
+    verified: true,
+    token: { name: "Capitoken", symbol: "CAPI", decimals: 18 }
+  },
+  security: {
+    mirrorsAllowed: true,
+    mirrorNotice: "You are viewing a mirror. The official site is https://www.capitoken.org"
+  }
+};
 ---
 
-<BaseLayout title={TITLE} description={DESC}>
-  <section class="section">
-    <div class="container reveal">
-      <div class="verify-head">
-        <div>
-          <h1 style="margin:0;">Verify</h1>
-          <p class="hero__lead" style="margin-top:10px;">
-            Single source of truth. Scammers will copy names, logos, and links.
-            If it’s not listed on this page, it’s not official.
-          </p>
-        </div>
-        <a class="btn" href="/" rel="noreferrer">Back to Home</a>
-      </div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Verify | Capitoken</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <div class="grid" style="margin-top:16px;">
-        <div class="card col-6">
-          <div class="small">Contract (ERC-20)</div>
-          <div class="mono addr" id="v_token" style="margin-top:8px; font-weight:900;">
-            {TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA"}
-          </div>
-          <div class="verify-actions">
-            <button class="btn btn--primary" id="copyToken" type="button" disabled={!TOKEN_ADDRESS}>Copy</button>
-            <a class="btn" id="openEtherscan" href="#" target="_blank" rel="noreferrer">Open Etherscan</a>
-          </div>
-          <p class="small" style="margin-top:12px;">
-            Always confirm the URL and the exact address. Never trust DMs.
-          </p>
-        </div>
+    <!-- Respect base path -->
+    <link rel="stylesheet" href={`${BASE}global.css`} />
 
-        <div class="card col-6">
-          <div class="small">DEX Pair</div>
-          <div class="mono addr" id="v_pair" style="margin-top:8px; font-weight:900;">
-            {DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA"}
-          </div>
-          <div class="verify-actions">
-            <button class="btn btn--primary" id="copyPair" type="button" disabled={!DEX_PAIR_ADDRESS}>Copy</button>
-            <a class="btn" id="openDex" href="#" target="_blank" rel="noreferrer">Open DexScreener</a>
-          </div>
-          <p class="small" style="margin-top:12px;">
-            Dex links appear only after a verified contract/pair exists.
-          </p>
-        </div>
-
-        <div class="card col-12">
-          <div style="font-weight:900;">Official Links</div>
-          <p class="small" style="margin-top:8px;">Bookmark this page. All other links are untrusted.</p>
-
-          <div class="links-list" style="margin-top:10px;">
-            {OFFICIAL_LINKS.map((l) => (
-              <div class="links-row">
-                <div class="small">{l.label}</div>
-                <div class="mono"><a href={l.value} target="_blank" rel="noreferrer">{l.value}</a></div>
-                <button class="btn" type="button" data-copy={l.value}>Copy</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-    </div>
-  </section>
-
-  <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
-    const $ = (s) => document.querySelector(s);
-
-    const toast = (msg) => {
-      const el = $("#toast");
-      if(!el) return;
-      el.textContent = msg;
-      el.classList.add("toast--show");
-      clearTimeout(window.__toastT);
-      window.__toastT = setTimeout(()=> el.classList.remove("toast--show"), 1800);
-    };
-
-    async function copyText(val){
-      if(!val) return;
-      try{
-        await navigator.clipboard.writeText(val);
-        toast("Copied");
-      }catch(e){
-        const ta = document.createElement("textarea");
-        ta.value = val;
-        ta.setAttribute("readonly","");
-        ta.style.position="absolute";
-        ta.style.left="-9999px";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        toast("Copied");
+    <style>
+      .wrap { max-width: 920px; margin: 80px auto; padding: 0 18px; }
+      .h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0 0 10px; }
+      .sub { opacity:.85; margin: 0 0 18px; }
+      .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+      .cardx{
+        grid-column: span 12;
+        background: rgba(0,0,0,.55);
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 14px;
+        padding: 18px;
+        backdrop-filter: blur(8px);
       }
-    }
+      .row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; word-break: break-all; }
+      .tag { font-size: 12px; padding: 6px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); }
+      .ok { color:#2ecc71; }
+      .warn { color:#f1c40f; }
+      .bad { color:#e74c3c; }
+      .btns { display:flex; gap:10px; flex-wrap:wrap; }
+      .btnx{
+        display:inline-flex; align-items:center; justify-content:center;
+        padding:10px 14px; border-radius:12px;
+        border:1px solid rgba(255,255,255,.14);
+        background: rgba(255,255,255,.06);
+        text-decoration:none; font-weight:700;
+      }
+      .btnx:hover{ transform: translateY(-1px); }
+      .primary{ background: rgba(233,144,44,.18); border-color: rgba(233,144,44,.30); }
+      .small { font-size: 13px; opacity:.85; }
+      .kvs { display:grid; grid-template-columns: 180px 1fr; gap: 10px 14px; }
+      @media (max-width: 640px){ .kvs{ grid-template-columns: 1fr; } }
+      .hr { height:1px; background: rgba(255,255,255,.10); border:0; margin: 14px 0; }
+      .score { font-size: 34px; font-weight: 900; }
+      .muted { opacity: .7; }
+      .notice{ border-color: rgba(255,200,0,.35); background: rgba(255,200,0,.06); }
+      .footer { margin-top: 18px; opacity: .7; font-size: 12px; }
+    </style>
+  </head>
 
-    function setLinks(){
-      $("#openEtherscan").href = TOKEN_ADDRESS ? `https://etherscan.io/token/${TOKEN_ADDRESS}` : "#";
-      $("#openDex").href = DEX_PAIR_ADDRESS ? `https://dexscreener.com/ethereum/${DEX_PAIR_ADDRESS}` : "#";
-      if(!TOKEN_ADDRESS) $("#openEtherscan").setAttribute("aria-disabled","true");
-      if(!DEX_PAIR_ADDRESS) $("#openDex").setAttribute("aria-disabled","true");
-    }
+  <body>
+    <div class="wrap">
+      <h1 class="h1">Verify Capitoken</h1>
+      <p class="sub">Single source of truth for official domain, contract and links. If anything disagrees with this page, treat it as <b>not official</b>.</p>
 
-    document.addEventListener("DOMContentLoaded", ()=>{
-      setLinks();
+      <!-- Mirror banner -->
+      <div id="mirrorBanner" class="cardx notice" style="display:none;">
+        <div class="row">
+          <div>
+            <div style="font-weight:900;">⚠ Mirror detected</div>
+            <div class="small" id="mirrorText"></div>
+          </div>
+          <div class="btns">
+            <a class="btnx primary" href="https://www.capitoken.org/verify" target="_blank" rel="noreferrer">Open Official /verify</a>
+          </div>
+        </div>
+      </div>
 
-      $("#copyToken")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
-      $("#copyPair")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
+      <div class="grid" style="margin-top:14px;">
+        <!-- Status / Score -->
+        <div class="cardx" style="grid-column: span 12;">
+          <div class="row">
+            <div>
+              <div class="tag" id="domainTag">Checking domain…</div>
+              <div class="tag" id="etherscanTag" style="margin-left:8px;">Checking verification…</div>
+            </div>
+            <div>
+              <span class="muted">Trust Score</span>
+              <span class="score" id="trustScore">—</span>
+            </div>
+          </div>
+          <hr class="hr" />
+          <div class="kvs">
+            <div class="muted">Official Domain</div>
+            <div><a id="officialDomainLink" href="#" target="_blank" rel="noreferrer">—</a></div>
 
-      document.querySelectorAll("[data-copy]").forEach((btn)=>{
-        btn.addEventListener("click", ()=> copyText(btn.getAttribute("data-copy")));
-      });
-    });
-  </script>
-</BaseLayout>
+            <div class="muted">Network</div>
+            <div id="networkName">—</div>
+
+            <div class="muted">Token</div>
+            <div><span id="tokenName">—</span> (<span id="tokenSymbol">—</span>) · Decimals: <span id="tokenDecimals">—</span></div>
+          </div>
+        </div>
+
+        <!-- Contract -->
+        <div class="cardx" style="grid-column: span 12;">
+          <div class="row">
+            <div>
+              <div style="font-weight:900;">Official Contract</div>
+              <div class="mono" id="contractAddr">—</div>
+            </div>
+            <div class="btns">
+              <button class="btnx" id="copyContract" type="button">Copy</button>
+              <a class="btnx primary" id="openEtherscan" target="_blank" rel="noreferrer">Open Etherscan</a>
+              <a class="btnx" id="addTokenHint" target="_blank" rel="noreferrer" href="https://support.metamask.io/manage-crypto/tokens/how-to-display-tokens-in-metamask/">How to add token</a>
+            </div>
+          </div>
+
+          <div class="footer">
+            Security rule: if the contract differs from <span class="mono">0xF2dA6C9B945c688A52D3B72340E622014920de6a</span> → NOT official.
+          </div>
+        </div>
+
+        <!-- Official Links -->
+        <div class="cardx" style="grid-column: span 12;">
+          <div style="font-weight:900;">Official Links</div>
+          <p class="small">Only these sources are considered official. Mirrors may exist, but the official domain remains <b>capitoken.org</b>.</p>
+          <div class="kvs" style="margin-top:10px;">
+            <div class="muted">Official Website</div>
+            <div><a id="siteLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">GitHub (source)</div>
+            <div><a id="repoLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Etherscan Token</div>
+            <div><a id="etherscanTokenLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Mirror (GitHub Pages)</div>
+            <div><a id="mirrorLink" target="_blank" rel="noreferrer">—</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ FIX: define:vars para inyectar BASE y FALLBACK correctamente -->
+    <script type="module" define:vars={{ BASE, FALLBACK }}>
+      function scoreFrom(data, isOfficialHost) {
+        let s = 0;
+        if (data?.contract?.address) s += 35;
+        if (data?.contract?.verified) s += 25;
+        if (data?.contract?.token?.name && data?.contract?.token?.symbol) s += 10;
+        if (data?.network?.chainId === 1) s += 10;
+        if (isOfficialHost) s += 20;
+        return Math.min(100, s);
+      }
+
+      function setText(id, v){ const el=document.getElementById(id); if(el) el.textContent = v ?? "—"; }
+      function setHref(id, href, label){
+        const el=document.getElementById(id);
+        if(!el) return;
+        el.href = href;
+        el.textContent = label ?? href;
+      }
+
+      async function loadRegistry(){
+        const url = BASE + "official-registry.json";
+        try {
+          const r = await fetch(url, { cache: "no-store" });
+          if (!r.ok) throw new Error("registry fetch failed");
+          return await r.json();
+        } catch(e){
+          return FALLBACK;
+        }
+      }
+
+      (async function init(){
+        const data = await loadRegistry();
+
+        const host = window.location.hostname;
+        const allowed = new Set((data.allowedDomains || []).map(x => String(x).toLowerCase()));
+        const isOfficialHost = allowed.has(String(host).toLowerCase());
+
+        // Mirror banner
+        if (!isOfficialHost) {
+          const b = document.getElementById("mirrorBanner");
+          const t = document.getElementById("mirrorText");
+          if (b) b.style.display = "block";
+          if (t) t.textContent = data.security?.mirrorNotice || "You are viewing a mirror. The official site is https://www.capitoken.org";
+        }
+
+        // Tags
+        const domainTag = document.getElementById("domainTag");
+        if (domainTag) {
+          domainTag.textContent = isOfficialHost ? "✔ Official domain" : "⚠ Mirror domain";
+          domainTag.className = "tag " + (isOfficialHost ? "ok" : "warn");
+        }
+
+        const etherscanTag = document.getElementById("etherscanTag");
+        if (etherscanTag) {
+          etherscanTag.textContent = data.contract?.verified ? "✔ Etherscan verified" : "⚠ Not verified";
+          etherscanTag.className = "tag " + (data.contract?.verified ? "ok" : "warn");
+        }
+
+        // Trust score
+        const score = scoreFrom(data, isOfficialHost);
+        setText("trustScore", String(score));
+
+        // Core fields
+        const officialUrl = "https://" + (data.officialDomain || "www.capitoken.org");
+        setHref("officialDomainLink", officialUrl, officialUrl);
+
+        setText("networkName", data.network?.name || "—");
+        setText("tokenName", data.contract?.token?.name || "—");
+        setText("tokenSymbol", data.contract?.token?.symbol || "—");
+        setText("tokenDecimals", String(data.contract?.token?.decimals ?? "—"));
+
+        const addr = data.contract?.address || "";
+        setText("contractAddr", addr);
+
+        const explorer = data.network?.explorer || "https://etherscan.io";
+        const etherscanToken = addr ? `${explorer}/token/${addr}` : explorer;
+
+        // Buttons / links
+        const openE = document.getElementById("openEtherscan");
+        if (openE) openE.href = etherscanToken;
+
+        setHref("repoLink", data.officialRepo || "https://github.com/capitoken-org/capitoken-site");
+        setHref("siteLink", "https://www.capitoken.org", "https://www.capitoken.org");
+        setHref("etherscanTokenLink", etherscanToken, etherscanToken);
+
+        // Mirror link (always show github pages)
+        setHref("mirrorLink", "https://capitoken-org.github.io/capitoken-site/", "https://capitoken-org.github.io/capitoken-site/");
+
+        // Copy contract
+        const copyBtn = document.getElementById("copyContract");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(addr);
+              copyBtn.textContent = "Copied";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+            } catch {
+              copyBtn.textContent = "Copy failed";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
