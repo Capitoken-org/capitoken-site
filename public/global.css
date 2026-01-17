@@ -1289,3 +1289,10 @@ body::after{
 .venue-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .venue-note{opacity:.82}
 .venue-hint{margin-top:10px;opacity:.75}
+
+/* =========================
+   Phase 9 – Layout priority helpers
+   ========================= */
+#venues{ scroll-margin-top: 90px; }
+.section{ padding-top: 34px; padding-bottom: 34px; }
+.section + .section{ border-top: 1px solid rgba(255,255,255,0.06); }

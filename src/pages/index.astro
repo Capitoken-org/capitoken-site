@@ -191,6 +191,134 @@ const roadmap = [
     </div>
   </section>
 
+<!-- PHASE 9 – Trading Venues (DEX / CEX) -->
+<section class="section" id="venues">
+  <div class="container reveal">
+    <div class="section__head">
+      <h2>Trading Venues</h2>
+      <p class="small">
+        Only use official links. If a venue is not listed here, assume it is not official.
+      </p>
+    </div>
+
+    <div class="venues">
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
+            <span>DEX Enabled</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">Live once the verified pair is published.</div>
+      </div>
+
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
+            <span>CEX Listings</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  // Phase 9: Trading venues data (editable via /public/venues.json)
+  const makeEl = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, String(v));
+    }
+    for (const c of children) el.append(c);
+    return el;
+  };
+
+  const safeUrl = (u) => {
+    try { return new URL(u).toString(); } catch { return ""; }
+  };
+
+  const fallback = {
+    dex: [
+      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
+      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
+      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
+      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
+    ],
+    cex: [
+      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
+    ]
+  };
+
+  async function loadVenues(){
+    const url = new URL("venues.json", window.location.href).toString();
+    try{
+      const r = await fetch(url, { cache: "no-store" });
+      if(!r.ok) throw new Error("venues fetch failed");
+      const data = await r.json();
+      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
+      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
+    }catch{
+      return fallback;
+    }
+  }
+
+  function renderGrid(targetId, items){
+    const host = document.getElementById(targetId);
+    if(!host) return;
+
+    host.innerHTML = "";
+    items.forEach((it) => {
+      const href = safeUrl(it.url);
+      const enabled = Boolean(it.enabled) && href;
+      const a = makeEl(enabled ? "a" : "div", {
+        class: "venue-tile" + (enabled ? "" : " is-disabled"),
+        href: enabled ? href : undefined,
+        target: enabled ? "_blank" : undefined,
+        rel: enabled ? "noreferrer noopener" : undefined
+      });
+
+      const img = makeEl("img", {
+        class: "venue-icon",
+        src: it.icon || "",
+        alt: it.name || "Venue",
+        loading: "lazy",
+        referrerpolicy: "no-referrer"
+      });
+
+      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
+      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
+
+      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
+      host.append(a);
+    });
+
+    if(!items.length){
+      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const data = await loadVenues();
+    renderGrid("dexGrid", data.dex);
+    renderGrid("cexGrid", data.cex);
+  });
+</script>
+
+
+
+
   <hr class="hr" />
 
   <!-- TOKENOMICS -->
@@ -569,129 +697,26 @@ async function initTrustHero() {
 
 <hr class="hr" />
 
-<!-- PHASE 9 – Trading Venues (DEX / CEX) -->
-<section class="section" id="venues">
-  <div class="container reveal">
-    <div class="section__head">
-      <h2>Trading Venues</h2>
-      <p class="small">
-        Only use official links. If a venue is not listed here, assume it is not official.
-      </p>
-    </div>
 
-    <div class="venues">
-      <div class="venue-block">
-        <div class="venue-title">
-          <span class="iconwrap">
-            <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
-            <span>DEX Enabled</span>
-          </span>
-        </div>
-        <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
-        <div class="small venue-hint">Live once the verified pair is published.</div>
-      </div>
-
-      <div class="venue-block">
-        <div class="venue-title">
-          <span class="iconwrap">
-            <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
-            <span>CEX Listings</span>
-          </span>
-        </div>
-        <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
-        <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script type="module">
-  // Phase 9: Trading venues data (editable via /public/venues.json)
-  const makeEl = (tag, attrs = {}, children = []) => {
-    const el = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs)) {
-      if (k === "class") el.className = v;
-      else if (k === "html") el.innerHTML = v;
-      else el.setAttribute(k, String(v));
-    }
-    for (const c of children) el.append(c);
-    return el;
-  };
-
-  const safeUrl = (u) => {
-    try { return new URL(u).toString(); } catch { return ""; }
-  };
-
-  const fallback = {
-    dex: [
-      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
-      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
-      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
-      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
-    ],
-    cex: [
-      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
-    ]
-  };
-
-  async function loadVenues(){
-    const url = new URL("venues.json", window.location.href).toString();
+<!-- Phase 9 – Cache bust (ensures visitors see latest HTML) -->
+<script is:inline>
+  (function(){
     try{
-      const r = await fetch(url, { cache: "no-store" });
-      if(!r.ok) throw new Error("venues fetch failed");
-      const data = await r.json();
-      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
-      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
-    }catch{
-      return fallback;
-    }
-  }
-
-  function renderGrid(targetId, items){
-    const host = document.getElementById(targetId);
-    if(!host) return;
-
-    host.innerHTML = "";
-    items.forEach((it) => {
-      const href = safeUrl(it.url);
-      const enabled = Boolean(it.enabled) && href;
-      const a = makeEl(enabled ? "a" : "div", {
-        class: "venue-tile" + (enabled ? "" : " is-disabled"),
-        href: enabled ? href : undefined,
-        target: enabled ? "_blank" : undefined,
-        rel: enabled ? "noreferrer noopener" : undefined
-      });
-
-      const img = makeEl("img", {
-        class: "venue-icon",
-        src: it.icon || "",
-        alt: it.name || "Venue",
-        loading: "lazy",
-        referrerpolicy: "no-referrer"
-      });
-
-      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
-      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
-
-      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
-      host.append(a);
-    });
-
-    if(!items.length){
-      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    const data = await loadVenues();
-    renderGrid("dexGrid", data.dex);
-    renderGrid("cexGrid", data.cex);
-  });
+      var url = new URL("build.json", window.location.href).toString();
+      fetch(url, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+        if(!d || !d.buildId) return;
+        var key = "capitoken_build_id";
+        var prev = localStorage.getItem(key);
+        if(prev && prev !== d.buildId){
+          localStorage.setItem(key, d.buildId);
+          // One-time refresh to pick up new HTML/CSS after a deploy
+          location.reload();
+          return;
+        }
+        if(!prev) localStorage.setItem(key, d.buildId);
+      }).catch(function(){});
+    }catch(e){}
+  })();
 </script>
 
 </BaseLayout>
