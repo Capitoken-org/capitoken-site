@@ -1202,3 +1202,16 @@ body::after{
     padding: 12px 12px !important;
   }
 }
+
+/* =========================
+   Phase 8.4 – Icon System (SVG)
+   Public assets in /public/icons
+   ========================= */
+.icon{width:18px;height:18px;display:inline-block;vertical-align:-3px}
+.icon--sm{width:16px;height:16px;vertical-align:-3px}
+.icon--lg{width:20px;height:20px;vertical-align:-4px}
+.iconwrap{display:inline-flex;align-items:center;gap:8px}
+.icon-verified{color:var(--trust-verified)}
+.icon-warn{color:var(--trust-warn)}
+.icon-risk{color:var(--trust-risk)}
+.icon-neutral{color:rgba(242,245,244,0.86)}
