@@ -311,3 +311,44 @@ h3{margin:0 0 6px;font-size:18px}
   flex-wrap: wrap;
   gap: 10px;
 }
+/* ==============================
+   Capitoken – Hard Spacing Fix
+   (append-only patch)
+   ============================== */
+
+/* Ensure main has breathing room */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* Section spacing */
+section {
+  margin-bottom: 48px;
+}
+
+/* Launch Panel: force separation between stacked cards */
+.launch-panel > * + * {
+  margin-top: 22px !important;
+}
+
+/* If cards share a wrapper */
+.launch-panel .card + .card,
+.launch-panel .panel + .panel,
+.launch-panel .box + .box {
+  margin-top: 22px !important;
+}
+
+/* Make routes/buttons wrap nicely */
+.routes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Buttons spacing without breaking style */
+.btn {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
