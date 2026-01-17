@@ -311,44 +311,25 @@ h3{margin:0 0 6px;font-size:18px}
   flex-wrap: wrap;
   gap: 10px;
 }
-/* ==============================
-   Capitoken – Hard Spacing Fix
-   (append-only patch)
-   ============================== */
 
-/* Ensure main has breathing room */
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 20px 80px;
+/* === HARDENING: Launch Panel card spacing (prevents "pegados") === */
+/* If anything else overrides grid gaps, these rules force visible separation. */
+.launch-grid{
+  gap: 22px !important;
+  row-gap: 22px !important;
+  column-gap: 22px !important;
 }
-
-/* Section spacing */
-section {
-  margin-bottom: 48px;
+.launch-grid > .card{
+  margin: 0 !important;
 }
-
-/* Launch Panel: force separation between stacked cards */
-.launch-panel > * + * {
+/* Extra safety for browsers that might collapse spacing in certain layouts */
+.launch-grid > .card + .card{
   margin-top: 22px !important;
 }
 
-/* If cards share a wrapper */
-.launch-panel .card + .card,
-.launch-panel .panel + .panel,
-.launch-panel .box + .box {
-  margin-top: 22px !important;
-}
-
-/* Make routes/buttons wrap nicely */
-.routes {
+/* Routes buttons spacing */
+.routes{
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* Buttons spacing without breaking style */
-.btn {
-  margin-right: 8px;
-  margin-bottom: 8px;
+  gap: 12px !important;
 }
