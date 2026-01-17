@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-iv4vc336> <head><meta charset="utf-8"><title>Verify | Capitoken</title><meta name="viewport" content="width=device-width, initial-scale=1"><!-- Respect base path --><link rel="stylesheet" href="/capitoken-site/global.css"><style>.scorewrap[data-astro-cid-iv4vc336]{display:flex;flex-direction:column;gap:10px;margin-top:10px}.bar[data-astro-cid-iv4vc336]{height:10px;border-radius:999px;background:#ffffff0f;border:1px solid rgba(255,255,255,.1);overflow:hidden}.barfill[data-astro-cid-iv4vc336]{height:100%;width:0%;background:linear-gradient(90deg,#f1c40f,#2ecc71);transition:width .85s ease}.wrap[data-astro-cid-iv4vc336]{max-width:920px;margin:80px auto;padding:0 18px}.h1[data-astro-cid-iv4vc336]{font-size:clamp(28px,4vw,44px);line-height:1.1;margin:0 0 10px}.sub[data-astro-cid-iv4vc336]{opacity:.85;margin:0 0 18px}.grid[data-astro-cid-iv4vc336]{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.cardx[data-astro-cid-iv4vc336]{grid-column:span 12;background:#0000008c;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;backdrop-filter:blur(8px)}.row[data-astro-cid-iv4vc336]{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.mono[data-astro-cid-iv4vc336]{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;word-break:break-all}.tag[data-astro-cid-iv4vc336]{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:#ffffff0d}.ok[data-astro-cid-iv4vc336]{color:#2ecc71}.warn[data-astro-cid-iv4vc336]{color:#f1c40f}.bad[data-astro-cid-iv4vc336]{color:#e74c3c}.btns[data-astro-cid-iv4vc336]{display:flex;gap:10px;flex-wrap:wrap}.btnx[data-astro-cid-iv4vc336]{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:#ffffff0f;text-decoration:none;font-weight:700}.btnx[data-astro-cid-iv4vc336]:hover{transform:translateY(-1px)}.primary[data-astro-cid-iv4vc336]{background:#e9902c2e;border-color:#e9902c4d}.small[data-astro-cid-iv4vc336]{font-size:13px;opacity:.85}.kvs[data-astro-cid-iv4vc336]{display:grid;grid-template-columns:180px 1fr;gap:10px 14px}@media(max-width:640px){.kvs[data-astro-cid-iv4vc336]{grid-template-columns:1fr}}.hr[data-astro-cid-iv4vc336]{height:1px;background:#ffffff1a;border:0;margin:14px 0}.score[data-astro-cid-iv4vc336]{font-size:34px;font-weight:900}.muted[data-astro-cid-iv4vc336]{opacity:.7}.notice[data-astro-cid-iv4vc336]{border-color:#ffc80059;background:#ffc8000f}.footer[data-astro-cid-iv4vc336]{margin-top:18px;opacity:.7;font-size:12px}
+</style></head> <body data-astro-cid-iv4vc336> <div class="wrap" data-astro-cid-iv4vc336> <h1 class="h1" data-astro-cid-iv4vc336>Verify Capitoken</h1> <p class="sub" data-astro-cid-iv4vc336>Single source of truth for official domain, contract and links. If anything disagrees with this page, treat it as <b data-astro-cid-iv4vc336>not official</b>.</p> <!-- Mirror banner --> <div id="mirrorBanner" class="cardx notice" style="display:none;" data-astro-cid-iv4vc336> <div class="row" data-astro-cid-iv4vc336> <div data-astro-cid-iv4vc336> <div style="font-weight:900;" data-astro-cid-iv4vc336>⚠ Mirror detected</div> <div class="small" id="mirrorText" data-astro-cid-iv4vc336></div> </div> <div class="btns" data-astro-cid-iv4vc336> <a class="btnx primary" href="https://www.capitoken.org/verify" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>Open Official /verify</a> </div> </div> </div> <div class="grid" style="margin-top:14px;" data-astro-cid-iv4vc336> <!-- Status / Score --> <div class="cardx" style="grid-column: span 12;" data-astro-cid-iv4vc336> <div class="row" data-astro-cid-iv4vc336> <div data-astro-cid-iv4vc336> <div class="tag" id="domainTag" data-astro-cid-iv4vc336>Checking domain…</div> <div class="tag" id="etherscanTag" style="margin-left:8px;" data-astro-cid-iv4vc336>Checking verification…</div> </div> <div data-astro-cid-iv4vc336> <span class="muted" data-astro-cid-iv4vc336>Trust Score</span> <span class="score" id="trustScore" data-astro-cid-iv4vc336>—</span> </div> </div> <hr class="hr" data-astro-cid-iv4vc336> <div class="kvs" data-astro-cid-iv4vc336> <div class="muted" data-astro-cid-iv4vc336>Official Domain</div> <div data-astro-cid-iv4vc336><a id="officialDomainLink" href="#" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>—</a></div> <div class="muted" data-astro-cid-iv4vc336>Network</div> <div id="networkName" data-astro-cid-iv4vc336>—</div> <div class="muted" data-astro-cid-iv4vc336>Token</div> <div data-astro-cid-iv4vc336><span id="tokenName" data-astro-cid-iv4vc336>—</span> (<span id="tokenSymbol" data-astro-cid-iv4vc336>—</span>) · Decimals: <span id="tokenDecimals" data-astro-cid-iv4vc336>—</span></div> </div> </div> <!-- Contract --> <div class="cardx" style="grid-column: span 12;" data-astro-cid-iv4vc336> <div class="row" data-astro-cid-iv4vc336> <div data-astro-cid-iv4vc336> <div style="font-weight:900;" data-astro-cid-iv4vc336>Official Contract</div> <div class="mono" id="contractAddr" data-astro-cid-iv4vc336>—</div> </div> <div class="btns" data-astro-cid-iv4vc336> <button class="btnx" id="copyContract" type="button" data-astro-cid-iv4vc336>Copy</button> <a class="btnx primary" id="openEtherscan" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>Open Etherscan</a> <a class="btnx" id="addTokenHint" target="_blank" rel="noreferrer" href="https://support.metamask.io/manage-crypto/tokens/how-to-display-tokens-in-metamask/" data-astro-cid-iv4vc336>How to add token</a> </div> </div> <div class="footer" data-astro-cid-iv4vc336>
+Security rule: if the contract differs from <span class="mono" data-astro-cid-iv4vc336>0xF2dA6C9B945c688A52D3B72340E622014920de6a</span> → NOT official.
+</div> </div> <!-- Official Links --> <div class="cardx" style="grid-column: span 12;" data-astro-cid-iv4vc336> <div style="font-weight:900;" data-astro-cid-iv4vc336>Official Links</div> <p class="small" data-astro-cid-iv4vc336>Only these sources are considered official. Mirrors may exist, but the official domain remains <b data-astro-cid-iv4vc336>capitoken.org</b>.</p> <div class="kvs" style="margin-top:10px;" data-astro-cid-iv4vc336> <div class="muted" data-astro-cid-iv4vc336>Official Website</div> <div data-astro-cid-iv4vc336><a id="siteLink" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>—</a></div> <div class="muted" data-astro-cid-iv4vc336>GitHub (source)</div> <div data-astro-cid-iv4vc336><a id="repoLink" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>—</a></div> <div class="muted" data-astro-cid-iv4vc336>Etherscan Token</div> <div data-astro-cid-iv4vc336><a id="etherscanTokenLink" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>—</a></div> <div class="muted" data-astro-cid-iv4vc336>Mirror (GitHub Pages)</div> <div data-astro-cid-iv4vc336><a id="mirrorLink" target="_blank" rel="noreferrer" data-astro-cid-iv4vc336>—</a></div> </div> </div> </div> </div> <!-- ✅ FIX: define:vars para inyectar BASE y FALLBACK correctamente --> <script type="module">const BASE = "/capitoken-site/";
+const FALLBACK = {"project":"Capitoken","version":"1.0.0","updatedAt":"2026-01-17","officialDomain":"www.capitoken.org","allowedDomains":["www.capitoken.org","capitoken.org"],"officialRepo":"https://github.com/capitoken-org/capitoken-site","network":{"name":"Ethereum Mainnet","chainId":1,"explorer":"https://etherscan.io"},"contract":{"address":"0xF2dA6C9B945c688A52D3B72340E622014920de6a","verified":true,"token":{"name":"Capitoken","symbol":"CAPI","decimals":18}},"security":{"mirrorsAllowed":true,"mirrorNotice":"You are viewing a mirror. The official site is https://www.capitoken.org"}};
+
+      function scoreFrom(data, isOfficialHost) {
+        let s = 0;
+        if (data?.contract?.address) s += 35;
+        if (data?.contract?.verified) s += 25;
+        if (data?.contract?.token?.name && data?.contract?.token?.symbol) s += 10;
+        if (data?.network?.chainId === 1) s += 10;
+        if (isOfficialHost) s += 20;
+        return Math.min(100, s);
+      }
+
+      function setText(id, v){ const el=document.getElementById(id); if(el) el.textContent = v ?? "—"; }
+      function setHref(id, href, label){
+        const el=document.getElementById(id);
+        if(!el) return;
+        el.href = href;
+        el.textContent = label ?? href;
+      }
+
+      async function loadRegistry(){
+        const url = BASE + "official-registry.json";
+        try {
+          const r = await fetch(url, { cache: "no-store" });
+          if (!r.ok) throw new Error("registry fetch failed");
+          return await r.json();
+        } catch(e){
+          return FALLBACK;
+        }
+      }
+
+      (async function init(){
+        const data = await loadRegistry();
+
+        const host = window.location.hostname;
+        const allowed = new Set((data.allowedDomains || []).map(x => String(x).toLowerCase()));
+        const isOfficialHost = allowed.has(String(host).toLowerCase());
+
+        // Mirror banner
+        if (!isOfficialHost) {
+          const b = document.getElementById("mirrorBanner");
+          const t = document.getElementById("mirrorText");
+          if (b) b.style.display = "block";
+          if (t) t.textContent = data.security?.mirrorNotice || "You are viewing a mirror. The official site is https://www.capitoken.org";
+        }
+
+        // Tags
+        const domainTag = document.getElementById("domainTag");
+        if (domainTag) {
+          domainTag.textContent = isOfficialHost ? "✔ Official domain" : "⚠ Mirror domain";
+          domainTag.className = "tag " + (isOfficialHost ? "ok" : "warn");
+        }
+
+        const etherscanTag = document.getElementById("etherscanTag");
+        if (etherscanTag) {
+          etherscanTag.textContent = data.contract?.verified ? "✔ Etherscan verified" : "⚠ Not verified";
+          etherscanTag.className = "tag " + (data.contract?.verified ? "ok" : "warn");
+        }
+
+        // Trust score
+        const score = scoreFrom(data, isOfficialHost);
+        setText("trustScore", String(score));
+
+        // Core fields
+        const officialUrl = "https://" + (data.officialDomain || "www.capitoken.org");
+        setHref("officialDomainLink", officialUrl, officialUrl);
+
+        setText("networkName", data.network?.name || "—");
+        setText("tokenName", data.contract?.token?.name || "—");
+        setText("tokenSymbol", data.contract?.token?.symbol || "—");
+        setText("tokenDecimals", String(data.contract?.token?.decimals ?? "—"));
+
+        const addr = data.contract?.address || "";
+        setText("contractAddr", addr);
+
+        const explorer = data.network?.explorer || "https://etherscan.io";
+        const etherscanToken = addr ? `${explorer}/token/${addr}` : explorer;
+
+        // Buttons / links
+        const openE = document.getElementById("openEtherscan");
+        if (openE) openE.href = etherscanToken;
+
+        setHref("repoLink", data.officialRepo || "https://github.com/capitoken-org/capitoken-site");
+        setHref("siteLink", "https://www.capitoken.org", "https://www.capitoken.org");
+        setHref("etherscanTokenLink", etherscanToken, etherscanToken);
+
+        // Mirror link (always show github pages)
+        setHref("mirrorLink", "https://capitoken-org.github.io/capitoken-site/", "https://capitoken-org.github.io/capitoken-site/");
+
+        // Copy contract
+        const copyBtn = document.getElementById("copyContract");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(addr);
+              copyBtn.textContent = "Copied";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+            } catch {
+              copyBtn.textContent = "Copy failed";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+            }
+          });
+        }
+      })();
+    </script> </body> </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Capitoken — Official Links</title><meta name="description" content="Official Capitoken links. Single source of truth. Anything not listed here is not official."><!-- Theme --><meta name="theme-color" content="#050c0a"><!-- Favicons / PWA --><link rel="icon" type="image/png" sizes="32x32" href="/capitoken-site/icons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/capitoken-site/icons/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/capitoken-site/icons/apple-touch-icon.png"><link rel="manifest" href="/capitoken-site/site.webmanifest"><!-- IMPORTANT: single source of truth for global styles --><link rel="stylesheet" href="/capitoken-site/global.css?v=13"></head> <body> <header class="nav"> <div class="container nav__inner"> <a class="brand" href="/capitoken-site/" aria-label="Capitoken home"> <img class="brand__img" src="/capitoken-site/brand/logo-navbar.png" alt="Capitoken" loading="eager"> </a> <nav class="nav__links" aria-label="Primary"> <a href="#launch">Launch</a><a href="#launchpanel">Panel</a><a href="#tokenomics">Tokenomics</a><a href="#roadmap">Roadmap</a><a href="/capitoken-site/verify/">Verify</a> </nav> </div> </header> <main>  <section class="hero"> <div class="hero__kicker"> <span class="pill__dot" aria-hidden="true"></span>
+Single source of truth
+</div> <h1>Official Links</h1> <p class="hero__lead">
+This page lists the <strong>only official links</strong> for Capitoken.
+      If it’s not published here, it is not official.
+</p> <div class="actions"> <a class="btn btn--primary" href="./verify">Open /verify</a> <a class="btn" href="./">Back to Home</a> </div> </section> <section class="section"> <div class="card"> <div class="kv"> <strong>Website</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <a href="https://capitoken-org.github.io/capitoken-site/" target="_blank" rel="noopener noreferrer" style="color: var(--text); text-decoration: underline;"> https://capitoken-org.github.io/capitoken-site/ </a> <button class="btn" type="button" style="padding:7px 10px; font-size:12px;" data-copy="https://capitoken-org.github.io/capitoken-site/">
+Copy
+</button> </span> </div><div class="kv"> <strong>Contract</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <span>TBA</span>  </span> </div><div class="kv"> <strong>DEX Pair / Pool</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <span>TBA</span>  </span> </div><div class="kv"> <strong>X (Twitter)</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <span>TBA</span>  </span> </div><div class="kv"> <strong>Telegram</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <span>TBA</span>  </span> </div><div class="kv"> <strong>GitHub</strong> <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"> <a href="https://github.com/Capitoken-org" target="_blank" rel="noopener noreferrer" style="color: var(--text); text-decoration: underline;"> https://github.com/Capitoken-org </a> <button class="btn" type="button" style="padding:7px 10px; font-size:12px;" data-copy="https://github.com/Capitoken-org">
+Copy
+</button> </span> </div> </div> <p class="small" style="margin-top:12px;">
+Bookmark this page. Scammers will copy names, logos, and URLs.
+      Always verify the domain and compare with this list.
+</p> </section> <section class="section"> <h2>Quick verification checklist</h2> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <h3>1) Verify the URL</h3> <p class="small">Only trust the official domain listed on this page.</p> </div> <div class="card col-6"> <h3>2) Verify the contract</h3> <p class="small">Only use the contract address published here (never from DMs).</p> </div> <div class="card col-6"> <h3>3) Verify the DEX pair</h3> <p class="small">If a pair/pool address is published, cross-check it before swapping.</p> </div> <div class="card col-6"> <h3>4) When in doubt</h3> <p class="small">Go back to /verify. If it’s not there, it’s not official.</p> </div> </div> </section> <script>
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+      }
+    }
+
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-copy]");
+      if (!btn) return;
+      const v = btn.getAttribute("data-copy");
+      if (!v) return;
+
+      const ok = await copyToClipboard(v);
+      const prev = btn.textContent;
+      btn.textContent = ok ? "Copied" : "Failed";
+      setTimeout(() => (btn.textContent = prev), 900);
+    });
+  </script>  </main> </body></html>

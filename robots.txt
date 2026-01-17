@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://capitoken-org.github.io/capitoken-site/sitemap.xml

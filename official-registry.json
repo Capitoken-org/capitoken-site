@@ -1,0 +1,29 @@
+{
+  "project": "Capitoken",
+  "version": "1.0.0",
+  "updatedAt": "2026-01-17",
+  "officialDomain": "www.capitoken.org",
+  "allowedDomains": [
+    "www.capitoken.org",
+    "capitoken.org"
+  ],
+  "officialRepo": "https://github.com/capitoken-org/capitoken-site",
+  "network": {
+    "name": "Ethereum Mainnet",
+    "chainId": 1,
+    "explorer": "https://etherscan.io"
+  },
+  "contract": {
+    "address": "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
+    "verified": true,
+    "token": {
+      "name": "Capitoken",
+      "symbol": "CAPI",
+      "decimals": 18
+    }
+  },
+  "security": {
+    "mirrorsAllowed": true,
+    "mirrorNotice": "You are viewing a mirror. The official site is https://www.capitoken.org"
+  }
+}
