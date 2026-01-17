@@ -7,7 +7,96 @@ Deep-green premium design, clear narrative, and verified links — built for ado
 Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
 </p> </div> <!-- DEX Pair --> <div class="card"> <div class="label">DEX Pair</div> <div class="mono" id="pairText">TBA</div> <div class="actions" style="margin-top:10px;"> <button class="btn btn-primary" id="copyPairBtn" type="button">Copy</button> <a class="btn" href="/capitoken-site/verify/" id="verifyPairBtn">Verify</a> </div> <div class="small" style="margin-top:12px;">Quick Uniswap routes</div> <div class="route-actions"> <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a> <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a> </div> </div> <!-- Live Market Snapshot --> <div class="card span-all"> <div class="h3">Live Market Snapshot</div> <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div> <div class="pill" style="margin-top:10px;"> <span class="pill-dot"></span> <span>Ethereum Mainnet</span> </div> <div class="stats" style="margin-top:14px;"> <!-- IMPORTANTE: IDs alineados con el script --> <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div> <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div> <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div> <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div> </div> <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p> </div> <!-- Recent Activity --> <div class="card span-all"> <div class="h3">Recent Activity</div> <div class="small">Shows recent activity (placeholder until contract is published).</div> <div class="table-wrap" style="margin-top:12px;"> <table class="table"> <thead> <tr><th>From</th><th>To</th><th>Amount</th><th>TX</th></tr> </thead> <tbody id="txBody"> <tr><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td></tr> </tbody> </table> </div> </div> </div> <!-- Cuando actives Fase 7 UI real:
         <TrustPanel />
-      --> </div> </section> <hr class="hr">  <section class="section" id="tokenomics"> <div class="container reveal"> <h2>Tokenomics</h2> <p>Simple allocation — 97 / 2 / 1.</p> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <h3>97% Community</h3> <p>Broad distribution &amp; liquidity-first mindset.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div><div class="card col-6"> <h3>2% Operations</h3> <p>Sustains development, infra, and execution.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div><div class="card col-6"> <h3>1% Marketing</h3> <p>Growth loops, listings, and content.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div> <div class="card col-12"> <div class="kv"><strong>Community</strong><span>97%</span></div> <div class="kv"><strong>Operations</strong><span>2%</span></div> <div class="kv"><strong>Marketing</strong><span>1%</span></div> </div> </div> </div> </section> <hr class="hr">  <section class="section" id="roadmap"> <div class="container reveal"> <h2>Roadmap</h2> <p>Focused phases with clear deliverables.</p> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <div class="small">Phase 1</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Foundation</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Brand + Website</li><li style="margin: 6px 0;">Docs/Whitepaper</li><li style="margin: 6px 0;">Official channels live</li> </ul> </div><div class="card col-6"> <div class="small">Phase 2</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Launch Prep</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Final checks</li><li style="margin: 6px 0;">DEX readiness</li><li style="margin: 6px 0;">Verified links live</li> </ul> </div><div class="card col-6"> <div class="small">Phase 3</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Expansion</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Listings</li><li style="margin: 6px 0;">Ecosystem features</li><li style="margin: 6px 0;">Partnerships</li> </ul> </div> </div> </div> </section> <hr class="hr">  <section class="section" id="daily"> <div class="container reveal"> <h2>Daily Capi</h2> <p>
+      --> </div> </section>  <section class="section" id="venues"> <div class="container reveal"> <div class="section__head"> <h2>Trading Venues</h2> <p class="small">
+Only use official links. If a venue is not listed here, assume it is not official.
+</p> </div> <div class="venues"> <div class="venue-block"> <div class="venue-title"> <span class="iconwrap"> <img class="icon icon--sm icon-verified" src="/capitoken-site/icons/shield.svg" alt=""> <span>DEX Enabled</span> </span> </div> <div class="venue-grid" id="dexGrid" aria-live="polite"></div> <div class="small venue-hint">Live once the verified pair is published.</div> </div> <div class="venue-block"> <div class="venue-title"> <span class="iconwrap"> <img class="icon icon--sm icon-neutral" src="/capitoken-site/icons/lock.svg" alt=""> <span>CEX Listings</span> </span> </div> <div class="venue-grid" id="cexGrid" aria-live="polite"></div> <div class="small venue-hint">CEX links will appear here once official listings go live.</div> </div> </div> </div> </section> <script type="module">
+  // Phase 9: Trading venues data (editable via /public/venues.json)
+  const makeEl = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, String(v));
+    }
+    for (const c of children) el.append(c);
+    return el;
+  };
+
+  const safeUrl = (u) => {
+    try { return new URL(u).toString(); } catch { return ""; }
+  };
+
+  const fallback = {
+    dex: [
+      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
+      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
+      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
+      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
+    ],
+    cex: [
+      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
+    ]
+  };
+
+  async function loadVenues(){
+    const url = new URL("venues.json", window.location.href).toString();
+    try{
+      const r = await fetch(url, { cache: "no-store" });
+      if(!r.ok) throw new Error("venues fetch failed");
+      const data = await r.json();
+      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
+      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
+    }catch{
+      return fallback;
+    }
+  }
+
+  function renderGrid(targetId, items){
+    const host = document.getElementById(targetId);
+    if(!host) return;
+
+    host.innerHTML = "";
+    items.forEach((it) => {
+      const href = safeUrl(it.url);
+      const enabled = Boolean(it.enabled) && href;
+      const a = makeEl(enabled ? "a" : "div", {
+        class: "venue-tile" + (enabled ? "" : " is-disabled"),
+        href: enabled ? href : undefined,
+        target: enabled ? "_blank" : undefined,
+        rel: enabled ? "noreferrer noopener" : undefined
+      });
+
+      const img = makeEl("img", {
+        class: "venue-icon",
+        src: it.icon || "",
+        alt: it.name || "Venue",
+        loading: "lazy",
+        referrerpolicy: "no-referrer"
+      });
+
+      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
+      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
+
+      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
+      host.append(a);
+    });
+
+    if(!items.length){
+      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const data = await loadVenues();
+    renderGrid("dexGrid", data.dex);
+    renderGrid("cexGrid", data.cex);
+  });
+</script> <hr class="hr">  <section class="section" id="tokenomics"> <div class="container reveal"> <h2>Tokenomics</h2> <p>Simple allocation — 97 / 2 / 1.</p> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <h3>97% Community</h3> <p>Broad distribution &amp; liquidity-first mindset.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div><div class="card col-6"> <h3>2% Operations</h3> <p>Sustains development, infra, and execution.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div><div class="card col-6"> <h3>1% Marketing</h3> <p>Growth loops, listings, and content.</p> <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div> </div> <div class="card col-12"> <div class="kv"><strong>Community</strong><span>97%</span></div> <div class="kv"><strong>Operations</strong><span>2%</span></div> <div class="kv"><strong>Marketing</strong><span>1%</span></div> </div> </div> </div> </section> <hr class="hr">  <section class="section" id="roadmap"> <div class="container reveal"> <h2>Roadmap</h2> <p>Focused phases with clear deliverables.</p> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <div class="small">Phase 1</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Foundation</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Brand + Website</li><li style="margin: 6px 0;">Docs/Whitepaper</li><li style="margin: 6px 0;">Official channels live</li> </ul> </div><div class="card col-6"> <div class="small">Phase 2</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Launch Prep</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Final checks</li><li style="margin: 6px 0;">DEX readiness</li><li style="margin: 6px 0;">Verified links live</li> </ul> </div><div class="card col-6"> <div class="small">Phase 3</div> <div style="margin-top:6px; font-weight:900; font-size:18px;">Expansion</div> <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);"> <li style="margin: 6px 0;">Listings</li><li style="margin: 6px 0;">Ecosystem features</li><li style="margin: 6px 0;">Partnerships</li> </ul> </div> </div> </div> </section> <hr class="hr">  <section class="section" id="daily"> <div class="container reveal"> <h2>Daily Capi</h2> <p>
 Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
 </p> <div class="grid" style="margin-top:14px;"> <div class="card col-6"> <h3>Today’s prompt</h3> <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p> <a class="btn btn--primary" href="https://twitter.com/Capitoken" target="_blank" rel="noreferrer">Reply on X</a> </div> <div class="card col-6"> <h3>Build in public</h3> <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p> <a class="btn" href="#launchpanel">Back to Launch Panel</a> </div> </div> </div> </section> <hr class="hr">  <section class="section" id="community"> <div class="container reveal"> <h2>Community</h2> <p>
 Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
@@ -248,93 +337,22 @@ async function initTrustHero() {
       await loadDexScreener();
       setInterval(loadDexScreener, 45000);
     });
-  </script> <hr class="hr">  <section class="section" id="venues"> <div class="container reveal"> <div class="section__head"> <h2>Trading Venues</h2> <p class="small">
-Only use official links. If a venue is not listed here, assume it is not official.
-</p> </div> <div class="venues"> <div class="venue-block"> <div class="venue-title"> <span class="iconwrap"> <img class="icon icon--sm icon-verified" src="/capitoken-site/icons/shield.svg" alt=""> <span>DEX Enabled</span> </span> </div> <div class="venue-grid" id="dexGrid" aria-live="polite"></div> <div class="small venue-hint">Live once the verified pair is published.</div> </div> <div class="venue-block"> <div class="venue-title"> <span class="iconwrap"> <img class="icon icon--sm icon-neutral" src="/capitoken-site/icons/lock.svg" alt=""> <span>CEX Listings</span> </span> </div> <div class="venue-grid" id="cexGrid" aria-live="polite"></div> <div class="small venue-hint">CEX links will appear here once official listings go live.</div> </div> </div> </div> </section> <script type="module">
-  // Phase 9: Trading venues data (editable via /public/venues.json)
-  const makeEl = (tag, attrs = {}, children = []) => {
-    const el = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs)) {
-      if (k === "class") el.className = v;
-      else if (k === "html") el.innerHTML = v;
-      else el.setAttribute(k, String(v));
-    }
-    for (const c of children) el.append(c);
-    return el;
-  };
-
-  const safeUrl = (u) => {
-    try { return new URL(u).toString(); } catch { return ""; }
-  };
-
-  const fallback = {
-    dex: [
-      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
-      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
-      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
-      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
-    ],
-    cex: [
-      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
-      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
-    ]
-  };
-
-  async function loadVenues(){
-    const url = new URL("venues.json", window.location.href).toString();
+  </script> <hr class="hr">  <script>
+  (function(){
     try{
-      const r = await fetch(url, { cache: "no-store" });
-      if(!r.ok) throw new Error("venues fetch failed");
-      const data = await r.json();
-      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
-      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
-    }catch{
-      return fallback;
-    }
-  }
-
-  function renderGrid(targetId, items){
-    const host = document.getElementById(targetId);
-    if(!host) return;
-
-    host.innerHTML = "";
-    items.forEach((it) => {
-      const href = safeUrl(it.url);
-      const enabled = Boolean(it.enabled) && href;
-      const a = makeEl(enabled ? "a" : "div", {
-        class: "venue-tile" + (enabled ? "" : " is-disabled"),
-        href: enabled ? href : undefined,
-        target: enabled ? "_blank" : undefined,
-        rel: enabled ? "noreferrer noopener" : undefined
-      });
-
-      const img = makeEl("img", {
-        class: "venue-icon",
-        src: it.icon || "",
-        alt: it.name || "Venue",
-        loading: "lazy",
-        referrerpolicy: "no-referrer"
-      });
-
-      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
-      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
-
-      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
-      host.append(a);
-    });
-
-    if(!items.length){
-      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    const data = await loadVenues();
-    renderGrid("dexGrid", data.dex);
-    renderGrid("cexGrid", data.cex);
-  });
+      var url = new URL("build.json", window.location.href).toString();
+      fetch(url, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+        if(!d || !d.buildId) return;
+        var key = "capitoken_build_id";
+        var prev = localStorage.getItem(key);
+        if(prev && prev !== d.buildId){
+          localStorage.setItem(key, d.buildId);
+          // One-time refresh to pick up new HTML/CSS after a deploy
+          location.reload();
+          return;
+        }
+        if(!prev) localStorage.setItem(key, d.buildId);
+      }).catch(function(){});
+    }catch(e){}
+  })();
 </script>  </main> </body></html>
