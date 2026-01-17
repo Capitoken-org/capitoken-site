@@ -367,7 +367,7 @@ body::after{
 .brand__name{display:none}
 
 .brand__img{
-  height: 74px;
+  height: 110px;
   width: auto;
   display: block;
   border-radius: 10px; /* mantiene look "badge" */
@@ -376,10 +376,10 @@ body::after{
 
 @media (max-width: 900px){
   .nav__inner{height: 86px;}
-  .brand__img{height: 62px;}
+  .brand__img{height: 88px;}
 }
 
 @media (max-width: 520px){
   .nav__inner{height: 78px;}
-  .brand__img{height: 52px;}
+  .brand__img{height: 64px;}
 }
