@@ -1215,3 +1215,77 @@ body::after{
 .icon-warn{color:var(--trust-warn)}
 .icon-risk{color:var(--trust-risk)}
 .icon-neutral{color:rgba(242,245,244,0.86)}
+
+/* =========================
+   Phase 9 – Trading Venues (DEX/CEX)
+   ========================= */
+.section__head{margin-bottom:14px}
+.venues{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+@media(max-width:900px){.venues{grid-template-columns:1fr}}
+
+.venue-block{
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 22px 80px rgba(0,0,0,0.28);
+}
+
+.venue-title{
+  font-weight:900;
+  letter-spacing:-0.01em;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.venue-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media(max-width:520px){.venue-grid{grid-template-columns:1fr}}
+
+.venue-tile{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding: 12px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  text-decoration:none;
+  color: inherit;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+}
+.venue-tile:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 14px 50px rgba(0,0,0,0.22);
+}
+
+.venue-tile.is-disabled{
+  opacity: .62;
+  cursor: not-allowed;
+}
+.venue-tile.is-disabled:hover{
+  transform:none;
+  box-shadow:none;
+  border-color: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+}
+
+.venue-icon{
+  width:28px;height:28px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.venue-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.venue-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.venue-note{opacity:.82}
+.venue-hint{margin-top:10px;opacity:.75}
