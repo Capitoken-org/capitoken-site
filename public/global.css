@@ -77,7 +77,7 @@ section{padding:24px 0}
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 .nav__inner{
-  height:66px;
+  height:96px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -344,7 +344,7 @@ body::before{
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.18;
+  opacity: 0.40;
   transform: translateZ(0);
 }
 
@@ -356,7 +356,7 @@ body::after{
   background:
     radial-gradient(900px 520px at 18% -10%, rgba(233,144,44,0.16), transparent 62%),
     radial-gradient(860px 520px at 82% 112%, rgba(11,58,43,0.26), transparent 62%),
-    linear-gradient(180deg, rgba(5,12,10,0.65), rgba(7,17,14,0.78) 55%, rgba(5,11,9,0.86) 100%);
+    linear-gradient(180deg, rgba(5,12,10,0.30), rgba(7,17,14,0.42) 55%, rgba(5,11,9,0.52) 100%);
 }
 
 /* === Navbar brand image (Option A) === */
@@ -367,13 +367,19 @@ body::after{
 .brand__name{display:none}
 
 .brand__img{
-  height: 34px;
+  height: 74px;
   width: auto;
   display: block;
   border-radius: 10px; /* mantiene look "badge" */
   box-shadow: 0 10px 26px rgba(0,0,0,0.25);
 }
 
+@media (max-width: 900px){
+  .nav__inner{height: 86px;}
+  .brand__img{height: 62px;}
+}
+
 @media (max-width: 520px){
-  .brand__img{height: 30px;}
+  .nav__inner{height: 78px;}
+  .brand__img{height: 52px;}
 }
