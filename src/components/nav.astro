@@ -1,25 +1,30 @@
 ---
+// Simple navbar component (NO html/head/body here)
 const BASE = import.meta.env.BASE_URL || "/";
 const withBase = (p) => {
   const clean = String(p || "");
   return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
 };
+
+const links = [
+  { href: "#launch", label: "Launch" },
+  { href: "#launchpanel", label: "Panel" },
+  { href: "#tokenomics", label: "Tokenomics" },
+  { href: "#roadmap", label: "Roadmap" },
+  { href: `${BASE}verify/`, label: "Verify" },
+];
 ---
 
 <header class="nav">
   <div class="container nav__inner">
-    <a class="brand" href={withBase("/")}> 
-      <!-- Placeholder dot keeps layout stable until brand icons are added -->
-      <span class="brand__dot" aria-hidden="true"></span>
-      <span class="brand__name">Capitoken</span>
+    <a class="brand" href={BASE} aria-label="Capitoken home">
+      <img class="brand__img" src={withBase("/brand/logo-navbar.png")} alt="Capitoken" loading="eager" />
     </a>
 
     <nav class="nav__links" aria-label="Primary">
-      <a href="#launch">Launch</a>
-      <a href="#launchpanel">Panel</a>
-      <a href="#tokenomics">Tokenomics</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href={withBase("/verify/")}>Verify</a>
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
     </nav>
   </div>
 </header>

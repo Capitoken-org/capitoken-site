@@ -6,11 +6,7 @@ const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
 
 // >>> EDITA AQUÍ cuando tengas data real <<<
-const TOKEN_ADDRESS = "";
-
-const BASE = import.meta.env.BASE_URL || '/';
-const withBase = (p: string) => (p.startsWith('/') ? `${BASE}${p.slice(1)}` : `${BASE}${p}`);
- // "0x..." (ETH mainnet)
+const TOKEN_ADDRESS = ""; // "0x..." (ETH mainnet)
 const DEX_PAIR_ADDRESS = ""; // opcional
 const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
 // >>> ------------------------------ <<<
@@ -42,7 +38,7 @@ function shortAddr(a: string) {
 
 <BaseLayout title={TITLE} description={DESC}>
   <!-- HERO -->
-  <section class="hero hero--banner" id="launch">
+  <section class="hero" id="launch">
     <div class="container reveal reveal--2">
     <div class="hero__kicker">
       <span class="pill__dot" aria-hidden="true"></span>
@@ -91,17 +87,12 @@ function shortAddr(a: string) {
 
         <div class="actions" style="margin-top:10px;">
           <button class="btn btn-primary" data-copy="contract" id="copyContractBtn">Copy</button>
-          <a class="btn" href={withBase("/verify/")} id="verifyContractBtn">Verify</a>
+          <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyContractBtn">Verify</a>
         </div>
 
         <div class="actions" style="margin-top:10px;">
           <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
           <a class="btn" id="watchTokenBtn" href="#" rel="nofollow noopener">Watch Token</a>
-        </div>
-
-        <div class="pill" id="accountPill" style="margin-top:10px; display:none;">
-          <span class="pill__dot" aria-hidden="true"></span>
-          <span class="mono" id="acct"></span>
         </div>
 
         <p class="small" style="margin-top:12px;">
@@ -116,7 +107,7 @@ function shortAddr(a: string) {
 
         <div class="actions" style="margin-top:10px;">
           <button class="btn btn-primary" data-copy="pair" id="copyPairBtn">Copy</button>
-          <a class="btn" href={withBase("/verify/")} id="verifyPairBtn">Verify</a>
+          <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyPairBtn">Verify</a>
         </div>
 
         <div class="small" style="margin-top:12px;">Quick Uniswap routes (V2)</div>
@@ -132,15 +123,15 @@ function shortAddr(a: string) {
         <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
 
         <div class="pill" style="margin-top:10px;">
-          <span class="pill__dot" aria-hidden="true"></span>
+          <span class="pill-dot"></span>
           <span>Ethereum Mainnet</span>
         </div>
 
         <div class="stats" style="margin-top:14px;">
-          <div class="stat"><div class="k">Price</div><div class="v" id="m_price">TBA</div></div>
-          <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="m_mc">TBA</div></div>
-          <div class="stat"><div class="k">Liquidity</div><div class="v" id="m_liq">TBA</div></div>
-          <div class="stat"><div class="k">24h Volume</div><div class="v" id="m_vol">TBA</div></div>
+          <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
+          <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
+          <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
+          <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
         </div>
 
         <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p>
@@ -156,7 +147,7 @@ function shortAddr(a: string) {
             <thead>
               <tr><th>From</th><th>To</th><th>Amount</th><th>TX</th></tr>
             </thead>
-            <tbody id="txBody">
+            <tbody>
               <tr><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td></tr>
             </tbody>
           </table>
@@ -407,6 +398,7 @@ function short(a){
               address: TOKEN_ADDRESS,
               symbol: "CAPI",
               decimals: 18,
+              image: `${location.origin}${import.meta.env.BASE_URL}logo/capitoken-white.png`,
             },
           },
         });
@@ -455,40 +447,20 @@ function short(a){
       `;
     }
 
-    function hydrateLaunchPanel(){
-      // Contract / pair text
-      if($("#contractText")) $("#contractText").textContent = TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA — verify only here";
-      if($("#pairText")) $("#pairText").textContent = DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA";
-
-      // Copy buttons
-      $("#copyContractBtn")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
-      $("#copyPairBtn")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
-
-      // Wallet
-      $("#connectWalletBtn")?.addEventListener("click", connectInjected);
-      $("#watchTokenBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); watchToken(); });
-
-      // Disable verify links until you publish verify page + addresses
-      if(!TOKEN_ADDRESS){
-        $("#verifyContractBtn")?.setAttribute("aria-disabled","true");
-      }
-      if(!DEX_PAIR_ADDRESS){
-        $("#verifyPairBtn")?.setAttribute("aria-disabled","true");
-      }
-
-      setDexLinks();
-    }
-
     document.addEventListener("DOMContentLoaded", async ()=>{
-      hydrateLaunchPanel();
       
+
+  // Copy buttons (safe: disabled until addresses exist)
+  $("#btnCopyToken")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
+  $("#btnCopyPair")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
+setDexLinks();
+
+      $("#btnConnect")?.addEventListener("click", connectInjected);
+      $("#btnWatch")?.addEventListener("click", watchToken);
 
       // Try live data (safe: will do nothing until TOKEN_ADDRESS is set)
       await loadDexScreener();
       setInterval(loadDexScreener, 45000);
     });
   </script>
-
-  <!-- Minimal UI helpers (safe/no dependencies) -->
-  <div id="toast" class="toast" aria-live="polite"></div>
 </BaseLayout>
