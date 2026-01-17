@@ -1,32 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { PROJECT, TOKEN, isAddress, tokenReady } from "../lib/token";
+import { PROJECT, TOKEN } from "../lib/token";
 
 const TOKEN_ADDR = TOKEN.address;
 const PAIR_ADDR = TOKEN.pairOrPoolAddress;
-
-// APIs (Dexscreener es lo más directo para DEX)
-const dexByToken = (addr) => `https://api.dexscreener.com/latest/dex/tokens/${addr}`;
-const dexByPair = (addr) => `https://api.dexscreener.com/latest/dex/pairs/ethereum/${addr}`;
-
-// UI helper
-function fmtNum(n) {
-  if (n === null || n === undefined || Number.isNaN(n)) return "—";
-  const num = Number(n);
-  if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
-  if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
-  if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
-  if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
-  return num.toFixed(2);
-}
-
-function fmtUsd(n) {
-  if (n === null || n === undefined || Number.isNaN(n)) return "—";
-  const num = Number(n);
-  if (num < 0.01) return "$" + num.toFixed(6);
-  if (num < 1) return "$" + num.toFixed(4);
-  return "$" + num.toFixed(2);
-}
 ---
 
 <BaseLayout
@@ -36,7 +13,16 @@ function fmtUsd(n) {
   <main class="container">
     <section class="hero">
       <div class="pill"><span class="pill__dot"></span><span>Live Dashboard</span></div>
-      <h1><span class="iconwrap"><img class="icon icon--lg icon-neutral" src={import.meta.env.BASE_URL + "icons/wallet.svg"} alt="" /> Live Dashboard</span></h1>
+      <h1>
+        <span class="iconwrap">
+          <img
+            class="icon icon--lg icon-neutral"
+            src={import.meta.env.BASE_URL + "icons/wallet.svg"}
+            alt=""
+          />
+          Live Dashboard
+        </span>
+      </h1>
       <p class="hero__lead">
         Real-time market data will appear here after launch. Always verify official info on
         <a href="./verify">/verify</a>.
@@ -45,18 +31,9 @@ function fmtUsd(n) {
 
     <section class="section">
       <div class="card">
-        <div class="kv">
-          <strong>Network</strong>
-          <span>{PROJECT.chain}</span>
-        </div>
-        <div class="kv">
-          <strong>Token contract</strong>
-          <span class="mono">{TOKEN_ADDR}</span>
-        </div>
-        <div class="kv">
-          <strong>Pair/Pool</strong>
-          <span class="mono">{PAIR_ADDR}</span>
-        </div>
+        <div class="kv"><strong>Network</strong><span>{PROJECT.chain}</span></div>
+        <div class="kv"><strong>Token contract</strong><span class="mono">{TOKEN_ADDR}</span></div>
+        <div class="kv"><strong>Pair/Pool</strong><span class="mono">{PAIR_ADDR}</span></div>
       </div>
 
       <p class="small" style="margin-top:12px;">
@@ -73,10 +50,15 @@ function fmtUsd(n) {
       </div>
 
       <div class="embed" style="margin-top:14px;">
-  <iframe id="dex-embed" title="DexScreener chart (embed)" loading="lazy" referrerpolicy="no-referrer"></iframe>
-</div>
+        <iframe
+          id="dex-embed"
+          title="DexScreener chart (embed)"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
 
-<div id="live-state" class="card">
+      <div id="live-state" class="card" style="margin-top:14px;">
         <div class="kv"><strong>Status</strong><span>Loading…</span></div>
       </div>
 
@@ -98,7 +80,6 @@ function fmtUsd(n) {
     </section>
   </main>
 
-  <!-- ✅ FIX: usar define:vars para inyectar variables de Astro al script -->
   <script type="module" define:vars={{ TOKEN_ADDR, PAIR_ADDR }}>
     const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(v);
 
@@ -122,19 +103,19 @@ function fmtUsd(n) {
 
     const state = document.getElementById("live-state");
     const grid = document.getElementById("live-grid");
+    const iframe = document.getElementById("dex-embed");
 
-const iframe = document.getElementById("dex-embed");
-function setEmbed(){
-  if(!iframe) return;
-  // DexScreener embed: prefer pair, fallback to token
-  if (isAddr(PAIR_ADDR)) {
-    iframe.src = `https://dexscreener.com/ethereum/${PAIR_ADDR}?embed=1&theme=dark&trades=0&info=0`;
-  } else if (isAddr(TOKEN_ADDR)) {
-    iframe.src = `https://dexscreener.com/ethereum/${TOKEN_ADDR}?embed=1&theme=dark&trades=0&info=0`;
-  } else {
-    iframe.src = "about:blank";
-  }
-}
+    function setEmbed() {
+      if (!iframe) return;
+      // DexScreener embed: prefer pair, fallback to token
+      if (isAddr(PAIR_ADDR)) {
+        iframe.src = `https://dexscreener.com/ethereum/${PAIR_ADDR}?embed=1&theme=dark&trades=0&info=0`;
+      } else if (isAddr(TOKEN_ADDR)) {
+        iframe.src = `https://dexscreener.com/ethereum/${TOKEN_ADDR}?embed=1&theme=dark&trades=0&info=0`;
+      } else {
+        iframe.src = "about:blank";
+      }
+    }
 
     const setStatus = (msg) => {
       state.innerHTML = `<div class="kv"><strong>Status</strong><span>${msg}</span></div>`;
@@ -144,15 +125,13 @@ function setEmbed(){
       document.getElementById("price").textContent = fmtUsd(d.priceUsd);
       document.getElementById("liquidity").textContent = "$" + fmtNum(d.liquidityUsd);
       document.getElementById("volume").textContent = "$" + fmtNum(d.volume24hUsd);
-      document.getElementById("change").textContent =
-        (d.change24hPct ?? "—") + (d.change24hPct !== null ? "%" : "");
+      document.getElementById("change").textContent = (d.change24hPct ?? "—") + (d.change24hPct !== null ? "%" : "");
       document.getElementById("dex").textContent = d.dex ?? "—";
       document.getElementById("pair").textContent = d.pair ?? "—";
       grid.style.display = "";
     };
 
     async function fetchDex() {
-      // If no addresses yet
       if (!isAddr(TOKEN_ADDR) && !isAddr(PAIR_ADDR)) {
         setStatus("TBA — contract/pair not published yet. Check /verify.");
         return;
@@ -161,12 +140,9 @@ function setEmbed(){
       try {
         setStatus("Fetching live data…");
 
-        let url = null;
-        if (isAddr(PAIR_ADDR)) {
-          url = `https://api.dexscreener.com/latest/dex/pairs/ethereum/${PAIR_ADDR}`;
-        } else {
-          url = `https://api.dexscreener.com/latest/dex/tokens/${TOKEN_ADDR}`;
-        }
+        const url = isAddr(PAIR_ADDR)
+          ? `https://api.dexscreener.com/latest/dex/pairs/ethereum/${PAIR_ADDR}`
+          : `https://api.dexscreener.com/latest/dex/tokens/${TOKEN_ADDR}`;
 
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error("DexScreener HTTP " + res.status);
@@ -199,7 +175,6 @@ function setEmbed(){
 
     setEmbed();
     fetchDex();
-    // Optional auto-refresh every 60s
     setInterval(fetchDex, 60000);
   </script>
 </BaseLayout>

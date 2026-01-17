@@ -1,123 +1,62 @@
 ---
-const title = "Capitoken Auto Trust Engine";
+const title = "Capitoken Trust Snapshot (Live)";
 ---
 
-<section class="trust-card" data-trust-root>
-  <header>
-    <h2>{title}</h2>
-    <p class="muted">Read-only verification. No signatures. No approvals.</p>
+<section class="tp-card" id="trustPanel">
+  <header class="tp-header">
+    <h2 class="tp-title">{title}</h2>
+    <p class="tp-muted">Read-only verification. No signatures. No approvals.</p>
   </header>
 
-  <div class="grid">
-    <div class="row"><span>Wallet</span><strong data-wallet>—</strong></div>
-    <div class="row"><span>Network</span><strong data-network>—</strong></div>
-    <div class="row"><span>Token</span><strong data-token>—</strong></div>
-    <div class="row"><span>Contract</span><strong data-contract>—</strong></div>
-    <div class="row"><span>Uniswap Pair</span><strong data-pair>—</strong></div>
-    <div class="row"><span>Liquidity (WETH)</span><strong data-liq>—</strong></div>
-    <div class="row"><span>Trust Score</span><strong data-score>—</strong></div>
+  <div class="tp-grid">
+    <div class="tp-line"><span>Wallet</span><strong id="tp_wallet">—</strong></div>
+    <div class="tp-line"><span>Network</span><strong id="tp_network">—</strong></div>
+    <div class="tp-line"><span>Token</span><strong id="tp_token">—</strong></div>
+    <div class="tp-line"><span>Contract</span><strong id="tp_contract">—</strong></div>
+    <div class="tp-line"><span>Uniswap Pair</span><strong id="tp_pair">—</strong></div>
+    <div class="tp-line"><span>Liquidity (WETH)</span><strong id="tp_liq">—</strong></div>
+    <div class="tp-line"><span>Market</span><strong id="tp_market">—</strong></div>
+
+    <div class="tp-line"><span>Price</span><strong id="tp_price">—</strong></div>
+    <div class="tp-line"><span>Liquidity (USD)</span><strong id="tp_liqusd">—</strong></div>
+    <div class="tp-line"><span>24h Volume</span><strong id="tp_vol">—</strong></div>
+    <div class="tp-line"><span>FDV (est.)</span><strong id="tp_fdv">—</strong></div>
+
+    <div class="tp-line"><span>Trust Score</span><strong id="tp_score">—</strong></div>
   </div>
 
-  <div class="alerts" data-alerts></div>
+  <div class="tp-alerts" id="tp_alerts"></div>
 
-  <div class="actions">
-    <button class="btn" data-connect>Connect Wallet</button>
-    <button class="btn" data-switch>Switch to Mainnet</button>
-    <button class="btn" data-addtoken>Add Capitoken to MetaMask</button>
-    <a class="btn secondary" data-etherscan target="_blank" rel="noopener">View on Etherscan</a>
-    <a class="btn secondary" data-uniswap target="_blank" rel="noopener">Buy on Uniswap</a>
+  <div class="tp-actions">
+    <button class="tp-btn" id="tp_connect" type="button">Connect Wallet</button>
+    <button class="tp-btn" id="tp_switch" type="button">Switch to Mainnet</button>
+    <button class="tp-btn" id="tp_addtoken" type="button">Add Capitoken to MetaMask</button>
+
+    <a class="tp-btn tp-btn--secondary" id="tp_etherscan" target="_blank" rel="noopener">View on Etherscan</a>
+    <a class="tp-btn tp-btn--secondary" id="tp_uniswap" target="_blank" rel="noopener nofollow">Buy on Uniswap</a>
+    <a class="tp-btn tp-btn--secondary" id="tp_dex" target="_blank" rel="noopener">DexScreener</a>
   </div>
-
-  <script type="module">
-    import { getTrustState, connectWallet, switchToMainnet, addTokenToWallet, CONFIG } from "../js/trust-engine.js";
-
-    const $ = (sel) => document.querySelector(sel);
-    const root = document.querySelector("[data-trust-root]");
-
-    const el = {
-      wallet: root.querySelector("[data-wallet]"),
-      network: root.querySelector("[data-network]"),
-      token: root.querySelector("[data-token]"),
-      contract: root.querySelector("[data-contract]"),
-      pair: root.querySelector("[data-pair]"),
-      liq: root.querySelector("[data-liq]"),
-      score: root.querySelector("[data-score]"),
-      alerts: root.querySelector("[data-alerts]"),
-      connect: root.querySelector("[data-connect]"),
-      sw: root.querySelector("[data-switch]"),
-      add: root.querySelector("[data-addtoken]"),
-      etherscan: root.querySelector("[data-etherscan]"),
-      uniswap: root.querySelector("[data-uniswap]"),
-    };
-
-    function fmtWeiToEth(wei) {
-      if (!wei) return "—";
-      const s = wei.toString();
-      if (s.length <= 18) return "0." + s.padStart(18, "0").slice(0, 4);
-      const i = s.slice(0, s.length - 18);
-      const d = s.slice(s.length - 18, s.length - 14);
-      return i + "." + d;
-    }
-
-    function setAlerts(list) {
-      if (!list?.length) {
-        el.alerts.innerHTML = "";
-        return;
-      }
-      el.alerts.innerHTML = list.map(a => `<div class="alert">${a}</div>`).join("");
-    }
-
-    async function render() {
-      const s = await getTrustState();
-
-      el.wallet.textContent = s.accountShort || (s.metamask ? "Not connected" : "MetaMask not detected");
-      el.network.textContent = s.chainOk ? "Ethereum Mainnet ✅" : (s.chainId ? `Wrong network (${s.chainId}) ❌` : "—");
-
-      const tokenLine = s.tokenSymbol ? `${s.tokenName || "Token"} (${s.tokenSymbol})` : "—";
-      el.token.textContent = tokenLine;
-
-      el.contract.textContent = s.contractExists ? "Verified (code present) ✅" : "Not found ❌";
-      el.pair.textContent = s.uniswapPair ? s.uniswapPair : "—";
-      el.liq.textContent = s.liquidityEth ? `${fmtWeiToEth(s.liquidityEth)} WETH` : "—";
-      el.score.textContent = `${s.trustScore}/100 — ${s.trustLabel}`;
-
-      setAlerts(s.alerts);
-
-      el.etherscan.href = `https://etherscan.io/token/${CONFIG.CAPITOKEN_ADDRESS}`;
-      el.uniswap.href = `https://app.uniswap.org/#/swap?outputCurrency=${CONFIG.CAPITOKEN_ADDRESS}`;
-    }
-
-    el.connect.addEventListener("click", async () => {
-      try { await connectWallet(); await render(); } catch (e) { console.error(e); }
-    });
-
-    el.sw.addEventListener("click", async () => {
-      try { await switchToMainnet(); await render(); } catch (e) { console.error(e); }
-    });
-
-    el.add.addEventListener("click", async () => {
-      try { await addTokenToWallet(); } catch (e) { console.error(e); }
-    });
-
-    // live refresh
-    render();
-    if (window.ethereum) {
-      window.ethereum.on?.("chainChanged", render);
-      window.ethereum.on?.("accountsChanged", render);
-    }
-    setInterval(render, 15000);
-  </script>
 </section>
 
 <style>
-  .trust-card{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;max-width:720px}
-  header h2{margin:0 0 6px 0}
-  .muted{opacity:.7;margin:0 0 14px 0}
-  .grid{display:grid;gap:10px}
-  .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
-  .alerts{margin-top:12px;display:grid;gap:8px}
-  .alert{border:1px solid rgba(255,0,0,.35);padding:10px;border-radius:12px;font-size:.95rem}
-  .actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
-  .btn{border:1px solid rgba(255,255,255,.18);padding:10px 12px;border-radius:12px;text-decoration:none;background:transparent;color:inherit;cursor:pointer}
-  .btn.secondary{opacity:.85}
+  .tp-card{
+    width:100%;
+    margin:16px 0 0 0;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    padding:16px;
+    background: rgba(0,0,0,.20);
+    backdrop-filter: blur(8px);
+  }
+  .tp-title{margin:0 0 6px 0}
+  .tp-muted{opacity:.75;margin:0 0 14px 0}
+  .tp-grid{display:grid;gap:10px}
+  .tp-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
+  .tp-line span{opacity:.85}
+  .tp-line strong{font-weight:800}
+  .tp-alerts{margin-top:12px;display:grid;gap:8px}
+  .tp-alert{border:1px solid rgba(255,0,0,.35);padding:10px;border-radius:12px;font-size:.95rem}
+  .tp-actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
+  .tp-btn{border:1px solid rgba(255,255,255,.18);padding:10px 12px;border-radius:12px;text-decoration:none;background:transparent;color:inherit;cursor:pointer;line-height:1}
+  .tp-btn--secondary{opacity:.85}
 </style>

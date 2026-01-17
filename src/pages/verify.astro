@@ -3,6 +3,7 @@
  * Capitoken /verify — Single Source of Truth + Trust Logic
  * - Works with Astro base path (e.g., /capitoken-site/)
  * - Reads official registry from: /official-registry.json (served from public/)
+ * - Also supports pair + official links when present
  * - Shows mirror warning if hostname is not allowed
  */
 
@@ -121,7 +122,12 @@ const FALLBACK = {
             <div class="muted">Network</div>
             <div id="networkName">—</div>
 
-            <div class="muted">Token</div>
+            
+
+            <div class="muted">DEX Pair</div>
+            <div><span class="mono" id="pairAddr">—</span> <span class="muted" id="pairDex" style="margin-left:8px;"> </span></div>
+
+<div class="muted">Token</div>
             <div><span id="tokenName">—</span> (<span id="tokenSymbol">—</span>) · Decimals: <span id="tokenDecimals">—</span></div>
           </div>
         </div>
@@ -158,6 +164,13 @@ const FALLBACK = {
 
             <div class="muted">Etherscan Token</div>
             <div><a id="etherscanTokenLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Buy (Uniswap)</div>
+            <div><a id="buyLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Live Market</div>
+            <div><a id="marketLink" target="_blank" rel="noreferrer">—</a></div>
+
 
             <div class="muted">Mirror (GitHub Pages)</div>
             <div><a id="mirrorLink" target="_blank" rel="noreferrer">—</a></div>

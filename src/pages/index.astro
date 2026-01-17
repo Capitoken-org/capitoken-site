@@ -1,16 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-// Nota: dejé TrustPanel fuera para no romper build si aún no creaste los archivos de Fase 7.
-// Cuando lo tengas listo, lo reactivamos.
-// import TrustPanel from "../components/TrustPanel.astro";
+import TrustPanel from "../components/trustpanel.astro";
 
 const TITLE = "Capitoken (CAPI) — Official Website";
 const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
 
 // >>> EDITA AQUÍ cuando tengas data real <<<
-const TOKEN_ADDRESS = ""; // "0x..." (ETH mainnet)
-const DEX_PAIR_ADDRESS = ""; // opcional
+const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
+const DEX_PAIR_ADDRESS = "0xb96808b1270A89eA8A237d52df389619f347AeA2"; // opcional
 const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
 // >>> ------------------------------ <<<
 
@@ -102,52 +100,93 @@ const roadmap = [
       <h2><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Launch Panel</span></span></h2>
       <p class="small">Single source of truth for contract, DEX pair, and status.</p>
 
+      <div class="trust-badges" aria-label="Trust badges">
+        <span class="badge" id="badgeContract">Contract: Pending</span>
+        <span class="badge" id="badgePair">Pair: Pending</span>
+        <span class="badge" id="badgeMarket">Market: Pending</span>
+      </div>
+
       <div class="launch-grid">
+        <div class="launch-row">
         <!-- Contract -->
         <div class="card">
           <div class="label">Contract</div>
-          <div class="mono" id="contractText">TBA — verify only here</div>
 
-          <div class="actions" style="margin-top:10px;">
-            <button class="btn btn-primary" id="copyContractBtn" type="button">Copy</button>
-            <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyContractBtn">Verify</a>
+          <div class="card__body">
+            <div class="addr-row">
+              <span class="mono addr" id="contractShort">TBA — verify only here</span>
+              <div class="addr-actions">
+                <button class="btn btn--mini btn--primary" id="copyContractBtn" type="button">Copy</button>
+                <a class="btn btn--mini" id="verifyContractBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+              </div>
+            </div>
+
+            <details class="addr-details" id="contractDetails" style="display:none;">
+              <summary>Show full address</summary>
+              <div class="mono" id="contractFull"></div>
+            </details>
+
+            <div id="accountPill" class="pill" style="margin-top:12px; display:none;">
+              <span class="pill-dot"></span>
+              <span class="mono" id="acct">—</span>
+            </div>
+
+            <p class="small note" style="margin-top:12px;">
+              Read-only verification. No approvals. Never sign "verify" prompts. If it’s not listed on this site, assume it’s not official.
+            </p>
           </div>
 
-          <div class="actions" style="margin-top:10px;">
-            <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
-            <button class="btn" id="watchTokenBtn" type="button">Watch Token</button>
+          <div class="card__footer">
+            <div class="small">Wallet tools</div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
+              <button class="btn" id="watchTokenBtn" type="button">Add to MetaMask</button>
+            </div>
           </div>
-
-          <!-- mini pill de cuenta conectada -->
-          <div id="accountPill" class="pill" style="margin-top:12px; display:none;">
-            <span class="pill-dot"></span>
-            <span class="mono" id="acct">—</span>
-          </div>
-
-          <p class="small" style="margin-top:12px;">
-            Security note: Scammers will copy names and logos. Verify contract + links ONLY here.
-          </p>
         </div>
 
-        <!-- DEX Pair -->
+<!-- DEX Pair -->
         <div class="card">
           <div class="label">DEX Pair</div>
-          <div class="mono" id="pairText">TBA</div>
 
-          <div class="actions" style="margin-top:10px;">
-            <button class="btn btn-primary" id="copyPairBtn" type="button">Copy</button>
-            <a class="btn" href={import.meta.env.BASE_URL + "verify/"} id="verifyPairBtn">Verify</a>
+          <div class="card__body">
+            <div class="addr-row">
+              <span class="mono addr" id="pairShort">TBA</span>
+              <div class="addr-actions">
+                <button class="btn btn--mini btn--primary" id="copyPairBtn" type="button">Copy</button>
+                <a class="btn btn--mini" id="verifyPairBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+              </div>
+            </div>
+
+            <details class="addr-details" id="pairDetails" style="display:none;">
+              <summary>Show full pair</summary>
+              <div class="mono" id="pairFull"></div>
+            </details>
+
+            <p class="small note" style="margin-top:12px;">
+              Only use official swap links from this panel. Scammers often publish fake pairs.
+            </p>
           </div>
 
-          <div class="small" style="margin-top:12px;">Quick Uniswap routes</div>
-          <div class="route-actions">
-            <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
-            <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
+          <div class="card__footer">
+            <div class="actions">
+              <a class="btn btn--primary" id="buyOnUniswap" href="#" target="_blank" rel="noreferrer noopener nofollow">Buy $CAPI</a>
+              <a class="btn" id="openDexScreener" href="#" target="_blank" rel="noreferrer noopener">Live Market</a>
+            </div>
+
+            <div class="small" style="margin-top:10px;">Quick Uniswap routes</div>
+            <div class="actions" style="margin-top:10px;">
+              <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
+              <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
+            </div>
           </div>
         </div>
 
+        </div>
+
+        <div class="launch-row">
         <!-- Live Market Snapshot -->
-        <div class="card span-all">
+        <div class="card">
           <div class="h3">Live Market Snapshot</div>
           <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
 
@@ -168,7 +207,7 @@ const roadmap = [
         </div>
 
         <!-- Recent Activity -->
-        <div class="card span-all">
+        <div class="card">
           <div class="h3">Recent Activity</div>
           <div class="small">Shows recent activity (placeholder until contract is published).</div>
 
@@ -183,11 +222,10 @@ const roadmap = [
             </table>
           </div>
         </div>
+        </div>
       </div>
 
-      <!-- Cuando actives Fase 7 UI real:
-        <TrustPanel />
-      -->
+      <TrustPanel />
     </div>
   </section>
 
@@ -464,6 +502,15 @@ const roadmap = [
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const $ = (s) => document.querySelector(s);
 
+    // Registry-first runtime state (single source of truth)
+    let tokenAddr = (typeof TOKEN_ADDRESS === "string" ? TOKEN_ADDRESS : "");
+    let pairAddr = (typeof DEX_PAIR_ADDRESS === "string" ? DEX_PAIR_ADDRESS : "");
+    let explorerBase = "https://etherscan.io";
+    let networkName = "Ethereum Mainnet";
+    let tokenMeta = { symbol: "CAPI", decimals: 18, image: "" };
+    let registryLinks = {};
+
+
 // Phase 8 Trust UI: reads public/official-registry.json (same source as /verify)
 const FALLBACK_REGISTRY = {
   officialDomain: "www.capitoken.org",
@@ -499,6 +546,18 @@ async function loadRegistry() {
 
 async function initTrustHero() {
   const data = await loadRegistry();
+
+  // Capture registry values for the whole page
+  explorerBase = String(data?.network?.explorer || explorerBase);
+  networkName = String(data?.network?.name || networkName);
+  tokenAddr = String(data?.contract?.address || tokenAddr || "");
+  pairAddr = String((data?.pair?.address) || pairAddr || "");
+  tokenMeta = {
+    symbol: String(data?.contract?.token?.symbol || tokenMeta.symbol || "CAPI"),
+    decimals: Number(data?.contract?.token?.decimals ?? tokenMeta.decimals ?? 18),
+    image: String(data?.links?.tokenImage || tokenMeta.image || "")
+  };
+  registryLinks = (data?.links && typeof data.links === "object") ? data.links : {};
   const host = window.location.hostname;
   const allowed = new Set((data.allowedDomains || []).map((x) => String(x).toLowerCase()));
   const isOfficialHost = allowed.has(String(host).toLowerCase());
@@ -577,15 +636,92 @@ async function initTrustHero() {
     }
 
     function setLaunchTexts(){
-      $("#contractText").textContent = TOKEN_ADDRESS ? TOKEN_ADDRESS : "TBA — verify only here";
-      $("#pairText").textContent = DEX_PAIR_ADDRESS ? DEX_PAIR_ADDRESS : "TBA";
+      const c = tokenAddr ? tokenAddr : "";
+      const p = pairAddr ? pairAddr : "";
+      const explorer = (explorerBase || "https://etherscan.io") + "/address/";
+
+      // Contract
+      const cShort = c ? short(c) : "TBA — verify only here";
+      if($("#contractShort")) $("#contractShort").textContent = cShort;
+      if($("#contractFull")) $("#contractFull").textContent = c;
+      if($("#contractDetails")) $("#contractDetails").style.display = c ? "block" : "none";
+
+      const vc = $("#verifyContractBtn");
+      if(vc){
+        if(c){
+          vc.href = (registryLinks.etherscanToken || (explorer + c));
+          vc.removeAttribute("aria-disabled");
+          vc.classList.remove("is-disabled");
+        }else{
+          vc.href = "#";
+          vc.setAttribute("aria-disabled","true");
+          vc.classList.add("is-disabled");
+        }
+      }
+
+      // Pair
+      const pShort = p ? short(p) : "TBA";
+      if($("#pairShort")) $("#pairShort").textContent = pShort;
+      if($("#pairFull")) $("#pairFull").textContent = p;
+      if($("#pairDetails")) $("#pairDetails").style.display = p ? "block" : "none";
+
+      const vp = $("#verifyPairBtn");
+      if(vp){
+        if(p){
+          vp.href = (registryLinks.etherscanPair || (explorer + p));
+          vp.removeAttribute("aria-disabled");
+          vp.classList.remove("is-disabled");
+        }else{
+          vp.href = "#";
+          vp.setAttribute("aria-disabled","true");
+          vp.classList.add("is-disabled");
+        }
+      }
+
+      // Badges
+      const bc = document.getElementById("badgeContract");
+      const bp = document.getElementById("badgePair");
+      const bm = document.getElementById("badgeMarket");
+      if(bc) bc.textContent = c ? "Contract: Set" : "Contract: Pending";
+      if(bp) bp.textContent = p ? "Pair: Set" : "Pair: Pending";
+      if(bm) bm.textContent = (c || p) ? "Market: Loading" : "Market: Pending";
+
+      // Primary CTAs
+      const buy = $("#buyOnUniswap");
+      const mkt = $("#openDexScreener");
+      if(buy){
+        if(c){
+          buy.href = (registryLinks.buy || uniswapUrl("ETH", c));
+          buy.removeAttribute("aria-disabled");
+          buy.classList.remove("is-disabled");
+        }else{
+          buy.href = "#";
+          buy.setAttribute("aria-disabled","true");
+          buy.classList.add("is-disabled");
+        }
+      }
+      if(mkt){
+        if(p){
+          mkt.href = (registryLinks.market || `https://dexscreener.com/ethereum/${p}`);
+          mkt.removeAttribute("aria-disabled");
+          mkt.classList.remove("is-disabled");
+        }else if(c){
+          mkt.href = (registryLinks.market || `https://dexscreener.com/ethereum/${c}`);
+          mkt.removeAttribute("aria-disabled");
+          mkt.classList.add("is-disabled");
+        }else{
+          mkt.href = "#";
+          mkt.setAttribute("aria-disabled","true");
+          mkt.classList.add("is-disabled");
+        }
+      }
     }
 
     function setDexLinks(){
       const a1 = $("#dexWethToCapi");
       const a2 = $("#dexCapiToWeth");
 
-      if(!TOKEN_ADDRESS){
+      if(!tokenAddr){
         [a1,a2].forEach(a=>{
           if(!a) return;
           a.href = "#";
@@ -595,8 +731,8 @@ async function initTrustHero() {
         return;
       }
 
-      if(a1) a1.href = uniswapUrl("ETH", TOKEN_ADDRESS);
-      if(a2) a2.href = uniswapUrl(TOKEN_ADDRESS, "ETH");
+      if(a1) a1.href = uniswapUrl("ETH", tokenAddr);
+      if(a2) a2.href = uniswapUrl(tokenAddr, "ETH");
     }
 
     async function connectInjected(){
@@ -611,7 +747,7 @@ async function initTrustHero() {
     }
 
     async function watchToken(){
-      if(!TOKEN_ADDRESS){
+      if(!tokenAddr){
         alert("Token address is still TBA.");
         return;
       }
@@ -625,7 +761,7 @@ async function initTrustHero() {
           params: {
             type: "ERC20",
             options: {
-              address: TOKEN_ADDRESS,
+              address: tokenAddr,
               symbol: "CAPI",
               decimals: 18,
               // Ajusta a tu asset real en /public/assets/
@@ -641,22 +777,46 @@ async function initTrustHero() {
     }
 
     async function loadDexScreener(){
-      if(!TOKEN_ADDRESS) return;
+      const bm = document.getElementById("badgeMarket");
+      const setMarketBadge = (txt) => { if(bm) bm.textContent = txt; };
 
-      const url = `https://api.dexscreener.com/latest/dex/tokens/${TOKEN_ADDRESS}`;
-      const r = await fetch(url);
-      if(!r.ok) return;
-      const j = await r.json();
-      const pairs = j?.pairs || [];
+      if(!tokenAddr && !pairAddr){
+        setMarketBadge("Market: Pending");
+        return;
+      }
 
-      let p = null;
-      if(DEX_PAIR_ADDRESS){
-        p = pairs.find(x => (x?.pairAddress || "").toLowerCase() === DEX_PAIR_ADDRESS.toLowerCase()) || null;
-      }
-      if(!p){
-        p = pairs.slice().sort((a,b) => (b?.liquidity?.usd||0) - (a?.liquidity?.usd||0))[0] || null;
-      }
-      if(!p) return;
+      // 1) Prefer pair endpoint (most reliable)
+      const tryFetch = async (url) => {
+        const r = await fetch(url, { cache: "no-store" });
+        if(!r.ok) throw new Error("HTTP " + r.status);
+        return await r.json();
+      };
+
+      try{
+        setMarketBadge("Market: Loading");
+
+        let pairs = [];
+        if(pairAddr){
+          const jPair = await tryFetch(`https://api.dexscreener.com/latest/dex/pairs/ethereum/${pairAddr}`);
+          pairs = jPair?.pairs || [];
+        }
+
+        // 2) Fallback to token endpoint (then filter by chain)
+        if(!pairs.length && tokenAddr){
+          const jTok = await tryFetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddr}`);
+          pairs = (jTok?.pairs || []).filter(x => (x?.chainId || "").toLowerCase() === "ethereum");
+        }
+
+        if(!pairs.length){
+          setMarketBadge("Market: Pending");
+          return;
+        }
+
+        // Choose the best pair (highest liquidity)
+        pairs = pairs.slice().sort((a,b) => (b?.liquidity?.usd||0) - (a?.liquidity?.usd||0));
+        const p = pairs[0];
+
+      setMarketBadge("Market: Live");
 
       $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
       $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
@@ -673,17 +833,24 @@ async function initTrustHero() {
           <td class="mono"><a href="${p.url}" target="_blank" rel="noreferrer">Open pair</a></td>
         </tr>
       `;
+      }catch(e){
+        // Most common: adblock / privacy extension blocking api.dexscreener.com
+        setMarketBadge("Market: Blocked");
+        console.warn("DexScreener fetch failed", e);
+      }
     }
 
     document.addEventListener("DOMContentLoaded", async ()=>{
       await initTrustHero();
-      // Textos
+      // Re-sync CTAs from registry values
       setLaunchTexts();
+      setDexLinks();
+      syncNetworkLabels();
       setDexLinks();
 
       // Copy buttons
-      $("#copyContractBtn")?.addEventListener("click", ()=> copyText(TOKEN_ADDRESS));
-      $("#copyPairBtn")?.addEventListener("click", ()=> copyText(DEX_PAIR_ADDRESS));
+      $("#copyContractBtn")?.addEventListener("click", ()=> copyText(tokenAddr));
+      $("#copyPairBtn")?.addEventListener("click", ()=> copyText(pairAddr));
 
       // Wallet
       $("#connectWalletBtn")?.addEventListener("click", connectInjected);
@@ -693,7 +860,21 @@ async function initTrustHero() {
       await loadDexScreener();
       setInterval(loadDexScreener, 45000);
     });
-  </script>
+  
+
+    function syncNetworkLabels(){
+      // Update the Live Market card pill label (first .pill inside Live Market Snapshot card)
+      const pills = document.querySelectorAll('#launchpanel .h3 + .small + .pill span');
+      // Fallback: find any pill that contains 'Ethereum' in launch panel and replace.
+      document.querySelectorAll('#launchpanel .pill').forEach((pill) => {
+        const spans = pill.querySelectorAll('span');
+        if (spans.length) {
+          const last = spans[spans.length-1];
+          if (last && /ethereum/i.test(last.textContent || '')) last.textContent = networkName;
+        }
+      });
+    }
+</script>
 
 <hr class="hr" />
 
@@ -716,6 +897,164 @@ async function initTrustHero() {
         if(!prev) localStorage.setItem(key, d.buildId);
       }).catch(function(){});
     }catch(e){}
+  })();
+</script>
+<script is:inline type="module">
+  console.log("[TrustPanel] root script boot");
+
+  const $id = (id) => document.getElementById(id);
+  const el = {
+    wallet: $id("tp_wallet"),
+    network: $id("tp_network"),
+    token: $id("tp_token"),
+    contract: $id("tp_contract"),
+    pair: $id("tp_pair"),
+    liq: $id("tp_liq"),
+    market: $id("tp_market"),
+    price: $id("tp_price"),
+    liqusd: $id("tp_liqusd"),
+    vol: $id("tp_vol"),
+    fdv: $id("tp_fdv"),
+    score: $id("tp_score"),
+    alerts: $id("tp_alerts"),
+    connect: $id("tp_connect"),
+    sw: $id("tp_switch"),
+    add: $id("tp_addtoken"),
+    etherscan: $id("tp_etherscan"),
+    uniswap: $id("tp_uniswap"),
+    dex: $id("tp_dex"),
+
+    // Launch Panel "Live Market Snapshot" (top cards)
+    mPrice: $id("mPrice"),
+    mMcap: $id("mMcap"),
+    mLiq: $id("mLiq"),
+    mVol: $id("mVol"),
+  };
+
+  const shortAddr = (a) => (a ? `${a.slice(0,6)}...${a.slice(-4)}` : "—");
+
+  function fmtWeiToEth(wei) {
+    if (wei === null || wei === undefined) return "—";
+    const s = wei.toString();
+    if (!s || s === "0") return "0.0000";
+    if (s.length <= 18) return "0." + s.padStart(18, "0").slice(0, 4);
+    const i = s.slice(0, s.length - 18);
+    const d = s.slice(s.length - 18, s.length - 14);
+    return i + "." + d;
+  }
+
+  function fmtUsd(v) {
+    if (v === null || v === undefined || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return String(v);
+    return n >= 1e9 ? `$${(n/1e9).toFixed(2)}B`
+         : n >= 1e6 ? `$${(n/1e6).toFixed(2)}M`
+         : n >= 1e3 ? `$${(n/1e3).toFixed(2)}K`
+         : `$${n.toFixed(6)}`;
+  }
+
+  function setAlerts(list) {
+    if (!el.alerts) return;
+    if (!list?.length) { el.alerts.innerHTML = ""; return; }
+
+    // Friendly alert copy (keep codes concise, avoid panic language)
+    const map = {
+      MARKET_NOT_INDEXED: "DexScreener: indexing in progress (can take minutes-hours).",
+      LOW_LIQUIDITY: "Liquidity is still low (early launch).",
+      DOMAIN_ALLOWLIST_EMPTY: "Domain allowlist not set in registry (set before production).",
+      DOMAIN_NOT_ALLOWED: "Domain not in allowlist (security check)."
+    };
+
+    el.alerts.innerHTML = list
+      .map(a => `<div class="tp-alert">${map[a] || a}</div>`)
+      .join("");
+  }
+
+
+  async function loadEngine() {
+    // Browser-safe base resolver (works with Astro base like /capitoken-site/)
+    // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
+    const base = new URL('.', window.location.href);
+    const url = new URL('js/trust-engine.js', base).toString();
+
+    const mod = await import(url);
+    console.log('[TrustPanel] engine loaded', url);
+    return mod;
+  }
+
+
+  async function render(engine) {
+    const s = await engine.getSnapshot();
+
+    el.wallet.textContent = s.accountShort || (s.metamask ? "Not connected" : "MetaMask not detected");
+    el.network.textContent = s.chainOk ? "Ethereum Mainnet ✅"
+      : (s.chainId ? `Wrong network (${s.chainId}) ❌` : "—");
+
+    el.token.textContent = s.tokenSymbol ? `${s.tokenName || "Token"} (${s.tokenSymbol})` : "—";
+    el.contract.textContent = s.contractExists ? "Verified (code present) ✅" : "Not found ❌";
+
+    const pair = s.uniswapPairOnChain || "—";
+    el.pair.textContent = s.pairMatchesExpected === false
+      ? `${shortAddr(pair)} ⚠️ mismatch`
+      : (pair !== "—" ? `${shortAddr(pair)} ✅` : "—");
+
+    el.liq.textContent = (s.liquidityEthWei !== null && s.liquidityEthWei !== undefined)
+      ? `${fmtWeiToEth(s.liquidityEthWei)} WETH`
+      : "—";
+
+    el.market.textContent =
+      s.marketStatus === "LIVE" ? `LIVE ✅ (${s.dexId || "DEX"})`
+      : s.marketStatus === "NOT_INDEXED" ? "Indexing on DexScreener ⏳"
+      : s.marketStatus === "UNAVAILABLE" ? "Unavailable ⚠️"
+      : (s.marketStatus || "—");
+
+    el.price.textContent = s.priceUsd ? `$${Number(s.priceUsd).toFixed(8)}` : "—";
+    el.liqusd.textContent = fmtUsd(s.liquidityUsd);
+    el.vol.textContent = fmtUsd(s.volumeH24);
+    el.fdv.textContent = fmtUsd(s.fdv);
+
+    // Keep Launch Panel "Live Market Snapshot" coherent with Trust Snapshot
+    if (el.mPrice) el.mPrice.textContent = s.priceUsd ? `$${Number(s.priceUsd).toFixed(8)}` : "—";
+    // Use FDV as market cap estimate until you have a better metric
+    if (el.mMcap) el.mMcap.textContent = fmtUsd(s.fdv);
+    // Prefer USD liquidity if available, fallback to WETH
+    if (el.mLiq) el.mLiq.textContent = (s.liquidityUsd != null && s.liquidityUsd !== undefined && s.liquidityUsd !== "")
+      ? fmtUsd(s.liquidityUsd)
+      : ((s.liquidityEthWei != null && s.liquidityEthWei !== undefined) ? `${fmtWeiToEth(s.liquidityEthWei)} WETH` : "—");
+    if (el.mVol) el.mVol.textContent = fmtUsd(s.volumeH24);
+
+    el.score.textContent = `${s.trustScore}/100 — ${s.trustLabel}`;
+    setAlerts(s.alerts);
+
+    const C = engine.CONFIG;
+    el.etherscan.href = `https://etherscan.io/token/${C.CAPITOKEN_ADDRESS}`;
+    el.uniswap.href = `https://app.uniswap.org/#/swap?outputCurrency=${C.CAPITOKEN_ADDRESS}`;
+    const chain = s.registry?.pair?.chain || "ethereum";
+    el.dex.href = `https://dexscreener.com/${chain}/${C.UNISWAP_PAIR_EXPECTED}`;
+  }
+
+  (async () => {
+    try {
+      // si no existe el panel en el DOM, no hacemos nada
+      if (!document.getElementById("trustPanel")) return;
+
+      const engine = await loadEngine();
+      await render(engine);
+
+      el.connect?.addEventListener("click", async () => { try { await engine.connectWallet(); await render(engine); } catch(e){ console.error(e);} });
+      el.sw?.addEventListener("click", async () => { try { await engine.switchToMainnet(); await render(engine); } catch(e){ console.error(e);} });
+      el.add?.addEventListener("click", async () => { try { await engine.addTokenToWallet(); } catch(e){ console.error(e);} });
+
+      if (window.ethereum) {
+        window.ethereum.on?.("chainChanged", () => render(engine));
+        window.ethereum.on?.("accountsChanged", () => render(engine));
+      }
+
+      setInterval(() => render(engine), 45000);
+    } catch (e) {
+      console.error("[TrustPanel] failed", e);
+      setAlerts(["TRUST_ENGINE_LOAD_FAILED"]);
+    }
   })();
 </script>
 
