@@ -311,25 +311,3 @@ h3{margin:0 0 6px;font-size:18px}
   flex-wrap: wrap;
   gap: 10px;
 }
-
-/* === HARDENING: Launch Panel card spacing (prevents "pegados") === */
-/* If anything else overrides grid gaps, these rules force visible separation. */
-.launch-grid{
-  gap: 22px !important;
-  row-gap: 22px !important;
-  column-gap: 22px !important;
-}
-.launch-grid > .card{
-  margin: 0 !important;
-}
-/* Extra safety for browsers that might collapse spacing in certain layouts */
-.launch-grid > .card + .card{
-  margin-top: 22px !important;
-}
-
-/* Routes buttons spacing */
-.routes{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px !important;
-}
