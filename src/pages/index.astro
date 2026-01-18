@@ -817,6 +817,9 @@ async function initTrustHero() {
       }
     }
 
+    // DexScreener is best-effort (it can be blocked by privacy/adblock or rate-limited).
+    // We must never let a transient DexScreener failure wipe or "flicker" the UI.
+    let __lastDexBadge = null;
     async function loadDexScreener(){
       const bm = document.getElementById("badgeMarket");
       const setMarketBadge = (txt) => { if(bm) bm.textContent = txt; };
@@ -834,7 +837,7 @@ async function initTrustHero() {
       };
 
       try{
-        setMarketBadge("Market: Loading");
+        setMarketBadge(__lastDexBadge || "Market: Loading");
 
         let pairs = [];
         if(pairAddr){
@@ -857,14 +860,11 @@ async function initTrustHero() {
         pairs = pairs.slice().sort((a,b) => (b?.liquidity?.usd||0) - (a?.liquidity?.usd||0));
         const p = pairs[0];
 
-      setMarketBadge("Market: Live");
-
-      $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
-      $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
-      $("#mVol").textContent = fmtUSD(p?.volume?.h24, 0);
-
-      const mc = p?.marketCap ?? p?.fdv ?? null;
-      $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
+      // Only set the badge here.
+      // Market numbers (#mPrice/#mLiq/#mVol/#mMcap) are owned by trust-engine/market-engine.
+      // If we overwrite them here we cause visible flicker and inconsistent states.
+      __lastDexBadge = "Market: Live";
+      setMarketBadge(__lastDexBadge);
 
       // IMPORTANT:
       // Do NOT write into #swapRows here.
@@ -874,7 +874,8 @@ async function initTrustHero() {
       // the row values to stop matching the column headers.
       }catch(e){
         // Most common: adblock / privacy extension blocking api.dexscreener.com
-        setMarketBadge("Market: Blocked");
+        // Keep the last known-good badge so the UI doesn't flap.
+        setMarketBadge(__lastDexBadge || "Market: Data limited");
         console.warn("DexScreener fetch failed", e);
       }
     }
@@ -943,7 +944,7 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R3 while trust-engine?v=PHASE94R8.
-	  const ENGINE_V = "PHASE94R14";
+	  const ENGINE_V = "PHASE94R15";
 
   const $id = (id) => document.getElementById(id);
   const el = {

@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R14
+// [market-engine] PHASE94R15
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -22,6 +22,10 @@ const CFG = {
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
+
+// Keep last non-empty swaps in memory to avoid UI flicker when the network/API
+// has intermittent failures.
+let LAST_NONEMPTY_SWAPS = [];
 
 let memSnapshot = null; // { ts, data }
 let memSwaps = null; // { ts, data }
@@ -113,13 +117,16 @@ export async function getRecentSwaps(limit = 8) {
 
   const cacheKey = `capi_swaps_${chainId}_${pairAddress.toLowerCase()}`;
   const cached = readCache(cacheKey, 5 * 60 * 1000); // 5 minutes
-  if (Array.isArray(cached) && cached.length) return cached.slice(0, limit);
+  if (Array.isArray(cached) && cached.length) {
+    LAST_NONEMPTY_SWAPS = cached;
+    return cached.slice(0, limit);
+  }
 
   try {
     const logs = await fetchPairSwapLogs(pairAddress, 40);
     if (!Array.isArray(logs) || logs.length === 0) {
-      // Don't wipe last cached value.
-      return Array.isArray(cached) ? cached.slice(0, limit) : [];
+      // Don't wipe last known swaps.
+      return LAST_NONEMPTY_SWAPS.length ? LAST_NONEMPTY_SWAPS.slice(0, limit) : (Array.isArray(cached) ? cached.slice(0, limit) : []);
     }
 
     const decoded = [];
@@ -136,12 +143,13 @@ export async function getRecentSwaps(limit = 8) {
     // Only write cache when non-empty (prevents flicker)
     if (out.length) {
       writeCache(cacheKey, out);
+      LAST_NONEMPTY_SWAPS = out;
     }
 
     return out;
   } catch (err) {
     console.warn('[Market] getRecentSwaps failed; using cache if available', err);
-    return Array.isArray(cached) ? cached.slice(0, limit) : [];
+    return LAST_NONEMPTY_SWAPS.length ? LAST_NONEMPTY_SWAPS.slice(0, limit) : (Array.isArray(cached) ? cached.slice(0, limit) : []);
   }
 }
 
@@ -160,7 +168,11 @@ function computeHealth(s) {
 
   const now = Date.now();
   const createdAt = Number.isFinite(s?.pairCreatedAt) ? s.pairCreatedAt : null;
-  const isEarlyLaunch = createdAt ? (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000) : false;
+  // If pairCreatedAt is missing (DexScreener sometimes omits it), we treat it as
+  // early-launch to avoid overly harsh flags during the first days.
+  const isEarlyLaunch = (createdAt == null)
+    ? true
+    : (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000);
 
   const flags = [];
   // Early launches: avoid overly negative flags while the pool/volume is still ramping.
