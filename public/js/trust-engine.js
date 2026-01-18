@@ -1,4 +1,3 @@
-/* trust-engine.js (PHASE94R14_STABLE) */
 // src/js/trust-engine.js
 // Phase 9.3 Market Live Final: snapshot real (on-chain + DexScreener) driven by official-registry.json
 
@@ -7,15 +6,15 @@
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
 // IMPORTANT: keep revision tags consistent across assets.
-// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R15
+// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R16
 // If we hardcode a different revision here, this module will import a mismatched
 // market-engine revision (because we append ?v=${ENGINE_VERSION}), causing
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R15";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R16";
   } catch {
-    return "PHASE94R15";
+    return "PHASE94R16";
   }
 })();
 

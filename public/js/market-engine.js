@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R15
+// [market-engine] PHASE94R16
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -22,10 +22,6 @@ const CFG = {
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
-
-// Keep last non-empty swaps in memory to avoid UI flicker when the network/API
-// has intermittent failures.
-let LAST_NONEMPTY_SWAPS = [];
 
 let memSnapshot = null; // { ts, data }
 let memSwaps = null; // { ts, data }
@@ -53,104 +49,98 @@ export async function getMarketSnapshot() {
   const cached = readCache(LS_SNAPSHOT, memSnapshot);
   if (cached) return cached;
 
-  const pairAddress = await resolvePairAddress();
-  if (!pairAddress) {
-    const empty = computeHealth({});
-    writeCache(LS_SNAPSHOT, empty, (v) => { memSnapshot = v; });
-    return empty;
+  try {
+    const token = (window?.CAPI_CONFIG?.token?.address || '').toLowerCase();
+    const pairFromCfg = (window?.CAPI_CONFIG?.dex?.pairAddress || '').toLowerCase();
+
+    let ds = null;
+    if (token) {
+      ds = await fetchDexScreenerByToken(token);
+    }
+
+    const snapshot = {
+      tokenAddress: token || null,
+      pairAddress: pairFromCfg || null,
+      chainId: 'ethereum',
+      priceUsd: toNum(ds?.priceUsd),
+      fdv: toNum(ds?.fdv),
+      marketCap: toNum(ds?.marketCap),
+      liquidityUsd: toNum(ds?.liquidity?.usd),
+      volumeH24: toNum(ds?.volume?.h24),
+      txnsH24: toNum(ds?.txns?.h24?.buys) + toNum(ds?.txns?.h24?.sells),
+      buysH24: toNum(ds?.txns?.h24?.buys),
+      sellsH24: toNum(ds?.txns?.h24?.sells),
+      pairCreatedAt: Number.isFinite(ds?.pairCreatedAt) ? ds.pairCreatedAt : null,
+      dexId: ds?.dexId || null,
+      url: ds?.url || null,
+      updatedAt: Date.now(),
+    };
+
+    const enriched = computeHealth(snapshot);
+    writeCache(LS_SNAPSHOT, enriched, (v) => { memSnapshot = v; });
+    return enriched;
+  } catch (e) {
+    // If DexScreener blips / CORS blocks, do NOT blank the panel.
+    if (memSnapshot) return memSnapshot;
+    return computeHealth({ updatedAt: Date.now() });
   }
-
-  const url = `https://api.dexscreener.com/latest/dex/pairs/ethereum/${pairAddress}`;
-  const json = await safeFetchJson(url);
-  const pair = json?.pair || (Array.isArray(json?.pairs) ? json.pairs[0] : null);
-
-  const snapshot = {
-    pairAddress,
-    dexId: pair?.dexId || null,
-    url: pair?.url || null,
-    baseToken: {
-      address: normAddr(pair?.baseToken?.address) || null,
-      symbol: pair?.baseToken?.symbol || null,
-      name: pair?.baseToken?.name || null,
-    },
-    quoteToken: {
-      address: normAddr(pair?.quoteToken?.address) || null,
-      symbol: pair?.quoteToken?.symbol || null,
-      name: pair?.quoteToken?.name || null,
-    },
-    priceUsd: toNum(pair?.priceUsd),
-    priceNative: toNum(pair?.priceNative),
-    liquidityUsd: toNum(pair?.liquidity?.usd),
-    volumeH24: toNum(pair?.volume?.h24),
-    txns24h: {
-      buys: toNum(pair?.txns?.h24?.buys),
-      sells: toNum(pair?.txns?.h24?.sells),
-    },
-    fdv: toNum(pair?.fdv),
-    marketCap: toNum(pair?.marketCap),
-    priceChange24h: toNum(pair?.priceChange?.h24),
-    pairCreatedAt: pair?.pairCreatedAt ? Number(pair.pairCreatedAt) : null,
-    labels: Array.isArray(pair?.labels) ? pair.labels.slice(0, 5) : [],
-  };
-
-  const enriched = computeHealth(snapshot);
-  writeCache(LS_SNAPSHOT, enriched, (v) => { memSnapshot = v; });
-  return enriched;
 }
 
-export async function getRecentSwaps(limit = 8) {
-  // Primary: on-chain Swap logs (Uniswap V2)
-  // Rules:
-  //  - Never return placeholder rows (those cause UI flicker).
-  //  - Never overwrite cached swaps with an empty result.
-  //  - If the chain is not reachable right now, return last cached swaps.
+export async function getRecentSwaps(limit = 10) {
+  const cached = readCache(LS_SWAPS, memSwaps);
+  if (cached) return cached.slice(0, limit);
 
-  try {
-    limit = Math.max(1, Math.min(20, Number(limit) || 8));
-  } catch (_) {
-    limit = 8;
-  }
-
-  const chainId = Number((window.__CAPI_CHAIN_ID || '').toString() || 1);
   const pairAddress = await resolvePairAddress();
-  if (!pairAddress) return [];
-
-  const cacheKey = `capi_swaps_${chainId}_${pairAddress.toLowerCase()}`;
-  const cached = readCache(cacheKey, 5 * 60 * 1000); // 5 minutes
-  if (Array.isArray(cached) && cached.length) {
-    LAST_NONEMPTY_SWAPS = cached;
-    return cached.slice(0, limit);
+  if (!pairAddress) {
+    return (memSwaps || []).slice(0, limit);
   }
 
+  // Ensure token0/token1 cached (needed for BUY/SELL side)
+  await ensureTokenOrder(pairAddress);
+
+  // Fetch latest price for USD estimation (best-effort)
+  let snapshot = null;
+  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
+  const priceUsd = toNum(snapshot?.priceUsd);
+
+  let latestBlock;
   try {
-    const logs = await fetchPairSwapLogs(pairAddress, 40);
-    if (!Array.isArray(logs) || logs.length === 0) {
-      // Don't wipe last known swaps.
-      return LAST_NONEMPTY_SWAPS.length ? LAST_NONEMPTY_SWAPS.slice(0, limit) : (Array.isArray(cached) ? cached.slice(0, limit) : []);
-    }
-
-    const decoded = [];
-    for (const log of logs) {
-      const d = await decodeUniV2SwapLog(log);
-      if (!d) continue;
-      decoded.push(d);
-    }
-
-    // Newest first
-    decoded.sort((a, b) => (b.ts || 0) - (a.ts || 0));
-    const out = decoded.slice(0, limit);
-
-    // Only write cache when non-empty (prevents flicker)
-    if (out.length) {
-      writeCache(cacheKey, out);
-      LAST_NONEMPTY_SWAPS = out;
-    }
-
-    return out;
-  } catch (err) {
-    console.warn('[Market] getRecentSwaps failed; using cache if available', err);
-    return LAST_NONEMPTY_SWAPS.length ? LAST_NONEMPTY_SWAPS.slice(0, limit) : (Array.isArray(cached) ? cached.slice(0, limit) : []);
+    latestBlock = await rpcCall('eth_blockNumber', []);
+  } catch (e) {
+    return (memSwaps || []).slice(0, limit);
   }
+  const latestBn = hexToInt(latestBlock);
+  if (!Number.isFinite(latestBn) || latestBn <= 0) {
+    return (memSwaps || []).slice(0, limit);
+  }
+
+  let logs = [];
+  for (const lookback of CFG.swapsLookbacks) {
+    const fromBn = Math.max(1, latestBn - lookback);
+    try {
+      logs = await getSwapLogs(pairAddress, fromBn, latestBn);
+    } catch (e) {
+      // RPC hiccup: keep last known swaps
+      return (memSwaps || []).slice(0, limit);
+    }
+    if (logs && logs.length) break;
+  }
+
+  if (!logs || logs.length === 0) {
+    // Soft-fail: no swaps visible via RPC/logs. Keep last known swaps to avoid flicker.
+    return (memSwaps || []).slice(0, limit);
+  }
+
+  // Normalize logs to swaps (newest first)
+  const swaps = [];
+  for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+    const lg = logs[i];
+    const swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
+    if (swap) swaps.push(swap);
+  }
+
+  writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+  return swaps.slice(0, limit);
 }
 
 // ---------------------------
@@ -168,23 +158,17 @@ function computeHealth(s) {
 
   const now = Date.now();
   const createdAt = Number.isFinite(s?.pairCreatedAt) ? s.pairCreatedAt : null;
-  // If pairCreatedAt is missing (DexScreener sometimes omits it), we treat it as
-  // early-launch to avoid overly harsh flags during the first days.
-  const isEarlyLaunch = (createdAt == null)
-    ? true
-    : (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000);
+  const ageMs = createdAt ? (now - createdAt) : null;
+  const ageDays = (ageMs != null && Number.isFinite(ageMs)) ? (ageMs / (24 * 3600 * 1000)) : null;
+  // If DexScreener doesn't report pairCreatedAt (or it is filtered/blocked), we assume *early launch* to avoid
+  // showing a scary "HIGH RISK" purely because the age couldn't be determined.
+  const isEarlyLaunch = (ageDays == null) ? true : (ageDays < CFG.earlyLaunchDays);
 
   const flags = [];
-  // Early launches: avoid overly negative flags while the pool/volume is still ramping.
-  // We still flag extreme cases (e.g., near-zero liquidity).
   if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) flags.push('LOW_LIQUIDITY');
-  else if (!isEarlyLaunch && liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
-  else if (isEarlyLaunch && liquidityUsd < 500) flags.push('LOW_LIQUIDITY');
+  else if (liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
 
-  if (!Number.isFinite(volumeH24)) flags.push('LOW_VOLUME');
-  else if (!isEarlyLaunch && volumeH24 < 50) flags.push('LOW_VOLUME');
-  else if (isEarlyLaunch && volumeH24 < 5) flags.push('LOW_VOLUME');
-
+  if (!Number.isFinite(volumeH24) || volumeH24 < 50) flags.push('LOW_VOLUME');
   if (Number.isFinite(slip) && slip >= 5) flags.push('HIGH_SLIPPAGE');
 
   const buySellRatio = (buys + sells) > 0 ? (buys / Math.max(1, sells)) : 0;
@@ -222,9 +206,14 @@ function computeHealth(s) {
   score = clamp(score, 0, 100);
 
   // Labeling (early launch friendly)
+  // Friendly labels: avoid 'HIGH RISK' style callouts on brand-new pairs
+  // or when pair age is unknown (DexScreener sometimes omits it / transient fetch issues).
   let label = 'CAUTION';
-  if (isEarlyLaunch) {
-    label = score >= 55 ? 'TRUST BUILDING' : 'EARLY LAUNCH';
+  if (isEarlyLaunch || ageDays == null) {
+    // In the early window we show an "EARLY" banner and clamp the score so UI doesn't scream risk
+    // while liquidity/volume are still warming up.
+    label = 'EARLY';
+    score = Math.max(score, 60);
   } else {
     label = score >= 75 ? 'HEALTHY' : (score >= 50 ? 'CAUTION' : 'RISK');
   }

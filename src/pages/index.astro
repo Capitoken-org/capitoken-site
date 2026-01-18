@@ -817,9 +817,6 @@ async function initTrustHero() {
       }
     }
 
-    // DexScreener is best-effort (it can be blocked by privacy/adblock or rate-limited).
-    // We must never let a transient DexScreener failure wipe or "flicker" the UI.
-    let __lastDexBadge = null;
     async function loadDexScreener(){
       const bm = document.getElementById("badgeMarket");
       const setMarketBadge = (txt) => { if(bm) bm.textContent = txt; };
@@ -837,7 +834,7 @@ async function initTrustHero() {
       };
 
       try{
-        setMarketBadge(__lastDexBadge || "Market: Loading");
+        setMarketBadge("Market: Loading");
 
         let pairs = [];
         if(pairAddr){
@@ -860,11 +857,14 @@ async function initTrustHero() {
         pairs = pairs.slice().sort((a,b) => (b?.liquidity?.usd||0) - (a?.liquidity?.usd||0));
         const p = pairs[0];
 
-      // Only set the badge here.
-      // Market numbers (#mPrice/#mLiq/#mVol/#mMcap) are owned by trust-engine/market-engine.
-      // If we overwrite them here we cause visible flicker and inconsistent states.
-      __lastDexBadge = "Market: Live";
-      setMarketBadge(__lastDexBadge);
+      setMarketBadge("Market: Live");
+
+      $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
+      $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+      $("#mVol").textContent = fmtUSD(p?.volume?.h24, 0);
+
+      const mc = p?.marketCap ?? p?.fdv ?? null;
+      $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
       // IMPORTANT:
       // Do NOT write into #swapRows here.
@@ -874,8 +874,7 @@ async function initTrustHero() {
       // the row values to stop matching the column headers.
       }catch(e){
         // Most common: adblock / privacy extension blocking api.dexscreener.com
-        // Keep the last known-good badge so the UI doesn't flap.
-        setMarketBadge(__lastDexBadge || "Market: Data limited");
+        setMarketBadge("Market: Blocked");
         console.warn("DexScreener fetch failed", e);
       }
     }
@@ -943,8 +942,8 @@ async function initTrustHero() {
   console.log("[TrustPanel] root script boot");
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
-	  // This avoids mixed loads like market-engine?v=PHASE94R3 while trust-engine?v=PHASE94R8.
-	  const ENGINE_V = "PHASE94R15";
+	  // This avoids mixed loads like market-engine?v=PHASE94R16 while trust-engine?v=PHASE94R16.
+	  const ENGINE_V = "PHASE94R16";
 
   const $id = (id) => document.getElementById(id);
   const el = {
@@ -1069,24 +1068,10 @@ async function initTrustHero() {
   function renderSwaps(swaps) {
     if (!el.swapRows) return;
 
-    // Never wipe good data. If we get an empty/invalid response, keep the last rendered swaps.
-    if (!Array.isArray(swaps)) swaps = [];
-    const last = Array.isArray(window.__CAPI_LAST_SWAPS) ? window.__CAPI_LAST_SWAPS : [];
-    if (swaps.length === 0 && last.length > 0) swaps = last;
-
-    // Still nothing? only then show a placeholder (first load).
-    if (swaps.length === 0) {
-      if (!el.swapRows.dataset.hasData) {
-        el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
-      }
+    if (!Array.isArray(swaps) || swaps.length === 0) {
+      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
       return;
     }
-
-    // De-dupe DOM updates (prevents flicker).
-    const hash = swaps.map(x => x && x.txHash ? String(x.txHash).toLowerCase() : '').join('|');
-    if (el.swapRows.dataset.hash === hash) return;
-    el.swapRows.dataset.hash = hash;
-    el.swapRows.dataset.hasData = '1';
 
     const fmtTime = (ts) => {
       try { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }
