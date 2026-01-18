@@ -160,12 +160,22 @@ function computeHealth(s) {
   const now = Date.now();
   const createdAt = Number.isFinite(s?.pairCreatedAt) ? s.pairCreatedAt : null;
   const isEarlyLaunch = createdAt ? (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000) : false;
-
   const flags = [];
-  if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) flags.push('LOW_LIQUIDITY');
-  else if (liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
 
-  if (!Number.isFinite(volumeH24) || volumeH24 < 50) flags.push('LOW_VOLUME');
+  // Flags are intentionally softened during early launch to avoid harming
+  // perception when liquidity/volume are naturally still forming.
+  if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) {
+    flags.push('LOW_LIQUIDITY');
+  } else if (liquidityUsd < (isEarlyLaunch ? 1_000 : 5_000)) {
+    flags.push('LOW_LIQUIDITY');
+  }
+
+  if (!Number.isFinite(volumeH24)) {
+    flags.push('LOW_VOLUME');
+  } else if (volumeH24 < (isEarlyLaunch ? 10 : 50)) {
+    flags.push('LOW_VOLUME');
+  }
+
   if (Number.isFinite(slip) && slip >= 5) flags.push('HIGH_SLIPPAGE');
 
   const buySellRatio = (buys + sells) > 0 ? (buys / Math.max(1, sells)) : 0;

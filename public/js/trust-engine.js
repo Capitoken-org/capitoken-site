@@ -5,14 +5,7 @@
 // IMPORTANT: trust-engine and market-engine must always use the SAME revision.
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
-export const ENGINE_VERSION = (() => {
-  try {
-    const u = new URL(import.meta.url);
-    return u.searchParams.get('v') || 'DEV';
-  } catch {
-    return 'DEV';
-  }
-})();
+export const ENGINE_VERSION = "PHASE94R11";
 
 export const CONFIG = {
   // Defaults (will be overwritten by registry at runtime)
