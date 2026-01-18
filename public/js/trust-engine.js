@@ -1,6 +1,9 @@
 // src/js/trust-engine.js
 // Phase 9.3 Market Live Final: snapshot real (on-chain + DexScreener) driven by official-registry.json
 
+// Cache-buster version (keeps GitHub Pages and aggressive browsers from serving stale JS)
+export const ENGINE_VERSION = "PHASE94R1";
+
 export const CONFIG = {
   // Defaults (will be overwritten by registry at runtime)
   CAPITOKEN_ADDRESS: "0x0000000000000000000000000000000000000000",
@@ -150,6 +153,26 @@ async function fetchDexScreenerPair() {
   };
 }
 
+// -------------------------------
+// Phase 9.4: Market Health (uses market-engine.js best-effort)
+// -------------------------------
+async function fetchMarketHealth() {
+  // Resolve base like https://site/base/ so dynamic import works on GitHub Pages base paths.
+  const base = new URL('.', window.location.href);
+  const marketUrl = new URL('js/market-engine.js', base).toString() + `?v=${ENGINE_VERSION}`;
+
+  const mod = await import(marketUrl);
+  // market-engine expects a baseUrl that can resolve official-registry.json correctly
+  mod.setMarketConfig({ baseUrl: base.toString() });
+
+  // Returns normalized snapshot with healthBoost + flags
+  return await mod.getMarketSnapshot();
+}
+
+function mergeUnique(arr, items) {
+  for (const it of items) if (!arr.includes(it)) arr.push(it);
+}
+
 export async function getTrustState() {
   // Load registry first (fails "soft": we still return state with alerts)
   let reg = null;
@@ -192,6 +215,16 @@ export async function getTrustState() {
     volumeH24: null,
     priceChangeH24: null,
     dexId: null,
+
+    // market health (Phase 9.4)
+    marketHealthScore: null,
+    marketHealthLabel: null,
+    marketHealthBoost: 0,
+    marketHealthFlags: [],
+    slippage1kPct: null,
+    buySellRatio24h: null,
+    lpLocked: null,
+    lpLockProvider: null,
 
     // scoring
     trustScore: 0,
@@ -336,6 +369,54 @@ export async function getTrustState() {
     state.alerts.push("MARKET_API_ERROR");
   }
 
+
+  // Market health (Phase 9.4) - best effort, never bricks panel
+  let marketBoost = 0;
+  try {
+    const mh = await fetchMarketHealth();
+
+    state.marketHealthScore = Number.isFinite(mh?.marketHealthScore) ? mh.marketHealthScore : null;
+    state.marketHealthLabel = mh?.marketHealthLabel || null;
+    marketBoost = Number.isFinite(mh?.healthBoost) ? mh.healthBoost : 0;
+    state.marketHealthBoost = clamp(marketBoost, 0, 15);
+    state.marketHealthFlags = Array.isArray(mh?.healthFlags) ? mh.healthFlags.slice(0, 12) : [];
+    state.slippage1kPct = Number.isFinite(mh?.slippageEst?.buy1kPct) ? mh.slippageEst.buy1kPct : null;
+    state.buySellRatio24h = Number.isFinite(mh?.buySellRatio) ? mh.buySellRatio : null;
+    state.lpLocked = (mh?.lp?.locked === true) ? true : (mh?.lp?.locked === false ? false : null);
+    state.lpLockProvider = (mh?.lp?.lockProvider ? String(mh.lp.lockProvider) : null);
+
+    // Promote key market health flags to Trust alerts (keep concise)
+    // NOTE: During EARLY LAUNCH we keep most of these informational (in the Market Health panel)
+    // so the Trust Snapshot doesn't scream risk on day 1.
+    const promoted = [];
+    const early = (mh?.isEarlyLaunch === true);
+    const slip = mh?.slippageEst?.buy1kPct;
+    const liqUsd = mh?.liquidityUsd;
+    const vol24 = mh?.volumeH24;
+
+    // Always promote if LP explicitly unlocked
+    if (mh?.lp?.locked === false) promoted.push("NO_LP_LOCK");
+
+    // Promote slippage / liquidity only if not early OR if it's extreme
+    const extremeEarly = early &&
+      (Number.isFinite(liqUsd) && liqUsd < 200) &&
+      (Number.isFinite(slip) && slip >= 30) &&
+      (Number.isFinite(vol24) && vol24 < 10);
+
+    if (!early || extremeEarly) {
+      if (Number.isFinite(slip) && slip >= 5) promoted.push("HIGH_SLIPPAGE");
+      if (state.marketHealthFlags.includes("LOW_LIQUIDITY")) promoted.push("LOW_LIQUIDITY");
+      if (state.marketHealthFlags.includes("LOW_VOLUME")) promoted.push("LOW_VOLUME");
+      if (state.marketHealthFlags.includes("SELL_PRESSURE")) promoted.push("SELL_PRESSURE");
+      if (state.marketHealthFlags.includes("HIGH_HOLDER_CONCENTRATION")) promoted.push("HIGH_HOLDER_CONCENTRATION");
+    }
+
+    mergeUnique(state.alerts, promoted);
+  } catch {
+    mergeUnique(state.alerts, ["MARKET_DATA_UNAVAILABLE"]);
+    state.marketHealthBoost = 0;
+  }
+
   // Trust score
   let score = 0;
 
@@ -403,6 +484,9 @@ export async function getTrustState() {
   // Market status (don't punish NOT_INDEXED during early launch)
   if (state.marketStatus === "LIVE") score += 10;
   else if (state.marketStatus === "NOT_INDEXED" && state.uniswapPairOnChain) score += 3;
+
+  // Phase 9.4: Market health boost (0..15)
+  if (state.marketHealthBoost) score += state.marketHealthBoost;
 
   score = clamp(score, 0, 100);
   state.trustScore = score;

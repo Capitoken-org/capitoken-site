@@ -970,6 +970,18 @@ async function initTrustHero() {
     mMcap: $id("mMcap"),
     mLiq: $id("mLiq"),
     mVol: $id("mVol"),
+
+    // Phase 9.4 UI
+    swapRows: $id("swapRows"),
+    mhLabel: $id("mhLabel"),
+    mhScore: $id("mhScore"),
+    mhLiq: $id("mhLiq"),
+    mhSlip: $id("mhSlip"),
+    mhVol: $id("mhVol"),
+    mhBS: $id("mhBS"),
+    mhLock: $id("mhLock"),
+    mhLockSub: $id("mhLockSub"),
+    mhFlags: $id("mhFlags"),
   };
 
   const shortAddr = (a) => (a ? `${a.slice(0,6)}...${a.slice(-4)}` : "—");
@@ -1003,7 +1015,15 @@ async function initTrustHero() {
       MARKET_NOT_INDEXED: "DexScreener: indexing in progress (can take minutes-hours).",
       LOW_LIQUIDITY: "Liquidity is still low (early launch).",
       DOMAIN_ALLOWLIST_EMPTY: "Domain allowlist not set in registry (set before production).",
-      DOMAIN_NOT_ALLOWED: "Domain not in allowlist (security check)."
+      DOMAIN_NOT_ALLOWED: "Domain not in allowlist (security check).",
+
+      // Phase 9.4 market health
+      HIGH_SLIPPAGE: "High slippage (low depth).",
+      NO_LP_LOCK: "LP is not locked (verify lock / ownership).",
+      LOW_VOLUME: "Low 24h volume (early launch or low activity).",
+      SELL_PRESSURE: "Sell pressure detected (24h).",
+      HIGH_HOLDER_CONCENTRATION: "High holder concentration (whale risk).",
+      MARKET_DATA_UNAVAILABLE: "Market data unavailable (blocked by extension / network)."
     };
 
     el.alerts.innerHTML = list
@@ -1016,11 +1036,106 @@ async function initTrustHero() {
     // Browser-safe base resolver (works with Astro base like /capitoken-site/)
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
-    const url = new URL('js/trust-engine.js', base).toString();
+    // Cache-buster to guarantee we are NOT running an old JS file.
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R1`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
     return mod;
+  }
+
+
+  let __marketEngine = null;
+
+  async function loadMarketEngine() {
+    if (__marketEngine) return __marketEngine;
+
+    const base = new URL('.', window.location.href);
+    // Cache-buster to guarantee we are NOT running an old JS file.
+    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R1`;
+
+    const mod = await import(url);
+    // Ensure market-engine resolves registry under base paths (GitHub Pages)
+    mod.setMarketConfig({ baseUrl: base.toString() });
+
+    __marketEngine = mod;
+    console.log('[Market] engine loaded', url);
+    return mod;
+  }
+
+  function renderSwaps(swaps) {
+    if (!el.swapRows) return;
+
+    if (!Array.isArray(swaps) || swaps.length === 0) {
+      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
+      return;
+    }
+
+    const fmtTime = (ts) => {
+      try { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }
+      catch { return '—'; }
+    };
+    const fmtUsdCompact = (n) => {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '—';
+      return x >= 1e6 ? `$${(x/1e6).toFixed(2)}M`
+           : x >= 1e3 ? `$${(x/1e3).toFixed(2)}K`
+           : `$${x.toFixed(2)}`;
+    };
+    const fmtPrice = (n) => {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '—';
+      return `$${x.toFixed(8)}`;
+    };
+    const short = (a) => (a ? `${a.slice(0,6)}...${a.slice(-4)}` : '—');
+
+    el.swapRows.innerHTML = swaps.map((x) => {
+      const side = (x.side || '').toUpperCase();
+      const pill = side === 'BUY'
+        ? `<span class="pill pill--good">BUY</span>`
+        : side === 'SELL'
+          ? `<span class="pill pill--warn">SELL</span>`
+          : `<span class="pill">—</span>`;
+
+      const txUrl = x.txHash ? `https://etherscan.io/tx/${x.txHash}` : '';
+      const tx = txUrl ? `<a href="${txUrl}" target="_blank" rel="noreferrer noopener">View</a>` : '—';
+
+      return `
+        <tr>
+          <td>${fmtTime(x.ts)}</td>
+          <td>${pill}</td>
+          <td>${fmtUsdCompact(x.amountUsd)}</td>
+          <td>${fmtPrice(x.priceUsd)}</td>
+          <td class="mono">${short(x.maker)}</td>
+          <td>${tx}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderMarketHealthFromTrustState(s) {
+    // Fill Phase 9.4 cards from Trust Engine state (already computed)
+    if (el.mhLabel) el.mhLabel.textContent = s.marketHealthLabel || '—';
+    if (el.mhScore) el.mhScore.textContent = (Number.isFinite(s.marketHealthScore) ? `${Math.round(s.marketHealthScore)}/100 (+${s.marketHealthBoost||0})` : `— (+${s.marketHealthBoost||0})`);
+
+    if (el.mhLiq) el.mhLiq.textContent = fmtUsd(s.liquidityUsd);
+    if (el.mhVol) el.mhVol.textContent = fmtUsd(s.volumeH24);
+
+    if (el.mhSlip) el.mhSlip.textContent = Number.isFinite(s.slippage1kPct) ? `${Number(s.slippage1kPct).toFixed(2)}%` : '—';
+    if (el.mhBS) el.mhBS.textContent = Number.isFinite(s.buySellRatio24h)
+      ? (s.buySellRatio24h === Infinity ? '∞' : Number(s.buySellRatio24h).toFixed(2))
+      : '—';
+
+    if (el.mhLock) el.mhLock.textContent = (s.lpLocked === true) ? 'LOCKED'
+      : (s.lpLocked === false) ? 'UNLOCKED'
+      : 'UNKNOWN';
+
+    if (el.mhLockSub) el.mhLockSub.textContent = s.lpLockProvider || '—';
+
+    if (el.mhFlags) {
+      const f = Array.isArray(s.marketHealthFlags) ? s.marketHealthFlags : [];
+      el.mhFlags.textContent = f.length ? `Flags: ${f.join(', ')}` : 'Flags: none';
+    }
   }
 
 
@@ -1066,6 +1181,17 @@ async function initTrustHero() {
 
     el.score.textContent = `${s.trustScore}/100 — ${s.trustLabel}`;
     setAlerts(s.alerts);
+
+    // Phase 9.4: Market Health + Recent Swaps
+    renderMarketHealthFromTrustState(s);
+    try{
+      const m = await loadMarketEngine();
+      const swaps = await m.getRecentSwaps(10);
+      renderSwaps(swaps);
+    }catch(e){
+      // keep UI stable even if DexScreener blocked
+      if (el.swapRows) el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">Market swaps unavailable (blocked or not indexed).</td></tr>`;
+    }
 
     const C = engine.CONFIG;
     el.etherscan.href = `https://etherscan.io/token/${C.CAPITOKEN_ADDRESS}`;
