@@ -866,17 +866,12 @@ async function initTrustHero() {
       const mc = p?.marketCap ?? p?.fdv ?? null;
       $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
-      // The swaps table body in this build is #swapRows (older builds used #txBody).
-      // Keep both for backward-compat, but never throw if the element is missing.
-      const txEl = document.getElementById("swapRows") || document.getElementById("txBody");
-      if (txEl) txEl.innerHTML = `
-        <tr>
-          <td class="mono">${short(p?.pairAddress || "TBA")}</td>
-          <td class="mono">Liquidity pool</td>
-          <td>${p?.txns?.h24 ? (p.txns.h24.buys + p.txns.h24.sells) : "TBA"}</td>
-          <td class="mono"><a href="${p.url}" target="_blank" rel="noreferrer">Open pair</a></td>
-        </tr>
-      `;
+      // IMPORTANT:
+      // Do NOT write into #swapRows here.
+      // #swapRows is owned by the Market Engine (market-engine.js) which renders
+      // *real swap rows* with columns: TIME / SIDE / USD / PRICE / MAKER / TX.
+      // Overwriting it here causes the "Real Swap Activity" table to flicker and
+      // the row values to stop matching the column headers.
       }catch(e){
         // Most common: adblock / privacy extension blocking api.dexscreener.com
         setMarketBadge("Market: Blocked");
