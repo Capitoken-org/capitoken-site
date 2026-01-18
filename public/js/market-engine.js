@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R4
+// [market-engine] PHASE94R5
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -14,6 +14,8 @@ const CFG = {
     'https://eth.llamarpc.com'
   ],
   cacheTtlMs: 60_000,
+  // Chunk size for eth_getLogs (some RPCs fail on large ranges)
+  swapsChunkSize: 2000,
   // Expand lookback if no swaps found
   swapsLookbacks: [5000, 20000, 100000, 250000],
   // Early launch window to avoid harsh labeling
@@ -22,7 +24,7 @@ const CFG = {
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
-const LS_BOOTSTRAP = 'capitoken:market:swaps:bootstrap';
+const LS_SWAPS_BOOT = 'capitoken:market:swaps:bootstrap';
 
 let memSnapshot = null; // { ts, data }
 let memSwaps = null; // { ts, data }
@@ -93,59 +95,6 @@ export async function getMarketSnapshot() {
   const enriched = computeHealth(snapshot);
   writeCache(LS_SNAPSHOT, enriched, (v) => { memSnapshot = v; });
   return enriched;
-
-// Phase 9.4 R4: debug bootstrap swaps from a real tx receipt
-export async function bootstrapFromTx(txHash) {
-  const tx = String(txHash || '').trim();
-  if (!/^0x[0-9a-fA-F]{64}$/.test(tx)) throw new Error('BAD_TX_HASH');
-
-  const pairAddress = await resolvePairAddress();
-  if (!pairAddress) throw new Error('PAIR_TBA');
-
-  // Receipt is easiest way to confirm the tx happened and contains logs.
-  const receipt = await rpcCall('eth_getTransactionReceipt', [tx]);
-  const logs = Array.isArray(receipt?.logs) ? receipt.logs : [];
-
-  // Keep only Swap logs from the pair (topic0 + address match)
-  const pair = pairAddress.toLowerCase();
-  const swapLogs = logs.filter(l => (String(l?.address||'').toLowerCase() === pair)
-    && Array.isArray(l?.topics) && l.topics[0] === UNIV2_SWAP_TOPIC0);
-
-  if (!swapLogs.length) {
-    // Still store a hint row so UI shows something for debugging
-    const row = {
-      ts: Date.now(),
-      side: 'UNKNOWN',
-      amountUsd: null,
-      amountToken: null,
-      priceUsd: null,
-      maker: null,
-      txHash: tx,
-      blockNumber: receipt?.blockNumber ? hexToInt(receipt.blockNumber) : null,
-      note: 'NO_SWAP_LOGS_IN_TX'
-    };
-    writeCache(LS_BOOTSTRAP, [row], () => {});
-    return [row];
-  }
-
-  // Best-effort priceUsd
-  let snapshot = null
-  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
-
-  const priceUsd = toNum(snapshot?.priceUsd);
-  await ensureTokenOrder(pairAddress);
-
-  const swaps = [];
-  for (const lg of swapLogs.slice(-25)) {
-    const s = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
-    if (s) swaps.push(s);
-  }
-  swaps.reverse();
-  // Save bootstrap swaps so UI can show them even if eth_getLogs is blocked
-  writeCache(LS_BOOTSTRAP, swaps, () => {});
-  return swaps;
-}
-
 }
 
 export async function getRecentSwaps(limit = 10) {
@@ -176,24 +125,17 @@ export async function getRecentSwaps(limit = 10) {
   let logs = [];
   for (const lookback of CFG.swapsLookbacks) {
     const fromBn = Math.max(1, latestBn - lookback);
-    logs = await getSwapLogs(pairAddress, fromBn, latestBn);
+    logs = await getSwapLogsChunked(pairAddress, fromBn, latestBn);
     if (logs && logs.length) break;
   }
 
   if (!logs || logs.length === 0) {
-    // Soft-fail: no swaps visible via eth_getLogs.
-    // Fallback: if we bootstrapped from a real tx receipt, show that instead.
-    try {
-      const raw = localStorage.getItem(LS_BOOTSTRAP);
-      if (raw) {
-        const obj = JSON.parse(raw);
-        if (obj?.data && Array.isArray(obj.data) && obj.data.length) {
-          writeCache(LS_SWAPS, obj.data, (v) => { memSwaps = v; });
-          return obj.data.slice(0, limit);
-        }
-      }
-    } catch {}
-
+    // Soft-fail: no swaps visible via RPC/logs. Try bootstrap cache as a last resort.
+    const boot = readCache(LS_SWAPS_BOOT, null);
+    if (boot && Array.isArray(boot) && boot.length) {
+      writeCache(LS_SWAPS, boot, (v) => { memSwaps = v; });
+      return boot.slice(0, limit);
+    }
     writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
     return [];
   }
@@ -208,6 +150,47 @@ export async function getRecentSwaps(limit = 10) {
 
   writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
   return swaps.slice(0, limit);
+}
+
+// Force-bootstrap swaps from a known txHash (receipt logs). Useful when eth_getLogs is flaky.
+// Returns an array of decoded swaps (newest first). Also writes to a separate cache key.
+export async function bootstrapFromTx(txHash) {
+  const h = String(txHash || '').trim();
+  if (!h || !h.startsWith('0x') || h.length < 10) return [];
+
+  const pairAddress = await resolvePairAddress();
+  if (!pairAddress) return [];
+
+  // Ensure token0/token1 cached for BUY/SELL classification
+  await ensureTokenOrder(pairAddress);
+
+  // Best-effort snapshot for USD estimation
+  let snapshot = null;
+  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
+  const priceUsd = toNum(snapshot?.priceUsd);
+
+  let receipt = null;
+  try {
+    receipt = await rpcCall('eth_getTransactionReceipt', [h]);
+  } catch {
+    receipt = null;
+  }
+  const logs = Array.isArray(receipt?.logs) ? receipt.logs : [];
+  const swaps = [];
+
+  for (let i = logs.length - 1; i >= 0; i--) {
+    const lg = logs[i];
+    const addr = normAddr(lg?.address);
+    const t0 = (lg?.topics && lg.topics[0]) ? String(lg.topics[0]).toLowerCase() : '';
+    if (addr !== pairAddress) continue;
+    if (t0 !== UNIV2_SWAP_TOPIC0) continue;
+    const decoded = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
+    if (decoded) swaps.push(decoded);
+  }
+
+  // Persist bootstrap swaps separately (do not overwrite main cache unless caller chooses)
+  writeCache(LS_SWAPS_BOOT, swaps, null);
+  return swaps;
 }
 
 // ---------------------------
@@ -338,13 +321,12 @@ async function ensureTokenOrder(pairAddress) {
   }
 }
 
-async function getSwapLogs(pairAddress, fromBn, toBn) {
-  // Many public RPCs reject large eth_getLogs ranges.
-  // Chunk to stay within provider limits.
-  const maxChunk = 2000;
+async function getSwapLogsChunked(pairAddress, fromBn, toBn) {
+  const chunk = Number.isFinite(CFG.swapsChunkSize) ? Math.max(250, CFG.swapsChunkSize) : 2000;
   const out = [];
-  for (let start = fromBn; start <= toBn; start += maxChunk) {
-    const end = Math.min(toBn, start + maxChunk - 1);
+  // Keep chunks reasonably small to avoid RPC/provider limits
+  for (let start = fromBn; start <= toBn; start += chunk) {
+    const end = Math.min(toBn, start + chunk - 1);
     const params = [{
       address: pairAddress,
       fromBlock: intToHex(start),
@@ -355,7 +337,7 @@ async function getSwapLogs(pairAddress, fromBn, toBn) {
       const logs = await rpcCall('eth_getLogs', params);
       if (Array.isArray(logs) && logs.length) out.push(...logs);
     } catch {
-      // keep going
+      // If a single chunk fails, continue; other chunks may still succeed.
     }
   }
   return out;
