@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R3
+// [market-engine] PHASE94R14
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -94,54 +94,55 @@ export async function getMarketSnapshot() {
   return enriched;
 }
 
-export async function getRecentSwaps(limit = 10) {
-  const cached = readCache(LS_SWAPS, memSwaps);
-  if (cached) return cached.slice(0, limit);
+export async function getRecentSwaps(limit = 8) {
+  // Primary: on-chain Swap logs (Uniswap V2)
+  // Rules:
+  //  - Never return placeholder rows (those cause UI flicker).
+  //  - Never overwrite cached swaps with an empty result.
+  //  - If the chain is not reachable right now, return last cached swaps.
 
+  try {
+    limit = Math.max(1, Math.min(20, Number(limit) || 8));
+  } catch (_) {
+    limit = 8;
+  }
+
+  const chainId = Number((window.__CAPI_CHAIN_ID || '').toString() || 1);
   const pairAddress = await resolvePairAddress();
-  if (!pairAddress) {
-    writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
-    return [];
+  if (!pairAddress) return [];
+
+  const cacheKey = `capi_swaps_${chainId}_${pairAddress.toLowerCase()}`;
+  const cached = readCache(cacheKey, 5 * 60 * 1000); // 5 minutes
+  if (Array.isArray(cached) && cached.length) return cached.slice(0, limit);
+
+  try {
+    const logs = await fetchPairSwapLogs(pairAddress, 40);
+    if (!Array.isArray(logs) || logs.length === 0) {
+      // Don't wipe last cached value.
+      return Array.isArray(cached) ? cached.slice(0, limit) : [];
+    }
+
+    const decoded = [];
+    for (const log of logs) {
+      const d = await decodeUniV2SwapLog(log);
+      if (!d) continue;
+      decoded.push(d);
+    }
+
+    // Newest first
+    decoded.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    const out = decoded.slice(0, limit);
+
+    // Only write cache when non-empty (prevents flicker)
+    if (out.length) {
+      writeCache(cacheKey, out);
+    }
+
+    return out;
+  } catch (err) {
+    console.warn('[Market] getRecentSwaps failed; using cache if available', err);
+    return Array.isArray(cached) ? cached.slice(0, limit) : [];
   }
-
-  // Ensure token0/token1 cached (needed for BUY/SELL side)
-  await ensureTokenOrder(pairAddress);
-
-  // Fetch latest price for USD estimation (best-effort)
-  let snapshot = null;
-  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
-  const priceUsd = toNum(snapshot?.priceUsd);
-
-  const latestBlock = await rpcCall('eth_blockNumber', []);
-  const latestBn = hexToInt(latestBlock);
-  if (!Number.isFinite(latestBn) || latestBn <= 0) {
-    writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
-    return [];
-  }
-
-  let logs = [];
-  for (const lookback of CFG.swapsLookbacks) {
-    const fromBn = Math.max(1, latestBn - lookback);
-    logs = await getSwapLogs(pairAddress, fromBn, latestBn);
-    if (logs && logs.length) break;
-  }
-
-  if (!logs || logs.length === 0) {
-    // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
-    writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
-    return [];
-  }
-
-  // Normalize logs to swaps (newest first)
-  const swaps = [];
-  for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
-    const lg = logs[i];
-    const swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
-    if (swap) swaps.push(swap);
-  }
-
-  writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
-  return swaps.slice(0, limit);
 }
 
 // ---------------------------
@@ -162,10 +163,16 @@ function computeHealth(s) {
   const isEarlyLaunch = createdAt ? (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000) : false;
 
   const flags = [];
+  // Early launches: avoid overly negative flags while the pool/volume is still ramping.
+  // We still flag extreme cases (e.g., near-zero liquidity).
   if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) flags.push('LOW_LIQUIDITY');
-  else if (liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
+  else if (!isEarlyLaunch && liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
+  else if (isEarlyLaunch && liquidityUsd < 500) flags.push('LOW_LIQUIDITY');
 
-  if (!Number.isFinite(volumeH24) || volumeH24 < 50) flags.push('LOW_VOLUME');
+  if (!Number.isFinite(volumeH24)) flags.push('LOW_VOLUME');
+  else if (!isEarlyLaunch && volumeH24 < 50) flags.push('LOW_VOLUME');
+  else if (isEarlyLaunch && volumeH24 < 5) flags.push('LOW_VOLUME');
+
   if (Number.isFinite(slip) && slip >= 5) flags.push('HIGH_SLIPPAGE');
 
   const buySellRatio = (buys + sells) > 0 ? (buys / Math.max(1, sells)) : 0;

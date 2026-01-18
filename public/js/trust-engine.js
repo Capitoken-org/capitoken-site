@@ -1,3 +1,4 @@
+/* trust-engine.js (PHASE94R14_STABLE) */
 // src/js/trust-engine.js
 // Phase 9.3 Market Live Final: snapshot real (on-chain + DexScreener) driven by official-registry.json
 

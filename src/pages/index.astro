@@ -943,7 +943,7 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R3 while trust-engine?v=PHASE94R8.
-	  const ENGINE_V = "PHASE94R12";
+	  const ENGINE_V = "PHASE94R14";
 
   const $id = (id) => document.getElementById(id);
   const el = {
@@ -1068,10 +1068,24 @@ async function initTrustHero() {
   function renderSwaps(swaps) {
     if (!el.swapRows) return;
 
-    if (!Array.isArray(swaps) || swaps.length === 0) {
-      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
+    // Never wipe good data. If we get an empty/invalid response, keep the last rendered swaps.
+    if (!Array.isArray(swaps)) swaps = [];
+    const last = Array.isArray(window.__CAPI_LAST_SWAPS) ? window.__CAPI_LAST_SWAPS : [];
+    if (swaps.length === 0 && last.length > 0) swaps = last;
+
+    // Still nothing? only then show a placeholder (first load).
+    if (swaps.length === 0) {
+      if (!el.swapRows.dataset.hasData) {
+        el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
+      }
       return;
     }
+
+    // De-dupe DOM updates (prevents flicker).
+    const hash = swaps.map(x => x && x.txHash ? String(x.txHash).toLowerCase() : '').join('|');
+    if (el.swapRows.dataset.hash === hash) return;
+    el.swapRows.dataset.hash = hash;
+    el.swapRows.dataset.hasData = '1';
 
     const fmtTime = (ts) => {
       try { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }
