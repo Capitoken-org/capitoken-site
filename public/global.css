@@ -1281,3 +1281,23 @@ h3{margin:0 0 6px;font-size:18px}
 #launchpanel .launch-row > .card{ margin-top:0 !important; }
 #launchpanel .launch-row .card + .card{ margin-top:0 !important; }
 
+
+
+/* ===== Phase 9.4 (additive) – match existing card/table styles ===== */
+#launchpanel .table td.buy,
+#launchpanel .table td.sell{
+  font-weight: 800;
+}
+
+/* Keep same spacing rules as top cards */
+#launchpanel .launch-grid{
+  gap: 14px;
+}
+#launchpanel .launch-row{
+  gap: 14px;
+}
+
+/* Ensure cards inside launch grid don't get any legacy margin-top stacking */
+#launchpanel .launch-row > .card{
+  margin-top: 0 !important;
+}

@@ -144,7 +144,6 @@ const roadmap = [
             </div>
           </div>
         </div>
-
 <!-- DEX Pair -->
         <div class="card">
           <div class="label">DEX Pair</div>
@@ -206,21 +205,63 @@ const roadmap = [
           <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p>
         </div>
 
-        <!-- Recent Activity -->
+                <!-- Real Swap Activity (Phase 9.4) -->
         <div class="card">
-          <div class="h3">Recent Activity</div>
-          <div class="small">Shows recent activity (placeholder until contract is published).</div>
+          <div class="h3">Real Swap Activity</div>
+          <div class="small">Live swaps from DexScreener (cached, refreshes automatically).</div>
 
           <div class="table-wrap" style="margin-top:12px;">
-            <table class="table">
+            <table class="table" aria-label="Recent swaps">
               <thead>
-                <tr><th>From</th><th>To</th><th>Amount</th><th>TX</th></tr>
+                <tr>
+                  <th>Time</th>
+                  <th>Side</th>
+                  <th>USD</th>
+                  <th>Price</th>
+                  <th>Maker</th>
+                  <th>Tx</th>
+                </tr>
               </thead>
-              <tbody id="txBody">
-                <tr><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td><td class="mono">TBA</td></tr>
+              <tbody id="swapRows">
+                <tr><td colspan="6" class="muted">Loading swaps…</td></tr>
               </tbody>
             </table>
           </div>
+        </div>
+        </div>
+
+        <div class="launch-row">
+        <!-- Market Health Panel (Phase 9.4) -->
+        <div class="card">
+          <div class="h3">Market Health Panel</div>
+          <div class="small">Liquidity, slippage estimate, buy/sell ratio, concentration & LP lock status.</div>
+
+                    <div class="stats" style="margin-top:14px;">
+            <div class="stat"><div class="k">Health</div><div class="v" id="mhLabel">—</div></div>
+            <div class="stat"><div class="k">Score</div><div class="v" id="mhScore">—</div></div>
+            <div class="stat"><div class="k">Liquidity</div><div class="v" id="mhLiq">—</div></div>
+            <div class="stat"><div class="k">Slippage (1k)</div><div class="v" id="mhSlip">—</div></div>
+            <div class="stat"><div class="k">24h Volume</div><div class="v" id="mhVol">—</div></div>
+            <div class="stat"><div class="k">Buy/Sell Ratio</div><div class="v" id="mhBS">—</div></div>
+            <div class="stat"><div class="k">LP Lock</div><div class="v" id="mhLock">—</div></div>
+            <div class="stat"><div class="k">LP Provider</div><div class="v" id="mhLockSub">—</div></div>
+          </div>
+
+          <div class="muted" id="mhFlags" style="margin-top:12px;">&nbsp;</div>
+        </div>
+
+        <!-- How to read this -->
+        <div class="card">
+          <div class="h3">How to read this</div>
+          <div class="small">
+            This panel is informational. Early launches can show low liquidity and high slippage. If DexScreener is blocked by an extension, you may see placeholders.
+          </div>
+
+          <ul class="small" style="margin-top:12px; line-height:1.5;">
+            <li><b>Slippage:</b> lower is better (depth).</li>
+            <li><b>Buy/Sell:</b> &gt; 1 indicates stronger buy flow.</li>
+            <li><b>LP Lock:</b> locked is safer; unknown is common early.</li>
+          </ul>
         </div>
         </div>
       </div>
