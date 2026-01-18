@@ -160,22 +160,12 @@ function computeHealth(s) {
   const now = Date.now();
   const createdAt = Number.isFinite(s?.pairCreatedAt) ? s.pairCreatedAt : null;
   const isEarlyLaunch = createdAt ? (now - createdAt) < (CFG.earlyLaunchDays * 24 * 3600 * 1000) : false;
+
   const flags = [];
+  if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) flags.push('LOW_LIQUIDITY');
+  else if (liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
 
-  // Flags are intentionally softened during early launch to avoid harming
-  // perception when liquidity/volume are naturally still forming.
-  if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) {
-    flags.push('LOW_LIQUIDITY');
-  } else if (liquidityUsd < (isEarlyLaunch ? 1_000 : 5_000)) {
-    flags.push('LOW_LIQUIDITY');
-  }
-
-  if (!Number.isFinite(volumeH24)) {
-    flags.push('LOW_VOLUME');
-  } else if (volumeH24 < (isEarlyLaunch ? 10 : 50)) {
-    flags.push('LOW_VOLUME');
-  }
-
+  if (!Number.isFinite(volumeH24) || volumeH24 < 50) flags.push('LOW_VOLUME');
   if (Number.isFinite(slip) && slip >= 5) flags.push('HIGH_SLIPPAGE');
 
   const buySellRatio = (buys + sells) > 0 ? (buys / Math.max(1, sells)) : 0;
@@ -429,7 +419,6 @@ async function safeFetchJson(url) {
 // ---------------------------
 
 function readCache(lsKey, mem) {
-  // Fresh cache only (TTL).
   const now = Date.now();
   if (mem && mem.ts && (now - mem.ts) < CFG.cacheTtlMs) return mem.data;
   try {
@@ -443,21 +432,7 @@ function readCache(lsKey, mem) {
   }
 }
 
-function readCacheStale(lsKey, mem) {
-  // Stale-OK cache (returns last good value even if TTL has expired).
-  if (mem && mem.ts) return mem.data;
-  try {
-    const raw = localStorage.getItem(lsKey);
-    if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (!obj?.ts) return null;
-    return obj.data;
-  } catch {
-    return null;
-  }
-}
-
-function writeCachefunction writeCache(lsKey, data, setMem) {
+function writeCache(lsKey, data, setMem) {
   const obj = { ts: Date.now(), data };
   try { localStorage.setItem(lsKey, JSON.stringify(obj)); } catch {}
   if (setMem) setMem(obj);
@@ -551,4 +526,133 @@ function bigToFloat(bi, decimals) {
   } catch {
     return null;
   }
+}
+
+// ------------------------------
+// Phase94R12: Compatibility helpers (used by trust-engine.js)
+// ------------------------------
+
+/**
+ * Fetch a single DexScreener pair object for a given pair address.
+ * Returns the *pair* object (not the wrapper), or null.
+ */
+export async function getDexScreenerPair(pairAddress, chainId = 1) {
+  try {
+    if (!pairAddress) return null;
+    const chain = Number(chainId) === 1 ? 'ethereum' : 'ethereum';
+    const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pairAddress}`;
+    const j = await fetchJson(url, { timeoutMs: 12_000 });
+    const p = Array.isArray(j?.pairs) ? j.pairs[0] : null;
+    return p || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Compute a normalized market health summary from a DexScreener pair object.
+ * Returns an object with fields expected by trust-engine / index renderer.
+ */
+export function computeMarketHealth(dsPair) {
+  if (!dsPair || typeof dsPair !== 'object') {
+    return {
+      marketHealthScore: null,
+      marketHealthLabel: null,
+      marketHealthStats: null,
+      marketHealthExplain: null,
+      marketHealthFlags: ['no_data'],
+    };
+  }
+
+  const now = Date.now();
+  const createdAt = Number(dsPair.pairCreatedAt || 0) || 0;
+  const ageDays = createdAt > 0 ? Math.max(0, (now - createdAt) / 86_400_000) : null;
+
+  const liquidityUsd = Number(dsPair?.liquidity?.usd || 0) || 0;
+  const vol24 = Number(dsPair?.volume?.h24 || 0) || 0;
+  const buys = Number(dsPair?.txns?.h24?.buys || 0) || 0;
+  const sells = Number(dsPair?.txns?.h24?.sells || 0) || 0;
+  const buySellRatio = sells > 0 ? buys / sells : (buys > 0 ? Infinity : 0);
+
+  // Slippage heuristic (very rough): higher liquidity relative to typical trade size => lower slippage.
+  // We don't have trade-size here, so we approximate with volume; clamp to avoid absurdities.
+  const slip = liquidityUsd > 0 ? Math.min(0.25, Math.max(0.001, (vol24 / 24) / liquidityUsd)) : null;
+
+  // Score components (0..100)
+  let score = 50;
+
+  // Liquidity score
+  if (liquidityUsd >= 250_000) score += 25;
+  else if (liquidityUsd >= 100_000) score += 18;
+  else if (liquidityUsd >= 25_000) score += 10;
+  else if (liquidityUsd >= 5_000) score += 3;
+  else score -= 10;
+
+  // Volume score
+  if (vol24 >= 250_000) score += 15;
+  else if (vol24 >= 50_000) score += 10;
+  else if (vol24 >= 10_000) score += 5;
+  else if (vol24 >= 1_000) score += 2;
+  else score -= 6;
+
+  // Flow score
+  if (buys + sells >= 20) {
+    if (buySellRatio >= 1.25) score += 6;
+    else if (buySellRatio >= 0.8) score += 2;
+    else score -= 4;
+  }
+
+  // Early launch smoothing (user requested 15 days)
+  // If age < earlyLaunchDays, we soften negative bias from low activity.
+  const early = (ageDays !== null && ageDays < CFG.earlyLaunchDays);
+  if (early && score < 55) score = 55; // floor for early phase
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  let label = 'OK';
+  if (score >= 80) label = 'GOOD';
+  else if (score >= 65) label = 'MODERATE';
+  else if (score >= 50) label = 'RISK';
+  else label = 'HIGH_RISK';
+
+  const flags = [];
+  if (!createdAt) flags.push('unknown_age');
+  if (early) flags.push('early_launch');
+  if (liquidityUsd < 10_000) flags.push('low_liquidity');
+  if (vol24 < 2_000) flags.push('low_volume');
+  if (buys + sells < 6) flags.push('low_activity');
+  if (sells > buys * 2 && buys + sells >= 10) flags.push('sell_pressure');
+
+  const stats = {
+    ageDays: ageDays !== null ? Number(ageDays.toFixed(2)) : null,
+    liquidityUsd,
+    volume24hUsd: vol24,
+    buys24h: buys,
+    sells24h: sells,
+    buySellRatio: Number.isFinite(buySellRatio) ? Number(buySellRatio.toFixed(2)) : null,
+    slippage1k: slip !== null ? Number((slip * 100).toFixed(2)) : null,
+  };
+
+  const explain = early
+    ? `Early launch (< ${CFG.earlyLaunchDays}d). Scoring is softened while liquidity/volume ramps up.`
+    : `Heuristic score based on liquidity, volume, and buy/sell flow.`;
+
+  return {
+    marketHealthScore: score,
+    marketHealthLabel: label,
+    marketHealthStats: stats,
+    marketHealthExplain: explain,
+    marketHealthFlags: flags.length ? flags : ['none'],
+  };
+}
+
+/**
+ * Helper used by trust-engine / index renderers.
+ * Accepts either the computeMarketHealth() output or a health flags array.
+ */
+export function getMarketFlags(mh) {
+  if (!mh) return ['no_data'];
+  if (Array.isArray(mh)) return mh;
+  if (Array.isArray(mh.marketHealthFlags)) return mh.marketHealthFlags;
+  return ['none'];
 }
