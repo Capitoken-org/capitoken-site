@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R3
+// [market-engine] PHASE94R4
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -22,6 +22,7 @@ const CFG = {
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
+const LS_BOOTSTRAP = 'capitoken:market:swaps:bootstrap';
 
 let memSnapshot = null; // { ts, data }
 let memSwaps = null; // { ts, data }
@@ -92,6 +93,59 @@ export async function getMarketSnapshot() {
   const enriched = computeHealth(snapshot);
   writeCache(LS_SNAPSHOT, enriched, (v) => { memSnapshot = v; });
   return enriched;
+
+// Phase 9.4 R4: debug bootstrap swaps from a real tx receipt
+export async function bootstrapFromTx(txHash) {
+  const tx = String(txHash || '').trim();
+  if (!/^0x[0-9a-fA-F]{64}$/.test(tx)) throw new Error('BAD_TX_HASH');
+
+  const pairAddress = await resolvePairAddress();
+  if (!pairAddress) throw new Error('PAIR_TBA');
+
+  // Receipt is easiest way to confirm the tx happened and contains logs.
+  const receipt = await rpcCall('eth_getTransactionReceipt', [tx]);
+  const logs = Array.isArray(receipt?.logs) ? receipt.logs : [];
+
+  // Keep only Swap logs from the pair (topic0 + address match)
+  const pair = pairAddress.toLowerCase();
+  const swapLogs = logs.filter(l => (String(l?.address||'').toLowerCase() === pair)
+    && Array.isArray(l?.topics) && l.topics[0] === UNIV2_SWAP_TOPIC0);
+
+  if (!swapLogs.length) {
+    // Still store a hint row so UI shows something for debugging
+    const row = {
+      ts: Date.now(),
+      side: 'UNKNOWN',
+      amountUsd: null,
+      amountToken: null,
+      priceUsd: null,
+      maker: null,
+      txHash: tx,
+      blockNumber: receipt?.blockNumber ? hexToInt(receipt.blockNumber) : null,
+      note: 'NO_SWAP_LOGS_IN_TX'
+    };
+    writeCache(LS_BOOTSTRAP, [row], () => {});
+    return [row];
+  }
+
+  // Best-effort priceUsd
+  let snapshot = null
+  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
+
+  const priceUsd = toNum(snapshot?.priceUsd);
+  await ensureTokenOrder(pairAddress);
+
+  const swaps = [];
+  for (const lg of swapLogs.slice(-25)) {
+    const s = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
+    if (s) swaps.push(s);
+  }
+  swaps.reverse();
+  // Save bootstrap swaps so UI can show them even if eth_getLogs is blocked
+  writeCache(LS_BOOTSTRAP, swaps, () => {});
+  return swaps;
+}
+
 }
 
 export async function getRecentSwaps(limit = 10) {
@@ -127,7 +181,19 @@ export async function getRecentSwaps(limit = 10) {
   }
 
   if (!logs || logs.length === 0) {
-    // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+    // Soft-fail: no swaps visible via eth_getLogs.
+    // Fallback: if we bootstrapped from a real tx receipt, show that instead.
+    try {
+      const raw = localStorage.getItem(LS_BOOTSTRAP);
+      if (raw) {
+        const obj = JSON.parse(raw);
+        if (obj?.data && Array.isArray(obj.data) && obj.data.length) {
+          writeCache(LS_SWAPS, obj.data, (v) => { memSwaps = v; });
+          return obj.data.slice(0, limit);
+        }
+      }
+    } catch {}
+
     writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
     return [];
   }
@@ -273,18 +339,26 @@ async function ensureTokenOrder(pairAddress) {
 }
 
 async function getSwapLogs(pairAddress, fromBn, toBn) {
-  const params = [{
-    address: pairAddress,
-    fromBlock: intToHex(fromBn),
-    toBlock: intToHex(toBn),
-    topics: [UNIV2_SWAP_TOPIC0],
-  }];
-  try {
-    const logs = await rpcCall('eth_getLogs', params);
-    return Array.isArray(logs) ? logs : [];
-  } catch {
-    return [];
+  // Many public RPCs reject large eth_getLogs ranges.
+  // Chunk to stay within provider limits.
+  const maxChunk = 2000;
+  const out = [];
+  for (let start = fromBn; start <= toBn; start += maxChunk) {
+    const end = Math.min(toBn, start + maxChunk - 1);
+    const params = [{
+      address: pairAddress,
+      fromBlock: intToHex(start),
+      toBlock: intToHex(end),
+      topics: [UNIV2_SWAP_TOPIC0],
+    }];
+    try {
+      const logs = await rpcCall('eth_getLogs', params);
+      if (Array.isArray(logs) && logs.length) out.push(...logs);
+    } catch {
+      // keep going
+    }
   }
+  return out;
 }
 
 async function decodeUniV2SwapLog(log, snapshot, priceUsd) {

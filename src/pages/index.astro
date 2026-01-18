@@ -1037,7 +1037,7 @@ async function initTrustHero() {
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R3`;
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R4`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
@@ -1052,7 +1052,7 @@ async function initTrustHero() {
 
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R3`;
+    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R4`;
 
     const mod = await import(url);
     // Ensure market-engine resolves registry under base paths (GitHub Pages)
@@ -1186,6 +1186,13 @@ async function initTrustHero() {
     renderMarketHealthFromTrustState(s);
     try{
       const m = await loadMarketEngine();
+      // Optional debug: force bootstrap swaps from a real tx receipt
+      const q = new URLSearchParams(window.location.search);
+      const debugTx = q.get('debugTx');
+      if (debugTx && m.bootstrapFromTx) {
+        try { await m.bootstrapFromTx(debugTx); } catch(e) { /* ignore */ }
+      }
+
       const swaps = await m.getRecentSwaps(10);
       renderSwaps(swaps);
     }catch(e){
