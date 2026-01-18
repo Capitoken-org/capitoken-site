@@ -208,7 +208,7 @@ const roadmap = [
                 <!-- Real Swap Activity (Phase 9.4) -->
         <div class="card">
           <div class="h3">Real Swap Activity</div>
-          <div class="small">On-chain swap logs (best-effort, cached, refreshes automatically).</div>
+          <div class="small">Live swaps from DexScreener (cached, refreshes automatically).</div>
 
           <div class="table-wrap" style="margin-top:12px;">
             <table class="table" aria-label="Recent swaps">
@@ -1037,7 +1037,7 @@ async function initTrustHero() {
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R5`;
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R4_FINAL`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
@@ -1052,7 +1052,7 @@ async function initTrustHero() {
 
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R5`;
+    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R4_FINAL`;
 
     const mod = await import(url);
     // Ensure market-engine resolves registry under base paths (GitHub Pages)
@@ -1067,7 +1067,7 @@ async function initTrustHero() {
     if (!el.swapRows) return;
 
     if (!Array.isArray(swaps) || swaps.length === 0) {
-      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps visible yet (RPC/logs). Tip: add ?tx=0x... to the URL to bootstrap from a known swap tx.</td></tr>`;
+      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or RPC blocked). Tip: add ?tx=0x... to the URL to bootstrap from a known swap tx.</td></tr>`;
       return;
     }
 
@@ -1139,21 +1139,7 @@ async function initTrustHero() {
   }
 
 
-  
-
-  // Optional: allow bootstrapping swaps from a known tx hash
-  // Usage: append ?tx=0x... to the page URL
-  function getTxBootstrapParam() {
-    try {
-      const u = new URL(window.location.href);
-      const tx = (u.searchParams.get('tx') || '').trim();
-      if (tx && tx.startsWith('0x') && tx.length > 10) return tx;
-    } catch {}
-    return null;
-  }
-
-  let __bootstrappedTx = null;
-async function render(engine) {
+  async function render(engine) {
     const s = await engine.getSnapshot();
 
     el.wallet.textContent = s.accountShort || (s.metamask ? "Not connected" : "MetaMask not detected");
@@ -1200,16 +1186,6 @@ async function render(engine) {
     renderMarketHealthFromTrustState(s);
     try{
       const m = await loadMarketEngine();
-      // Optional: bootstrap swaps from a known tx hash (?tx=0x...)
-      try {
-        const u = new URL(window.location.href);
-        const tx = u.searchParams.get("tx");
-        if (tx && !window.__CAPITOKEN_SWAP_BOOTSTRAPPED) {
-          window.__CAPITOKEN_SWAP_BOOTSTRAPPED = true;
-          await m.bootstrapFromTx(tx);
-        }
-      } catch {}
-
       const swaps = await m.getRecentSwaps(10);
       renderSwaps(swaps);
     }catch(e){

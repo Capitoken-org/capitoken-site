@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R5
+// [market-engine] PHASE94R4_FINAL
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -14,8 +14,6 @@ const CFG = {
     'https://eth.llamarpc.com'
   ],
   cacheTtlMs: 60_000,
-  // Chunk size for eth_getLogs (some RPCs fail on large ranges)
-  swapsChunkSize: 2000,
   // Expand lookback if no swaps found
   swapsLookbacks: [5000, 20000, 100000, 250000],
   // Early launch window to avoid harsh labeling
@@ -24,7 +22,6 @@ const CFG = {
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
-const LS_SWAPS_BOOT = 'capitoken:market:swaps:bootstrap';
 
 let memSnapshot = null; // { ts, data }
 let memSwaps = null; // { ts, data }
@@ -98,99 +95,465 @@ export async function getMarketSnapshot() {
 }
 
 export async function getRecentSwaps(limit = 10) {
-  const cached = readCache(LS_SWAPS, memSwaps);
-  if (cached) return cached.slice(0, limit);
+  // Never throw in production UI. Return [] if RPC/logs are blocked.
+  try {
+    const cached = readCache(LS_SWAPS, memSwaps);
+    if (cached) return cached.slice(0, limit);
 
-  const pairAddress = await resolvePairAddress();
-  if (!pairAddress) {
-    writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
-    return [];
-  }
-
-  // Ensure token0/token1 cached (needed for BUY/SELL side)
-  await ensureTokenOrder(pairAddress);
-
-  // Fetch latest price for USD estimation (best-effort)
-  let snapshot = null;
-  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
-  const priceUsd = toNum(snapshot?.priceUsd);
-
-  const latestBlock = await rpcCall('eth_blockNumber', []);
-  const latestBn = hexToInt(latestBlock);
-  if (!Number.isFinite(latestBn) || latestBn <= 0) {
-    writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
-    return [];
-  }
-
-  let logs = [];
-  for (const lookback of CFG.swapsLookbacks) {
-    const fromBn = Math.max(1, latestBn - lookback);
-    logs = await getSwapLogsChunked(pairAddress, fromBn, latestBn);
-    if (logs && logs.length) break;
-  }
-
-  if (!logs || logs.length === 0) {
-    // Soft-fail: no swaps visible via RPC/logs. Try bootstrap cache as a last resort.
-    const boot = readCache(LS_SWAPS_BOOT, null);
-    if (boot && Array.isArray(boot) && boot.length) {
-      writeCache(LS_SWAPS, boot, (v) => { memSwaps = v; });
-      return boot.slice(0, limit);
+    const pairAddress = await resolvePairAddress();
+    if (!pairAddress) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
     }
+
+    // Ensure token0/token1 cached (needed for BUY/SELL side)
+    try { await ensureTokenOrder(pairAddress); } catch {}
+
+    // Fetch latest price for USD estimation (best-effort)
+    let snapshot = null;
+    try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
+    const priceUsd = toNum(snapshot?.priceUsd);
+
+    // If the page has ?tx=0x... attempt a targeted bootstrap around that tx.
+    try {
+      const url = new URL(globalThis.location?.href || "", "https://example.com");
+      const tx = (url.searchParams.get("tx") || "").trim();
+      if (tx && /^0x[0-9a-fA-F]{64}$/.test(tx)) {
+        const boot = await bootstrapFromTx(tx, snapshot, priceUsd);
+        if (boot && boot.length) {
+          writeCache(LS_SWAPS, boot, (v) => { memSwaps = v; });
+          return boot.slice(0, limit);
+        }
+      }
+    } catch {}
+
+    const latestBlock = await rpcCall("eth_blockNumber", []);
+    const latestBn = hexToInt(latestBlock);
+    if (!Number.isFinite(latestBn) || latestBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+    for (const lookback of CFG.swapsLookbacks) {
+      const fromBn = Math.max(1, latestBn - lookback);
+      try {
+        logs = await getSwapLogs(pairAddress, fromBn, latestBn);
+      } catch {
+        logs = [];
+      }
+      if (logs && logs.length) break;
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
     writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
     return [];
   }
-
-  // Normalize logs to swaps (newest first)
-  const swaps = [];
-  for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
-    const lg = logs[i];
-    const swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
-    if (swap) swaps.push(swap);
-  }
-
-  writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
-  return swaps.slice(0, limit);
 }
 
-// Force-bootstrap swaps from a known txHash (receipt logs). Useful when eth_getLogs is flaky.
-// Returns an array of decoded swaps (newest first). Also writes to a separate cache key.
-export async function bootstrapFromTx(txHash) {
-  const h = String(txHash || '').trim();
-  if (!h || !h.startsWith('0x') || h.length < 10) return [];
+// Bootstrap swaps by tx hash: read receipt blockNumber then fetch logs around it.
+export async function bootstrapFromTx(txHash, snapshot = null, priceUsd = undefined) {
+  if (!txHash || !/^0x[0-9a-fA-F]{64}$/.test(txHash)) return [];
 
   const pairAddress = await resolvePairAddress();
   if (!pairAddress) return [];
 
-  // Ensure token0/token1 cached for BUY/SELL classification
-  await ensureTokenOrder(pairAddress);
+  try { await ensureTokenOrder(pairAddress); } catch {}
 
-  // Best-effort snapshot for USD estimation
-  let snapshot = null;
-  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
-  const priceUsd = toNum(snapshot?.priceUsd);
+  const rcpt = await rpcCall("eth_getTransactionReceipt", [txHash]);
+  const bn = hexToInt(rcpt?.blockNumber);
+  if (!Number.isFinite(bn) || bn <= 0) return [];
 
-  let receipt = null;
-  try {
-    receipt = await rpcCall('eth_getTransactionReceipt', [h]);
-  } catch {
-    receipt = null;
-  }
-  const logs = Array.isArray(receipt?.logs) ? receipt.logs : [];
+  const fromBn = Math.max(1, bn - 2000);
+  const toBn = bn + 2000;
+
+  const logs = await getSwapLogs(pairAddress, fromBn, toBn);
+  if (!logs || !logs.length) return [];
+
   const swaps = [];
-
-  for (let i = logs.length - 1; i >= 0; i--) {
+  for (let i = logs.length - 1; i >= 0 && swaps.length < 50; i--) {
     const lg = logs[i];
-    const addr = normAddr(lg?.address);
-    const t0 = (lg?.topics && lg.topics[0]) ? String(lg.topics[0]).toLowerCase() : '';
-    if (addr !== pairAddress) continue;
-    if (t0 !== UNIV2_SWAP_TOPIC0) continue;
-    const decoded = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
-    if (decoded) swaps.push(decoded);
+    let swap = null;
+    try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+    if (swap) swaps.push(swap);
   }
 
-  // Persist bootstrap swaps separately (do not overwrite main cache unless caller chooses)
-  writeCache(LS_SWAPS_BOOT, swaps, null);
   return swaps;
+}
+
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchor exists, try a tight window first (fast, reliable)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try {
+        logs = await getSwapLogs(pairAddress, fromA, toA);
+      } catch {
+        logs = [];
+      }
+    }
+
+    // 2) Adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try {
+          logs = await getSwapLogs(pairAddress, fromBn, headBn);
+        } catch {
+          logs = [];
+        }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    // Absolute last-resort safety net
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast, reliable)
+    if (Number.isFinite(anchorBn) && anchorBn > 0) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try { logs = await getSwapLogs(pairAddress, fromA, toA); } catch { logs = []; }
+    }
+
+    // 2) Adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try { logs = await getSwapLogs(pairAddress, fromBn, headBn); } catch { logs = []; }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast, reliable)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try {
+        logs = await getSwapLogs(pairAddress, fromA, toA);
+      } catch {
+        logs = [];
+      }
+    }
+
+    // 2) Otherwise, adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try {
+          logs = await getSwapLogs(pairAddress, fromBn, headBn);
+        } catch {
+          logs = [];
+        }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast + reliable)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try {
+        logs = await getSwapLogs(pairAddress, fromA, toA);
+      } catch {
+        logs = [];
+      }
+    }
+
+    // 2) Adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try {
+          logs = await getSwapLogs(pairAddress, fromBn, headBn);
+        } catch {
+          logs = [];
+        }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don\'t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast, reliable)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try {
+        logs = await getSwapLogs(pairAddress, fromA, toA);
+      } catch {
+        logs = [];
+      }
+    }
+
+    // 2) Otherwise, adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try {
+          logs = await getSwapLogs(pairAddress, fromBn, headBn);
+        } catch {
+          logs = [];
+        }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    // Absolute last-resort safety net
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast + reliable)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2_000);
+      const toA = Math.max(fromA, anchorBn + 2_000);
+      try { logs = await getSwapLogs(pairAddress, fromA, toA); } catch { logs = []; }
+    }
+
+    // 2) Otherwise, adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try { logs = await getSwapLogs(pairAddress, fromBn, headBn); } catch { logs = []; }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    // Absolute last-resort safety net
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
+}
+    if (!Number.isFinite(headBn) || headBn <= 0) {
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    let logs = [];
+
+    // 1) If anchorBn exists, try a tight window first (fast)
+    if (Number.isFinite(anchorBn)) {
+      const fromA = Math.max(1, anchorBn - 2000);
+      const toA = Math.max(fromA, anchorBn + 2000);
+      try {
+        logs = await getSwapLogs(pairAddress, fromA, toA);
+      } catch {
+        logs = [];
+      }
+    }
+
+    // 2) Adaptive lookback from headBn
+    if (!logs || logs.length === 0) {
+      for (const lookback of CFG.swapsLookbacks) {
+        const fromBn = Math.max(1, headBn - lookback);
+        try {
+          logs = await getSwapLogs(pairAddress, fromBn, headBn);
+        } catch {
+          logs = [];
+        }
+        if (logs && logs.length) break;
+      }
+    }
+
+    if (!logs || logs.length === 0) {
+      // Soft-fail: no swaps visible via RPC/logs (but don’t break UI)
+      writeCache(LS_SWAPS, [], (v) => { memSwaps = v; });
+      return [];
+    }
+
+    // Normalize logs to swaps (newest first)
+    const swaps = [];
+    for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
+      const lg = logs[i];
+      let swap = null;
+      try { swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd); } catch { swap = null; }
+      if (swap) swaps.push(swap);
+    }
+
+    writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
+    return swaps.slice(0, limit);
+  } catch {
+    try { writeCache(LS_SWAPS, [], (v) => { memSwaps = v; }); } catch {}
+    return [];
+  }
 }
 
 // ---------------------------
@@ -321,26 +684,19 @@ async function ensureTokenOrder(pairAddress) {
   }
 }
 
-async function getSwapLogsChunked(pairAddress, fromBn, toBn) {
-  const chunk = Number.isFinite(CFG.swapsChunkSize) ? Math.max(250, CFG.swapsChunkSize) : 2000;
-  const out = [];
-  // Keep chunks reasonably small to avoid RPC/provider limits
-  for (let start = fromBn; start <= toBn; start += chunk) {
-    const end = Math.min(toBn, start + chunk - 1);
-    const params = [{
-      address: pairAddress,
-      fromBlock: intToHex(start),
-      toBlock: intToHex(end),
-      topics: [UNIV2_SWAP_TOPIC0],
-    }];
-    try {
-      const logs = await rpcCall('eth_getLogs', params);
-      if (Array.isArray(logs) && logs.length) out.push(...logs);
-    } catch {
-      // If a single chunk fails, continue; other chunks may still succeed.
-    }
+async function getSwapLogs(pairAddress, fromBn, toBn) {
+  const params = [{
+    address: pairAddress,
+    fromBlock: intToHex(fromBn),
+    toBlock: intToHex(toBn),
+    topics: [UNIV2_SWAP_TOPIC0],
+  }];
+  try {
+    const logs = await rpcCall('eth_getLogs', params);
+    return Array.isArray(logs) ? logs : [];
+  } catch {
+    return [];
   }
-  return out;
 }
 
 async function decodeUniV2SwapLog(log, snapshot, priceUsd) {
