@@ -948,7 +948,7 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R3 while trust-engine?v=PHASE94R8.
-	  const ENGINE_V = "PHASE94R9";
+	  const ENGINE_V = "PHASE94R10";
 
   const $id = (id) => document.getElementById(id);
   const el = {
@@ -1147,7 +1147,46 @@ async function initTrustHero() {
 
 
   async function render(engine) {
-    const s = await engine.getSnapshot();
+    // Keep the UI stable: if market APIs temporarily rate-limit / return empty,
+    // don't wipe previously displayed values.
+    const last = window.__CAPI_LAST_TRUST_SNAPSHOT || null;
+    let sRaw;
+    try {
+      sRaw = await engine.getSnapshot();
+    } catch (e) {
+      console.error('[TrustPanel] getSnapshot failed', e);
+      if (!last) throw e;
+      sRaw = last;
+    }
+
+    // Merge: prefer new values, but never overwrite previous non-empty values with null/undefined/"".
+    const keepIfEmptyKeys = [
+      'priceUsd','liquidityUsd','volumeH24','fdv',
+      'marketStatus','dexId',
+      'uniswapPairOnChain','liquidityEthWei','pairMatchesExpected',
+      'trustScore','trustLabel','alerts'
+    ];
+    const s = last ? { ...last, ...sRaw } : sRaw;
+    if (last) {
+      for (const k of keepIfEmptyKeys) {
+        const v = sRaw[k];
+        const empty = (v === null || v === undefined || v === '');
+        if (empty && last[k] !== null && last[k] !== undefined && last[k] !== '') {
+          s[k] = last[k];
+        }
+      }
+      // If the new snapshot says UNAVAILABLE but we previously had LIVE data, keep LIVE fields.
+      if ((sRaw.marketStatus === 'UNAVAILABLE' || sRaw.marketStatus === 'NOT_INDEXED') && last.marketStatus === 'LIVE') {
+        s.marketStatus = last.marketStatus;
+        s.priceUsd = s.priceUsd ?? last.priceUsd;
+        s.liquidityUsd = s.liquidityUsd ?? last.liquidityUsd;
+        s.volumeH24 = s.volumeH24 ?? last.volumeH24;
+        s.fdv = s.fdv ?? last.fdv;
+      }
+    }
+
+    window.__CAPI_LAST_TRUST_SNAPSHOT = s;
+
 
     el.wallet.textContent = s.accountShort || (s.metamask ? "Not connected" : "MetaMask not detected");
     el.network.textContent = s.chainOk ? "Ethereum Mainnet ✅"
@@ -1194,7 +1233,13 @@ async function initTrustHero() {
     try{
       const m = await loadMarketEngine();
       const swaps = await m.getRecentSwaps(10);
+            // If a transient fetch returns an empty list, keep the last rendered swaps instead of wiping the table.
+            if (Array.isArray(swaps) && swaps.length === 0 && Array.isArray(window.__CAPI_LAST_SWAPS) && window.__CAPI_LAST_SWAPS.length) {
+              // no-op: keep last table
+            } else {
       renderSwaps(swaps);
+      window.__CAPI_LAST_SWAPS = swaps;
+      }
     }catch(e){
 	      // Keep UI stable. If we already have swaps rendered, do NOT wipe them.
 	      if (el.swapRows) {

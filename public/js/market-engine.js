@@ -17,7 +17,7 @@ const CFG = {
   // Expand lookback if no swaps found
   swapsLookbacks: [5000, 20000, 100000, 250000],
   // Early launch window to avoid harsh labeling
-  earlyLaunchDays: 7,
+  earlyLaunchDays: 15,
 };
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
@@ -419,6 +419,7 @@ async function safeFetchJson(url) {
 // ---------------------------
 
 function readCache(lsKey, mem) {
+  // Fresh cache only (TTL).
   const now = Date.now();
   if (mem && mem.ts && (now - mem.ts) < CFG.cacheTtlMs) return mem.data;
   try {
@@ -432,7 +433,21 @@ function readCache(lsKey, mem) {
   }
 }
 
-function writeCache(lsKey, data, setMem) {
+function readCacheStale(lsKey, mem) {
+  // Stale-OK cache (returns last good value even if TTL has expired).
+  if (mem && mem.ts) return mem.data;
+  try {
+    const raw = localStorage.getItem(lsKey);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj?.ts) return null;
+    return obj.data;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachefunction writeCache(lsKey, data, setMem) {
   const obj = { ts: Date.now(), data };
   try { localStorage.setItem(lsKey, JSON.stringify(obj)); } catch {}
   if (setMem) setMem(obj);
