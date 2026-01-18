@@ -542,6 +542,10 @@ const roadmap = [
   <!-- Live + Wallet script -->
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const $ = (s) => document.querySelector(s);
+    // Helpers (avoid null deref + keep code readable)
+    const setText = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = (txt ?? ''); };
+    const setHTML = (sel, html) => { const el = document.querySelector(sel); if (el) el.innerHTML = (html ?? ''); };
+
 
     // Registry-first runtime state (single source of truth)
     let tokenAddr = (typeof TOKEN_ADDRESS === "string" ? TOKEN_ADDRESS : "");
@@ -859,21 +863,21 @@ async function initTrustHero() {
 
       setMarketBadge("Market: Live");
 
-      setText("#mPrice", fmtUSD(p.priceUsd, 8));
-      setText("#mLiq", fmtUSD(p?.liquidity?.usd, 0));
-      setText("#mVol", fmtUSD(p?.volume?.h24, 0));
+      $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
+      $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+      $("#mVol").textContent = fmtUSD(p?.volume?.h24, 0);
 
       const mc = p?.marketCap ?? p?.fdv ?? null;
-      setText("#mMcap", mc ? fmtUSD(mc, 0) : "TBA");
+      $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
-      setHTML("#txBody", `
+      $("#txBody").innerHTML = `
         <tr>
           <td class="mono">${short(p?.pairAddress || "TBA")}</td>
           <td class="mono">Liquidity pool</td>
           <td>${p?.txns?.h24 ? (p.txns.h24.buys + p.txns.h24.sells) : "TBA"}</td>
           <td class="mono"><a href="${p.url}" target="_blank" rel="noreferrer">Open pair</a></td>
         </tr>
-      `);
+      `;
       }catch(e){
         // Most common: adblock / privacy extension blocking api.dexscreener.com
         setMarketBadge("Market: Blocked");
@@ -1037,7 +1041,7 @@ async function initTrustHero() {
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R6`;
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R7`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
@@ -1052,7 +1056,7 @@ async function initTrustHero() {
 
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R6`;
+    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R7`;
 
     const mod = await import(url);
     // Ensure market-engine resolves registry under base paths (GitHub Pages)
