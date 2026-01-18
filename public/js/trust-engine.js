@@ -1,9 +1,8 @@
-/* Capitoken Site - PHASE94R7 FINAL (setText/setHTML fix for DexScreener errors) */
+export const ENGINE_VERSION = (new URL(import.meta.url)).searchParams.get('v') || 'dev';
 // src/js/trust-engine.js
 // Phase 9.3 Market Live Final: snapshot real (on-chain + DexScreener) driven by official-registry.json
 
 // Cache-buster version (keeps GitHub Pages and aggressive browsers from serving stale JS)
-export const ENGINE_VERSION = "PHASE94R3";
 
 export const CONFIG = {
   // Defaults (will be overwritten by registry at runtime)

@@ -542,10 +542,6 @@ const roadmap = [
   <!-- Live + Wallet script -->
   <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const $ = (s) => document.querySelector(s);
-    // Helpers (avoid null deref + keep code readable)
-    const setText = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = (txt ?? ''); };
-    const setHTML = (sel, html) => { const el = document.querySelector(sel); if (el) el.innerHTML = (html ?? ''); };
-
 
     // Registry-first runtime state (single source of truth)
     let tokenAddr = (typeof TOKEN_ADDRESS === "string" ? TOKEN_ADDRESS : "");
