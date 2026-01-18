@@ -866,7 +866,10 @@ async function initTrustHero() {
       const mc = p?.marketCap ?? p?.fdv ?? null;
       $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
-      $("#txBody").innerHTML = `
+      // The swaps table body in this build is #swapRows (older builds used #txBody).
+      // Keep both for backward-compat, but never throw if the element is missing.
+      const txEl = document.getElementById("swapRows") || document.getElementById("txBody");
+      if (txEl) txEl.innerHTML = `
         <tr>
           <td class="mono">${short(p?.pairAddress || "TBA")}</td>
           <td class="mono">Liquidity pool</td>
@@ -1037,7 +1040,7 @@ async function initTrustHero() {
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R7`;
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R8`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
@@ -1052,7 +1055,7 @@ async function initTrustHero() {
 
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R7`;
+    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R8`;
 
     const mod = await import(url);
     // Ensure market-engine resolves registry under base paths (GitHub Pages)

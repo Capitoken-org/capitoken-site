@@ -1,4 +1,3 @@
-export const ENGINE_VERSION = (new URL(import.meta.url)).searchParams.get('v') || 'dev';
 // [market-engine] PHASE94R3
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
