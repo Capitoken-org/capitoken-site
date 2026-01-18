@@ -2,7 +2,17 @@
 // Phase 9.3 Market Live Final: snapshot real (on-chain + DexScreener) driven by official-registry.json
 
 // Cache-buster version (keeps GitHub Pages and aggressive browsers from serving stale JS)
-export const ENGINE_VERSION = "PHASE94R3";
+// IMPORTANT: trust-engine and market-engine must always use the SAME revision.
+// We derive it from THIS module URL (?v=...). This prevents mixed loads like:
+//   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
+export const ENGINE_VERSION = (() => {
+  try {
+    const u = new URL(import.meta.url);
+    return u.searchParams.get('v') || 'DEV';
+  } catch {
+    return 'DEV';
+  }
+})();
 
 export const CONFIG = {
   // Defaults (will be overwritten by registry at runtime)
@@ -157,9 +167,12 @@ async function fetchDexScreenerPair() {
 // Phase 9.4: Market Health (uses market-engine.js best-effort)
 // -------------------------------
 async function fetchMarketHealth() {
-  // Resolve base like https://site/base/ so dynamic import works on GitHub Pages base paths.
+  // Import relative to THIS module to avoid base-path and revision mismatches.
+  // trust-engine.js lives in /js, so this resolves to /js/market-engine.js.
+  const marketUrl = new URL(`market-engine.js?v=${encodeURIComponent(ENGINE_VERSION)}`, import.meta.url).toString();
+
+  // Base URL for other fetches (eg, /official-registry.json)
   const base = new URL('.', window.location.href);
-  const marketUrl = new URL('js/market-engine.js', base).toString() + `?v=${ENGINE_VERSION}`;
 
   const mod = await import(marketUrl);
   // market-engine expects a baseUrl that can resolve official-registry.json correctly

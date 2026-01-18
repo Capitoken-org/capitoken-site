@@ -946,6 +946,10 @@ async function initTrustHero() {
 <script is:inline type="module">
   console.log("[TrustPanel] root script boot");
 
+	  // IMPORTANT: keep all engine modules on the SAME revision.
+	  // This avoids mixed loads like market-engine?v=PHASE94R3 while trust-engine?v=PHASE94R8.
+	  const ENGINE_V = "PHASE94R9";
+
   const $id = (id) => document.getElementById(id);
   const el = {
     wallet: $id("tp_wallet"),
@@ -1040,7 +1044,7 @@ async function initTrustHero() {
     // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/trust-engine.js', base).toString() + `?v=PHASE94R8`;
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=${ENGINE_V}`;
 
     const mod = await import(url);
     console.log('[TrustPanel] engine loaded', url);
@@ -1055,7 +1059,7 @@ async function initTrustHero() {
 
     const base = new URL('.', window.location.href);
     // Cache-buster to guarantee we are NOT running an old JS file.
-    const url = new URL('js/market-engine.js', base).toString() + `?v=PHASE94R8`;
+    const url = new URL('js/market-engine.js', base).toString() + `?v=${ENGINE_V}`;
 
     const mod = await import(url);
     // Ensure market-engine resolves registry under base paths (GitHub Pages)
@@ -1192,8 +1196,13 @@ async function initTrustHero() {
       const swaps = await m.getRecentSwaps(10);
       renderSwaps(swaps);
     }catch(e){
-      // keep UI stable even if DexScreener blocked
-      if (el.swapRows) el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">Market swaps unavailable (blocked or not indexed).</td></tr>`;
+	      // Keep UI stable. If we already have swaps rendered, do NOT wipe them.
+	      if (el.swapRows) {
+	        const hasRows = el.swapRows.querySelector('tr') != null;
+	        if (!hasRows) {
+	          el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">Market swaps unavailable (blocked or not indexed).</td></tr>`;
+	        }
+	      }
     }
 
     const C = engine.CONFIG;
