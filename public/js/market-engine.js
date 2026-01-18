@@ -238,7 +238,7 @@ function marketHealthFrom(pair, swaps){
   // DexScreener provides pairCreatedAt (ms). Early launch gets gentler scoring.
   const createdAt = Number(pair?.pairCreatedAt ?? NaN);
   const isEarlyLaunch = Number.isFinite(createdAt)
-    ? (now() - createdAt) < (72 * 60 * 60 * 1000)
+    ? (now() - createdAt) < (7 * 24 * 60 * 60 * 1000)
     : false;
 
   const liquidityUsd = Number(pair?.liquidity?.usd ?? NaN);
@@ -415,8 +415,13 @@ export async function getRecentSwaps(limit = 10){
 
   // Official DexScreener REST reference does not include a trades endpoint.
   // We use on-chain Uniswap V2 Swap logs instead.
-  const out = await fetchOnChainSwaps(pairAddress, Math.max(0, Number(limit) || 10));
-
+  let out = [];
+  try{
+    out = await fetchOnChainSwaps(pairAddress, Math.max(0, Number(limit) || 10));
+  }catch(e){
+    // Soft-fail: RPC/logs can be blocked by privacy extensions or provider limits
+    out = [];
+  }
   mem.swaps = out;
   mem.swapsAt = now();
   lsSet('capitoken:market:swaps', { ts: mem.swapsAt, data: out });
