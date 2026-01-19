@@ -1381,20 +1381,48 @@ html, body{
   object-fit: contain;
 }
 
-/* ===== Phase 9.4 UI: Trust Score tile ===== */
-.stat-value{ margin-top:6px; font-weight:800; }
-.stat-suffix{ opacity:.75; font-weight:700; font-size:12px; }
 
-.trust-mini-bar{
-  height:6px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.12);
-  margin-top:10px;
+/* === Capi Vibes: Hero Trust Bar (contained, right-aligned) === */
+.hero-trustbar{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  max-width: 520px;
+}
+/* If your hero uses a grid, this keeps it aligned with the right edge of the hero copy area */
+.hero-trustbar{ justify-content:flex-start; }
+.hero-trustbar__left{
+  min-width: 120px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  opacity:.95;
+}
+.hero-trustbar__label{
+  font-size:12px;
+  letter-spacing:.02em;
+  opacity:.85;
+}
+.hero-trustbar__value{
+  font-size:13px;
+  font-weight:700;
+}
+.hero-trustbar__track{
+  position:relative;
+  flex:1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.14);
   overflow:hidden;
 }
-.trust-mini-bar__fill{
-  height:100%;
+.hero-trustbar__fill{
+  position:absolute;
+  inset:0 auto 0 0;
   width:0%;
-  background: linear-gradient(90deg, rgba(255,200,90,0.95), rgba(90,220,140,0.95));
   border-radius:999px;
+  background: rgba(255, 172, 64, .95);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.18) inset;
+  transition: width 400ms ease;
 }
