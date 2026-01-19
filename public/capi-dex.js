@@ -1,29 +1,53 @@
+// public/js/capi-dex.js
+// Sets safe, official DEX links based on DOM values. No deps.
 (function(){
-  const cfg = window.CAPI_CONFIG || {};
-  const { TOKENS, CONTRACT_ADDRESS } = cfg;
-
-  function uniswapUrl(input, output){
-    const base = "https://app.uniswap.org/#/swap";
-    const p = new URLSearchParams({
-      inputCurrency: input,
-      outputCurrency: output
-    });
-    return `${base}?${p.toString()}`;
+  function $(id){ return document.getElementById(id); }
+  function getAddr(id){
+    const v = ($(id)?.textContent || '').trim();
+    return (v.startsWith('0x') && v.length >= 10) ? v : '';
   }
 
-  function isAddress(a){
-    return typeof a === "string" && /^0x[a-fA-F0-9]{40}$/.test(a);
+  const WETH_MAINNET = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+  function setHref(id, href){
+    const a = $(id);
+    if(a && href){ a.setAttribute('href', href); }
   }
 
-  function setDexLinks(){
-    if(!isAddress(CONTRACT_ADDRESS)) return;
+  function wire(){
+    const token = getAddr('contractFull');
+    const pair  = getAddr('pairFull');
 
-    const map = [
-      ["dexEth",  TOKENS.ETH],
-      ["dexUsdc", TOKENS.USDC],
-      ["dexUsdt", TOKENS.USDT],
-      ["dexDai",  TOKENS.DAI],
-    ];
+    // Etherscan buttons (if present as <a>)
+    setHref('etherscanContract', token ? `https://etherscan.io/token/${token}` : '');
+    setHref('etherscanPair', pair ? `https://etherscan.io/address/${pair}` : '');
+
+    // Uniswap swap links
+    // token0/token1 order doesn't matter for UI; Uniswap will resolve.
+    if(token){
+      const uniSwap = `https://app.uniswap.org/#/swap?inputCurrency=${WETH_MAINNET}&outputCurrency=${token}`;
+      const uniSwapReverse = `https://app.uniswap.org/#/swap?inputCurrency=${token}&outputCurrency=${WETH_MAINNET}`;
+
+      setHref('buyOnUniswap', uniSwap);
+      setHref('routeWethCapi', uniSwap);
+      setHref('routeCapiWeth', uniSwapReverse);
+
+      // If there is a "Live Market" link, point to Dexscreener if pair known, else token.
+      const dex = pair
+        ? `https://dexscreener.com/ethereum/${pair}`
+        : `https://dexscreener.com/ethereum/${token}`;
+      setHref('liveMarket', dex);
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wire);
+  }else{
+    wire();
+  }
+
+  window.CAPI_DEX = { wire };
+})();
 
     map.forEach(([id, token])=>{
       const a = document.getElementById(id);
