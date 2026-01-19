@@ -1,6 +1,7 @@
 // Capitoken runtime config (public)
 window.CAPI_CONFIG = {
   CHAIN_ID_HEX: "0x1", // Ethereum mainnet
+  RPC_HTTP: "https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE",
 
   // Verified contract (mainnet)
   CONTRACT_ADDRESS: "0xF2dA6C9B945c688A52D3B72340E622014920de6a",

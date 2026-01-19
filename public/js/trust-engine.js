@@ -6,15 +6,15 @@
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
 // IMPORTANT: keep revision tags consistent across assets.
-// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R16
+// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R17_RPC
 // If we hardcode a different revision here, this module will import a mismatched
 // market-engine revision (because we append ?v=${ENGINE_VERSION}), causing
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R16";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R17_RPC";
   } catch {
-    return "PHASE94R16";
+    return "PHASE94R17_RPC";
   }
 })();
 
@@ -34,7 +34,7 @@ export const CONFIG = {
   TOKEN_IMAGE_URL: "https://www.capitoken.org/assets/capi-logo-256.png",
 
   // Fallback RPC read-only
-  RPC_HTTP: "https://cloudflare-eth.com",
+  RPC_HTTP: (typeof window !== "undefined" && window.CAPI_RPC_HTTP) ? window.CAPI_RPC_HTTP : "https://cloudflare-eth.com",
 
   // Liquidity threshold
   MIN_LIQ_WEI: 25n * (10n ** 16n), // 0.25 ETH

@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R16
+// [market-engine] PHASE94R17_RPC
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -19,6 +19,13 @@ const CFG = {
   // Early launch window to avoid harsh labeling
   earlyLaunchDays: 15,
 };
+
+// Prefer user-provided RPC (public site; do not paste secrets unless restricted)
+if (typeof window !== "undefined" && window.CAPI_RPC_HTTP) {
+  const u = String(window.CAPI_RPC_HTTP);
+  if (u && !CFG.rpcUrls.includes(u)) CFG.rpcUrls.unshift(u);
+}
+
 
 const LS_SNAPSHOT = 'capitoken:market:snapshot';
 const LS_SWAPS = 'capitoken:market:swaps';
