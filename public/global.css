@@ -1301,3 +1301,41 @@ h3{margin:0 0 6px;font-size:18px}
 #launchpanel .launch-row > .card{
   margin-top: 0 !important;
 }
+
+/* ===== Fix: Icon "double background" (favicons already include their own tile) ===== */
+.venue-icon{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  object-fit:contain;
+}
+
+/* ===== Hero metrics: 5 columns on desktop (Chain / Status / Focus / Symbol / Trust Score) ===== */
+.hero-metrics{
+  display:grid;
+  gap:14px;
+  margin-top:18px;
+}
+@media (min-width:980px){
+  .hero-metrics{ grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width:979px){
+  .hero-metrics{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width:520px){
+  .hero-metrics{ grid-template-columns: 1fr; }
+}
+
+/* ===== Trust score: compact variant for hero row ===== */
+.trust-score--mini{
+  margin-top:0;
+  max-width:none;
+  padding:12px 12px 10px;
+}
+.trust-score--mini .trust-score__row{ margin-bottom:8px; }
+.trust-score--mini .trust-score__value{ font-size:15px; }
+.trust-score--mini .trust-bar{ height:8px; }
+.trust-score--mini .trust-score__hint{ margin-top:8px; font-size:12px; opacity:.85; }
