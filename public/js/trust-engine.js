@@ -12,7 +12,7 @@
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R20_ALCHEMY_STABLE";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R21_ALCHEMY_FIX";
   } catch {
     return "PHASE94R20_ALCHEMY_STABLE";
   }
@@ -45,13 +45,20 @@ export const CONFIG = {
 const CHAIN_ID_MAINNET = "0x1";
 
 function getRpcHttp() {
-  const w = (typeof window !== 'undefined') ? window : {};
-  const cfg = w.CAPI_CONFIG || {};
-  // Prefer normalized field, then common legacy aliases
-  const a = (cfg.rpcHttp || cfg.RPC_HTTP || cfg.rpcHTTP || '').toString().trim();
-  const b = (w.CAPI_RPC_HTTP || w.CAPI_RPC || '').toString().trim();
-  const pick = a || b || (CFG.RPC_HTTP_DEFAULT || '').toString().trim();
-  return pick;
+  // Prefer runtime-configured RPC (Alchemy) if present.
+  // Supported shapes:
+  //  - window.CAPI_CONFIG.RPC_HTTP (current)
+  //  - window.CAPI_CONFIG.rpcHttp (legacy)
+  //  - window.CAPI_RPC_HTTP (very legacy)
+  try {
+    const cfg = (typeof window !== 'undefined' && window.CAPI_CONFIG) ? window.CAPI_CONFIG : null;
+    const v1 = cfg && (cfg.RPC_HTTP || cfg.rpcHttp || cfg.rpc_http);
+    const v2 = (typeof window !== 'undefined' && window.CAPI_RPC_HTTP) ? window.CAPI_RPC_HTTP : null;
+    const pick = (v1 || v2 || CONFIG.RPC_HTTP_DEFAULT || '').toString().trim();
+    return pick || CONFIG.RPC_HTTP_DEFAULT;
+  } catch {
+    return CONFIG.RPC_HTTP_DEFAULT;
+  }
 }
 
 

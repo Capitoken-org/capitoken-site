@@ -943,7 +943,43 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R16 while trust-engine?v=PHASE94R16.
-	  const ENGINE_V = "PHASE94R18";
+	  const ENGINE_V = "PHASE94R21_ALCHEMY_FIX";
+
+
+  const BASE_URL = (import.meta.env.BASE_URL || '/');
+
+  function _loadScriptOnce(src) {
+    return new Promise((resolve) => {
+      // if already on page
+      for (const s of document.scripts) {
+        if (s && s.src && s.src.split('?')[0] === src.split('?')[0]) return resolve(true);
+      }
+      const el = document.createElement('script');
+      el.src = src;
+      el.async = true;
+      el.onload = () => resolve(true);
+      el.onerror = () => resolve(false);
+      document.head.appendChild(el);
+    });
+  }
+
+  async function ensureRuntimeConfig() {
+    if (typeof window !== 'undefined' && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) return true;
+
+    const candidates = [
+      `${BASE_URL}capi-config.js?v=${ENGINE_V}`,
+      `${BASE_URL}js/capi-config.js?v=${ENGINE_V}`,
+    ];
+
+    for (const url of candidates) {
+      const ok = await _loadScriptOnce(url);
+      if (ok && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) return true;
+    }
+
+    console.warn('[LaunchPanel] capi-config.js not loaded; continuing with registry defaults');
+    return false;
+  }
+
 
   const $id = (id) => document.getElementById(id);
   const el = {
@@ -1257,7 +1293,8 @@ async function initTrustHero() {
       // si no existe el panel en el DOM, no hacemos nada
       if (!document.getElementById("trustPanel")) return;
 
-      const engine = await loadEngine();
+      await ensureRuntimeConfig();
+    const engine = await loadEngine();
       await render(engine);
 
       el.connect?.addEventListener("click", async () => { try { await engine.connectWallet(); await render(engine); } catch(e){ console.error(e);} });

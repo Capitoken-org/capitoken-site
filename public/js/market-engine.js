@@ -22,6 +22,12 @@ const CFG = {
 
 // Prefer configured RPC (Alchemy) if present, then legacy override.
 if (typeof window !== 'undefined') {
+  const cfgRpc = window.CAPI_CONFIG && window.CAPI_CONFIG.RPC_HTTP ? String(window.CAPI_CONFIG.RPC_HTTP) : (window.CAPI_CONFIG && window.CAPI_CONFIG.rpcHttp ? String(window.CAPI_CONFIG.rpcHttp) : '');
+  const legacyRpc = window.CAPI_RPC_HTTP ? String(window.CAPI_RPC_HTTP) : '';
+  const pick = cfgRpc || legacyRpc;
+  if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
+}
+if (typeof window !== 'undefined') {
   const cfg = window.CAPI_CONFIG || {};
   const cfgRpc = String(cfg.rpcHttp || cfg.RPC_HTTP || '').trim();
   const legacy = String(window.CAPI_RPC_HTTP || '').trim();
