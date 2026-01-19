@@ -66,44 +66,39 @@ const roadmap = [
       </p>
 
       <!-- Hero Mini-Boxes (restore the 5 tiles) -->
-      <div class="hero-stats" aria-label="Quick status">
-        <div class="hero-stat">
-          <div class="k">Chain</div>
-          <div class="v">Ethereum Mainnet</div>
-        </div>
-        <div class="hero-stat">
-          <div class="k">Status</div>
-          <div class="v">Building</div>
-        </div>
-        <div class="hero-stat">
-          <div class="k">Focus</div>
-          <div class="v">Community-first</div>
-        </div>
-        <div class="hero-stat">
-          <div class="k">Symbol</div>
-          <div class="v">CAPI</div>
+      <div class="hero-row" aria-label="Quick status">
+        <div class="hero-stats hero-stats--left" aria-label="Quick status tiles">
+          <div class="hero-stat">
+            <div class="hero-stat__k">Chain</div>
+            <div class="hero-stat__v" id="trustChain">Ethereum Mainnet</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__k">Status</div>
+            <div class="hero-stat__v" id="trustStatus">Building</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__k">Focus</div>
+            <div class="hero-stat__v" id="trustFocus">Community-first</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__k">Symbol</div>
+            <div class="hero-stat__v" id="trustSymbol">CAPI</div>
+          </div>
         </div>
 
-        <!-- Trust Score tile (numbers + bar) -->
-        <div class="hero-stat hero-stat--trust" data-trust="tile">
-          <div class="k">Trust Score</div>
-          <div class="v">
-            <span id="trustScoreValue">80</span>
-            <span class="muted">/ 100</span>
+        <div class="hero-trustbar" aria-label="Trust Score">
+          <div class="hero-trustbar__top">
+            <div class="hero-trustbar__label">Trust Score</div>
+            <div class="hero-trustbar__value"><span id="trustScoreValue">80</span><span class="muted">/ 100</span></div>
           </div>
-          <div class="trustbar" role="progressbar" aria-label="Trust Score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80">
-            <div class="trustbar__fill" id="trustBarFill" style="width: 80%"></div>
+          <div class="hero-trustbar__bar" role="progressbar" aria-label="Trust Score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80">
+            <div class="hero-trustbar__fill" id="trustBarFill" style="width: 80%"></div>
           </div>
+          <div class="hero-trustbar__note muted" id="mirrorNote" style="display:none"></div>
         </div>
       </div>
 
-    </div>
-  </section>
-
-  <hr class="hr" />
-
-  <!-- LAUNCH PANEL -->
-  <section class="section" id="launchpanel">
+<section class="section" id="launchpanel">
     <div class="container reveal reveal--3">
       <h2>
         <span class="iconwrap">
