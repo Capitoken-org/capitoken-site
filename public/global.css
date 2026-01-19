@@ -1302,33 +1302,43 @@ h3{margin:0 0 6px;font-size:18px}
   margin-top: 0 !important;
 }
 
-/* ===== Metrics row: keep Trust Score on the SAME LINE as Chain/Status/Focus/Symbol (desktop) ===== */
-.metrics-row{
-  display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-  align-items:stretch;
-}
-.metrics-row .metrics-card{
-  flex: 1 1 190px;
-  min-width: 190px;
-}
-.metrics-row .metrics-trust{
-  flex: 1 1 320px;
-  min-width: 260px;
-  max-width: 420px;
+/* ===== v3: Trust Score should be a compact stat-card beside Symbol (no big bar) ===== */
+.sr-only{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
 }
 
-/* Trust score mini (compact card) */
-.trust-score--mini{
-  margin-top:0 !important;
-  max-width:none !important;
-  padding:12px 12px 10px;
+/* Row that contains Chain/Status/Focus/Symbol/Trust */
+.stats-row{
+  display:flex;
+  gap:12px;
+  align-items:stretch;
 }
-.trust-score--mini .trust-score__row{ margin-bottom:8px; display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
-.trust-score--mini .trust-score__value{ font-size:15px; }
-.trust-score--mini .trust-bar{ height:8px; }
-.trust-score--mini .trust-score__hint{ margin-top:8px; font-size:12px; opacity:.85; }
+
+/* Keep them on one line on desktop */
+@media (min-width: 900px){
+  .stats-row{ flex-wrap: nowrap; }
+  .stats-row .stat-card{ min-width: 160px; }
+}
+
+/* Allow wrapping on smaller screens */
+@media (max-width: 899px){
+  .stats-row{ flex-wrap: wrap; }
+  .stats-row .stat-card{ min-width: 170px; flex: 1 1 170px; }
+}
+
+/* Match the visual density of your hero stat tiles */
+.stat-card{
+  padding:14px 14px 12px;
+  border-radius:14px;
+}
 
 /* Fix: Icon "double background" in venues + wallet hangar */
 .venue-icon{
