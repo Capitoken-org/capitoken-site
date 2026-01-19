@@ -1,86 +1,50 @@
-// public/js/capi-wallets.js
-// Lightweight wallet helpers (safe on GitHub Pages). No deps.
-(function(){
-  function $(id){ return document.getElementById(id); }
-  function short(a){ return a ? (a.slice(0,6)+'…'+a.slice(-4)) : ''; }
-  function toast(msg){
-    const el = $('toast');
-    if(!el) return;
-    el.textContent = msg;
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0)';
-    clearTimeout(window.__toastT);
-    window.__toastT = setTimeout(()=>{
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(8px)';
-    }, 1800);
-  }
+// Capitoken — capi-wallets.js
+// Lightweight, safe module: no imports; just DOM wiring.
+// This file MUST exist in /public/js so GitHub Pages serves it as application/javascript.
 
-  function getTokenAddr(){
-    const full = $('contractFull');
-    const v = (full && full.textContent || '').trim();
-    return (v && v.startsWith('0x') && v.length >= 10) ? v : '';
-  }
-  function getTokenMeta(){
-    const sym = $('heroSymbol')?.textContent?.trim() || $('symbolPill')?.textContent?.trim() || 'CAPI';
-    // decimals/image can be extended later; keep defaults safe
-    return { symbol: sym || 'CAPI', decimals: 18 };
-  }
+export function initCapiWallets(options = {}) {
+  const rootSelector = options.rootSelector || "[data-wallet-hangar]";
+  const root = document.querySelector(rootSelector);
+  if (!root) return;
 
-  async function connectInjected(){
-    try{
-      if(!window.ethereum){ toast('No injected wallet detected'); return; }
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const a = accounts && accounts[0];
-      if(!a) return;
-      const pill = $('accountPill');
-      if(pill) pill.style.display = 'inline-flex';
-      const acct = $('acct');
-      if(acct) acct.textContent = short(a);
-      toast('Wallet connected');
-    }catch(e){
-      console.warn('connectInjected failed', e);
-      toast('Wallet connect failed');
-    }
-  }
+  // If the page already rendered wallet cards server-side, do nothing.
+  if (root.querySelector("[data-wallet-card]")) return;
 
-  async function watchToken(){
-    try{
-      const tokenAddr = getTokenAddr();
-      if(!window.ethereum || !tokenAddr){ toast('Token not ready'); return; }
-      const meta = getTokenMeta();
-      await window.ethereum.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address: tokenAddr,
-            symbol: meta.symbol,
-            decimals: Number(meta.decimals || 18)
-          }
-        }
-      });
-      toast('Token added (if supported)');
-    }catch(e){
-      console.warn('watchToken failed', e);
-      toast('Wallet declined / not supported');
-    }
-  }
+  const wallets = (options.wallets && Array.isArray(options.wallets)) ? options.wallets : [
+    { name: "MetaMask", url: "https://metamask.io/", note: "Browser / Mobile" },
+    { name: "Trust Wallet", url: "https://trustwallet.com/", note: "Mobile" },
+    { name: "Coinbase Wallet", url: "https://www.coinbase.com/wallet", note: "Browser / Mobile" },
+    { name: "Rainbow", url: "https://rainbow.me/", note: "Mobile" },
+    { name: "Rabby", url: "https://rabby.io/", note: "Browser" },
+    { name: "Phantom", url: "https://phantom.app/", note: "Multi-chain" },
+    { name: "WalletConnect", url: "https://walletconnect.com/", note: "Connector" },
+    { name: "Safe", url: "https://safe.global/", note: "Multisig" }
+  ];
 
-  function wire(){
-    const btnConnect = $('connectWalletBtn');
-    if(btnConnect) btnConnect.addEventListener('click', (e)=>{ e.preventDefault(); connectInjected(); });
+  const frag = document.createDocumentFragment();
+  wallets.forEach(w => {
+    const a = document.createElement("a");
+    a.href = w.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "wallet-card";
+    a.setAttribute("data-wallet-card", "1");
 
-    const btnAdd = $('addToMetaMaskBtn');
-    if(btnAdd) btnAdd.addEventListener('click', (e)=>{ e.preventDefault(); watchToken(); });
-  }
+    const title = document.createElement("div");
+    title.className = "wallet-title";
+    title.textContent = w.name;
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', wire);
-  }else{
-    wire();
-  }
+    const note = document.createElement("div");
+    note.className = "wallet-note";
+    note.textContent = w.note || "";
 
-  // Expose for debugging
-  window.CAPI_WALLETS = { connectInjected, watchToken };
-})();
+    a.appendChild(title);
+    a.appendChild(note);
+    frag.appendChild(a);
+  });
+
+  root.appendChild(frag);
+}
+
+// Auto-init (non-breaking)
+try { initCapiWallets(); } catch (e) { /* noop */ }
