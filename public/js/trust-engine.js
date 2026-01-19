@@ -12,7 +12,7 @@
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R21_ALCHEMY_FIX";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R22_BASEURI_FIX";
   } catch {
     return "PHASE94R20_ALCHEMY_STABLE";
   }

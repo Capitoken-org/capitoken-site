@@ -1,16 +1,16 @@
 // Capitoken runtime config (public)
 // NOTE: This file MUST live at /public/capi-config.js so GitHub Pages serves it at /capi-config.js
-// Version: PHASE94R20_ALCHEMY_STABLE
+// Version: PHASE94R22_BASEURI_FIX
 
 (function () {
   // You can override in console for testing:
   //   window.CAPI_RPC_HTTP = 'https://...'; location.reload();
 
-  window.CAPI_CONFIG = window.CAPI_CONFIG || {};
+  window.CAPI_CONFIG = window.CAPI_CONFIG || { RPC_HTTP: "https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE"};
 
   // Core network
   window.CAPI_CONFIG.chainIdHex = window.CAPI_CONFIG.chainIdHex || '0x1';
-  window.CAPI_CONFIG.rpcHttp = window.CAPI_CONFIG.rpcHttp || 'https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE';
+  window.CAPI_CONFIG.rpcHttp = window.CAPI_CONFIG.rpcHttp || "https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE";
 
   // Token + DEX (Uniswap V2)
   window.CAPI_CONFIG.token = window.CAPI_CONFIG.token || {};
