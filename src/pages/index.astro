@@ -943,7 +943,7 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R16 while trust-engine?v=PHASE94R16.
-	  const ENGINE_V = "PHASE94R22_BASEURI_FIX";
+	  const ENGINE_V = "PHASE94R24_FINAL";
 
 
   const BASE_URL = new URL('./', document.baseURI).toString();
@@ -963,12 +963,15 @@ async function initTrustHero() {
     });
   }
 
+
   async function ensureRuntimeConfig() {
     if (typeof window !== 'undefined' && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) return true;
 
+    // IMPORTANT: GitHub Pages often serves /js/*, while /capi-config.js may 404 depending on where the file lives.
+    // We try /js/capi-config.js first, then the root fallback.
     const candidates = [
-      `${BASE_URL}capi-config.js?v=${ENGINE_V}`,
-      `${BASE_URL}js/capi-config.js?v=${ENGINE_V}`,
+      `${BASE_URL}js/capi-config.js?v=${ENGINE_V}&t=${Date.now()}`,
+      `${BASE_URL}capi-config.js?v=${ENGINE_V}&t=${Date.now()}`,
     ];
 
     for (const url of candidates) {
@@ -979,6 +982,7 @@ async function initTrustHero() {
     console.warn('[LaunchPanel] capi-config.js not loaded; continuing with registry defaults');
     return false;
   }
+
 
 
   const $id = (id) => document.getElementById(id);

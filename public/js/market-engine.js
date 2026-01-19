@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R20_ALCHEMY_STABLE
+// [market-engine] PHASE94R24_FINAL
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback

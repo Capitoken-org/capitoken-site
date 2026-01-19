@@ -6,15 +6,15 @@
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
 // IMPORTANT: keep revision tags consistent across assets.
-// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R20_ALCHEMY_STABLE
+// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R24_FINAL
 // If we hardcode a different revision here, this module will import a mismatched
 // market-engine revision (because we append ?v=${ENGINE_VERSION}), causing
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R22_BASEURI_FIX";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R24_FINAL";
   } catch {
-    return "PHASE94R20_ALCHEMY_STABLE";
+    return "PHASE94R24_FINAL";
   }
 })();
 
