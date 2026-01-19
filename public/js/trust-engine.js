@@ -6,18 +6,21 @@
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
 // IMPORTANT: keep revision tags consistent across assets.
-// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R24_FINAL
+// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R20_ALCHEMY_STABLE
 // If we hardcode a different revision here, this module will import a mismatched
 // market-engine revision (because we append ?v=${ENGINE_VERSION}), causing
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R25_FINAL";
-  } catch {
-    return "PHASE94R25_FINAL";
-  }
+    const fromModule = new URL(import.meta.url).searchParams.get('v');
+    if (fromModule) return fromModule;
+    if (typeof window !== 'undefined') {
+      const fromPage = new URL(window.location.href).searchParams.get('v');
+      if (fromPage) return fromPage;
+    }
+  } catch {}
+  return 'PHASE94R24_FINAL';
 })();
-
 export const CONFIG = {
   // Defaults (will be overwritten by registry at runtime)
   CAPITOKEN_ADDRESS: "0x0000000000000000000000000000000000000000",
@@ -41,6 +44,49 @@ export const CONFIG = {
   // Liquidity threshold
   MIN_LIQ_WEI: 25n * (10n ** 16n), // 0.25 ETH
 };
+
+// Apply runtime config from capi-config.js (if present). This makes the panel
+// work even if official-registry.json is missing or stale.
+(function applyRuntimeConfigToDefaults() {
+  try {
+    if (typeof window === 'undefined' || !window.CAPI_CONFIG) return;
+    const c = window.CAPI_CONFIG;
+
+    // Contract + Pair
+    if (c.CONTRACT_ADDRESS && /^0x[a-fA-F0-9]{40}$/.test(c.CONTRACT_ADDRESS)) {
+      CONFIG.CAPITOKEN_ADDRESS = c.CONTRACT_ADDRESS;
+    }
+    if (c.DEX_PAIR_ADDRESS && /^0x[a-fA-F0-9]{40}$/.test(c.DEX_PAIR_ADDRESS)) {
+      CONFIG.UNISWAP_PAIR_EXPECTED = c.DEX_PAIR_ADDRESS;
+    }
+
+    // RPC preference
+    if (c.RPC_HTTP && typeof c.RPC_HTTP === 'string') {
+      window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || c.RPC_HTTP;
+    }
+  } catch {
+    // ignore
+  }
+})();
+
+// Apply runtime config from capi-config.js (if present). This makes the panel
+// work even if official-registry.json is missing or stale.
+(function applyRuntimeConfigToDefaults(){
+  try {
+    if (typeof window === "undefined" || !window.CAPI_CONFIG) return;
+    const c = window.CAPI_CONFIG;
+    if (c.CONTRACT_ADDRESS && /^0x[a-fA-F0-9]{40}$/.test(c.CONTRACT_ADDRESS)) {
+      CONFIG.CAPITOKEN_ADDRESS = c.CONTRACT_ADDRESS;
+    }
+    if (c.DEX_PAIR_ADDRESS && /^0x[a-fA-F0-9]{40}$/.test(c.DEX_PAIR_ADDRESS)) {
+      CONFIG.UNISWAP_PAIR_EXPECTED = c.DEX_PAIR_ADDRESS;
+    }
+    if (c.TOKEN_IMAGE_URL && typeof c.TOKEN_IMAGE_URL === "string") {
+      CONFIG.TOKEN_IMAGE_URL = c.TOKEN_IMAGE_URL;
+    }
+  } catch {}
+})();
+
 
 const CHAIN_ID_MAINNET = "0x1";
 

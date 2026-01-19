@@ -1,24 +1,34 @@
 // Capitoken runtime config (public)
-// Loaded as classic <script> before trust-engine / market-engine.
-//
-// IMPORTANT:
-// 1) Replace RPC_HTTP with your Alchemy (or other) HTTPS endpoint.
-// 2) Commit & deploy.
+// Load this in the browser BEFORE trust-engine/market-engine.
+// You only need to edit RPC_HTTP.
 
 (function () {
-  window.CAPI_CONFIG = window.CAPI_CONFIG || {
+  const CFG = {
+    // Ethereum mainnet
     CHAIN_ID_HEX: '0x1',
 
-    // Your Ethereum Mainnet RPC (Alchemy recommended)
-    RPC_HTTP: 'https://eth-mainnet.g.alchemy.com/v2/REPLACE_ME',
+    // ✅ Put your Alchemy HTTP URL here (client-side key)
+    RPC_HTTP: 'https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE',
 
-    // Capitoken mainnet token contract
+    // Verified token contract (mainnet)
     CONTRACT_ADDRESS: '0xF2dA6C9B945c688A52D3B72340E622014920de6a',
 
-    // Optional: Uniswap V2 pair address (leave null to auto-discover)
-    DEX_PAIR_ADDRESS: null,
+    // Uniswap V2 pair (CAPI/WETH)
+    // This is NOT Etherscan; it is the PAIR address (the pool contract).
+    DEX_PAIR_ADDRESS: '0xb96808b1270A89eA8A237d52df389619f347AeA2',
+
+    // Optional sanity checks
+    TOKEN_SYMBOL_EXPECTED: 'CAPI',
+    TOKEN_DECIMALS_EXPECTED: 18,
+
+    // Optional helper token addresses (mainnet)
+    TOKENS: {
+      WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    },
   };
 
+  // Public config objects used by the engines
+  window.CAPI_CONFIG = CFG;
   // Back-compat for older code paths
-  window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || window.CAPI_CONFIG.RPC_HTTP;
+  window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || CFG.RPC_HTTP;
 })();
