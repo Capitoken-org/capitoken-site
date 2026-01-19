@@ -23,6 +23,13 @@ function shortAddr(a: string) {
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
 }
 
+// GitHub Pages base (astro.config.mjs: base: "/capitoken-site/")
+const BASE = import.meta.env.BASE_URL || "/";
+const withBase = (p: string) => {
+  const clean = String(p || "");
+  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
+};
+
 const rows = [
   { name: "Website", value: OFFICIAL.website, type: "url" },
   { name: "Contract", value: OFFICIAL.contract, type: "address" },
@@ -51,8 +58,8 @@ const rows = [
     </p>
 
     <div class="actions">
-      <a class="btn btn--primary" href="./verify">Open /verify</a>
-      <a class="btn" href="./">Back to Home</a>
+      <a class="btn btn--primary" href={withBase("/verify")}>Open /verify</a>
+      <a class="btn" href={withBase("/")}>Back to Home</a>
     </div>
   </section>
 
@@ -63,23 +70,30 @@ const rows = [
         const urlish = isUrl(v);
         const addrish = isAddress(v);
 
-        const display =
-          addrish ? shortAddr(v) : v;
+        const display = addrish ? shortAddr(v) : v;
 
         return (
           <div class="kv">
             <strong>{l.name}</strong>
 
-            <span class="mono" style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;">
+            <span
+              class="mono"
+              style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;"
+            >
               {urlish ? (
-                <a href={v} target="_blank" rel="noopener noreferrer" style="color: var(--text); text-decoration: underline;">
+                <a
+                  href={v}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style="color: var(--text); text-decoration: underline;"
+                >
                   {display}
                 </a>
               ) : (
                 <span>{display}</span>
               )}
 
-              {(addrish || urlish) ? (
+              {addrish || urlish ? (
                 <button
                   class="btn"
                   type="button"
