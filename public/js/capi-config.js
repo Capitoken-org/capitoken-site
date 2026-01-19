@@ -16,7 +16,7 @@
     CONTRACT_ADDRESS: '0xF2dA6C9B945c688A52D3B72340E622014920de6a',
 
     // Optional: Uniswap V2 pair address (leave null to auto-discover)
-    DEX_PAIR_ADDRESS: null,
+    DEX_PAIR_ADDRESS: '0xb96808b1270a89ea8a237d52df389619f347aea2',
   };
 
   // Back-compat for older code paths
