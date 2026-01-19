@@ -6,9 +6,9 @@ const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
 
 // >>> EDITA AQUÍ cuando tengas data real <<<
-const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
+const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // ETH mainnet
 const DEX_PAIR_ADDRESS = "0xb96808b1270A89eA8A237d52df389619f347AeA2"; // opcional
-const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
+const X_HANDLE = "Capitoken"; // sin @
 // >>> ------------------------------ <<<
 
 const stats = [
@@ -33,7 +33,7 @@ const roadmap = [
 
 <BaseLayout title={TITLE} description={DESC}>
   <!-- HERO -->
-  <section class="hero" id="launch">
+  <section class="hero" id="launch" data-token={TOKEN_ADDRESS} data-pair={DEX_PAIR_ADDRESS} data-x={X_HANDLE}>
     <div class="container reveal reveal--2">
       <div class="trust-row">
         <div class="trust-badge" id="trustBadgeHero">
@@ -41,8 +41,8 @@ const roadmap = [
           <span id="trustStatusHero">Checking trust…</span>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <a class="pill" href={import.meta.env.BASE_URL + "verify/"} style="text-decoration:none;">
+        <div class="hero-rightpills">
+          <a class="pill" href={import.meta.env.BASE_URL + "verify/"}>
             <span class="pill-dot" aria-hidden="true"></span>
             <span class="iconwrap">
               <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
@@ -65,16 +65,17 @@ const roadmap = [
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
 
-<!-- Hero Trust Bar (Capi Vibes) -->
-<div class="hero-trustbar" aria-hidden="true">
-  <div class="hero-trustbar__label">
-    <span class="hero-trustbar__name">Capi Vibes</span>
-    <span class="hero-trustbar__value"><span id="trustScoreHeroLabel">—</span>/100</span>
-  </div>
-  <div class="hero-trustbar__track">
-    <div class="hero-trustbar__fill" id="trustBarFillHero" style="width:0%"></div>
-  </div>
-</div>
+      <!-- Hero Trust Bar (Capi Vibes) -->
+      <div class="hero-trust" aria-label="Capi Vibes trust bar">
+        <div class="hero-trust__top">
+          <div class="small" style="font-weight:800; letter-spacing:.02em;">Capi Vibes</div>
+          <div class="hero-trust__value"><span id="trustScoreHero">—</span><span class="small" style="opacity:.75;"> / 100</span></div>
+        </div>
+        <div class="hero-trust__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="hero-trust__fill" id="trustBarFill" style="width:0%"></div>
+        </div>
+        <div class="hero-trust__hint small" id="trustHintHero">Loading official registry…</div>
+      </div>
 
       <div class="actions">
         <a class="btn btn--primary" href="#launchpanel">
@@ -95,31 +96,13 @@ const roadmap = [
           </div>
         ))}
 
-<div class="card col-3 stat-tile" id="trustTile">
-  <div class="small">Trust Score</div>
-  <div class="stat-value">
-    <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
-  </div>
-
-  <!-- Progress (filled by trust-engine.js via #trustBarFill) -->
-  <div class="trust-mini-bar" aria-hidden="true">
-    <div class="trust-mini-bar__fill" id="trustBarFill" style="width:0%"></div>
-  </div>
-
-  <div id="trustHintHero" class="sr-only">Loading official registry…</div>
-</div>
-<div class="stat-value">
-    <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
-  </div>
-
-  <!-- Progress (filled by trust-engine.js via #trustBarFill) -->
-  <div class="trust-mini-bar" aria-hidden="true">
-    <div class="trust-mini-bar__fill" id="trustBarFill" style="width:0%"></div>
-  </div>
-
-  <div id="trustHintHero" class="sr-only">Loading official registry…</div>
-</div>
-</div>
+        <!-- Trust Score tile aligned with the other 4 tiles -->
+        <div class="card col-3 stat-tile" id="trustTile">
+          <div class="small">Trust Score</div>
+          <div style="margin-top:6px; font-weight:800;">
+            <span id="trustScoreTile">—</span><span class="small" style="opacity:.8;"> / 100</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -591,16 +574,8 @@ const roadmap = [
       if(el) el.textContent = v;
     }
     function setWidth(id, pct){
-  const n = Math.max(0, Math.min(100, Number(pct || 0)));
-  const el = $id(id);
-  if (el) el.style.width = n + "%";
-
-  // Also update Hero bar if present (keeps UI in sync)
-  if (id === "trustBarFill") {
-    const hero = $id("trustBarFillHero");
-    if (hero) hero.style.width = n + "%";
-  }
-}%`;
+      const el = $id(id);
+      if(el) el.style.width = `${Math.max(0, Math.min(100, Number(pct)||0))}%`;
     }
 
     async function loadRegistry(){
@@ -645,7 +620,6 @@ const roadmap = [
 
       const score = scoreFrom(data, isOfficialHost);
       setTxt("trustScoreHero", String(score));
-      setTxt("trustScoreHeroLabel", String(score));
       setWidth("trustBarFill", score);
 
       const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";

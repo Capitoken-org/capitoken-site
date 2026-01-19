@@ -24,16 +24,14 @@ const CSS_VERSION = "14";
     <title>{title}</title>
     <meta name="description" content={description} />
 
-    <!-- Theme -->
     <meta name="theme-color" content="#050c0a" />
 
-    <!-- Favicons / PWA -->
     <link rel="icon" type="image/png" sizes="32x32" href={`${withBase("/icons/favicon-32x32.png")}`} />
     <link rel="icon" type="image/png" sizes="16x16" href={`${withBase("/icons/favicon-16x16.png")}`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${withBase("/icons/apple-touch-icon.png")}`} />
     <link rel="manifest" href={`${withBase("/site.webmanifest")}`} />
 
-    <!-- IMPORTANT: single source of truth for global styles -->
+    <!-- single source of truth for global styles -->
     <link rel="stylesheet" href={`${withBase(`/global.css?v=${CSS_VERSION}`)}`} />
 
     <slot name="head" />
@@ -44,5 +42,15 @@ const CSS_VERSION = "14";
     <main>
       <slot />
     </main>
+
+    <!--
+      IMPORTANT (GitHub Pages base path):
+      Always load site scripts via BASE_URL so they work at /capitoken-site/.
+      This is why you weren't seeing trust-engine/market-engine in F12 Network.
+    -->
+    <script defer src={`${withBase("/js/capi-config.js")}`}></script>
+    <script defer src={`${withBase("/js/trust-engine.js")}`}></script>
+    <script defer src={`${withBase("/js/market-engine.js")}`}></script>
+    <script defer src={`${withBase("/js/capi-wallets.js")}`}></script>
   </body>
 </html>
