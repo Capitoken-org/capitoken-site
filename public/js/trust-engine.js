@@ -6,15 +6,15 @@
 // We derive it from THIS module URL (?v=...). This prevents mixed loads like:
 //   trust-engine.js?v=PHASE94R8 + market-engine.js?v=PHASE94R3
 // IMPORTANT: keep revision tags consistent across assets.
-// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R17_RPC
+// index.astro loads this file as: /js/trust-engine.js?v=PHASE94R19_ALCHEMY_ONCHAIN
 // If we hardcode a different revision here, this module will import a mismatched
 // market-engine revision (because we append ?v=${ENGINE_VERSION}), causing
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R17_RPC";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R19_ALCHEMY_ONCHAIN";
   } catch {
-    return "PHASE94R17_RPC";
+    return "PHASE94R19_ALCHEMY_ONCHAIN";
   }
 })();
 
@@ -35,7 +35,7 @@ export const CONFIG = {
 
   // Default RPC. The actual RPC can be injected at runtime via:
   // - window.CAPI_RPC_HTTP (preferred)
-  // - window.CAPI_CONFIG.rpcHttp (fallback)
+  // - window.CAPI_CONFIG.RPC_HTTP (fallback)
   RPC_HTTP_DEFAULT: "https://cloudflare-eth.com",
 
   // Liquidity threshold
@@ -48,10 +48,15 @@ function getRpcHttp() {
   // Read at call-time so load order doesn’t matter (capi-config.js may load after this file)
   if (typeof window === "undefined") return CONFIG.RPC_HTTP_DEFAULT;
   const w = window;
+  // Back-compat: promote configured RPC into legacy variable (once)
+  if (!w.CAPI_RPC_HTTP && w.CAPI_CONFIG && typeof w.CAPI_CONFIG === "object") {
+    const maybe = String(w.CAPI_CONFIG.RPC_HTTP || "").trim();
+    if (maybe) w.CAPI_RPC_HTTP = maybe;
+  }
   const fromWin = (typeof w.CAPI_RPC_HTTP === "string" && w.CAPI_RPC_HTTP.trim()) ? w.CAPI_RPC_HTTP.trim() : "";
   if (fromWin) return fromWin;
   const cfg = w.CAPI_CONFIG && typeof w.CAPI_CONFIG === "object" ? w.CAPI_CONFIG : null;
-  const fromCfg = cfg && typeof cfg.rpcHttp === "string" ? cfg.rpcHttp.trim() : "";
+  const fromCfg = cfg && typeof cfg.RPC_HTTP === "string" ? cfg.RPC_HTTP.trim() : "";
   return fromCfg || CONFIG.RPC_HTTP_DEFAULT;
 }
 

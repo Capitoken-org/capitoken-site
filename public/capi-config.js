@@ -16,3 +16,6 @@ window.CAPI_CONFIG = {
     DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
   }
 };
+
+// Back-compat for older code paths (some scripts read window.CAPI_RPC_HTTP)
+window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || window.CAPI_CONFIG.RPC_HTTP;

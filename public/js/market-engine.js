@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R17_RPC
+// [market-engine] PHASE94R19_ALCHEMY_ONCHAIN
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -20,10 +20,12 @@ const CFG = {
   earlyLaunchDays: 15,
 };
 
-// Prefer user-provided RPC (public site; do not paste secrets unless restricted)
-if (typeof window !== "undefined" && window.CAPI_RPC_HTTP) {
-  const u = String(window.CAPI_RPC_HTTP);
-  if (u && !CFG.rpcUrls.includes(u)) CFG.rpcUrls.unshift(u);
+// Prefer configured RPC (Alchemy) if present, then legacy override.
+if (typeof window !== "undefined") {
+  const cfgRpc = window.CAPI_CONFIG && window.CAPI_CONFIG.RPC_HTTP ? String(window.CAPI_CONFIG.RPC_HTTP) : "";
+  const legacyRpc = window.CAPI_RPC_HTTP ? String(window.CAPI_RPC_HTTP) : "";
+  const pick = cfgRpc || legacyRpc;
+  if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
 }
 
 
@@ -583,10 +585,12 @@ export function computeMarketHealth(dsPair) {
   const createdAt = Number(dsPair.pairCreatedAt || 0) || 0;
   const ageDays = createdAt > 0 ? Math.max(0, (now - createdAt) / 86_400_000) : null;
 
-  const liquidityUsd = Number(dsPair?.liquidity?.usd || 0) || 0;
-  const vol24 = Number(dsPair?.volume?.h24 || 0) || 0;
-  const buys = Number(dsPair?.txns?.h24?.buys || 0) || 0;
-  const sells = Number(dsPair?.txns?.h24?.sells || 0) || 0;
+  const liquidityUsd = Number(dsPair?.liquidity?.usd ?? dsPair?.liquidityUsd ?? 0) || 0;
+  const vol24 = Number(dsPair?.volume?.h24 ?? dsPair?.volumeH24Usd ?? 0) || 0;
+  // Dexscreener shape: dsPair.txns.h24.buys/sells
+  // Our fallback snapshot shape: buysH24/sellsH24
+  const buys = Number(dsPair?.txns?.h24?.buys ?? dsPair?.buysH24 ?? 0) || 0;
+  const sells = Number(dsPair?.txns?.h24?.sells ?? dsPair?.sellsH24 ?? 0) || 0;
   const buySellRatio = sells > 0 ? buys / sells : (buys > 0 ? Infinity : 0);
 
   // Slippage heuristic (very rough): higher liquidity relative to typical trade size => lower slippage.

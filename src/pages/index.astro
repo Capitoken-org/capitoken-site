@@ -306,7 +306,10 @@ const roadmap = [
   </div>
 </section>
 
-<script type="module">
+  <!-- Load runtime config BEFORE engines (ensures window.CAPI_CONFIG & RPC are set) -->
+  <script src="/capi-config.js?v=PHASE94R19_ALCHEMY_ONCHAIN" defer></script>
+
+  <script type="module">
   // Phase 9: Trading venues data (editable via /public/venues.json)
   const makeEl = (tag, attrs = {}, children = []) => {
     const el = document.createElement(tag);
@@ -943,7 +946,7 @@ async function initTrustHero() {
 
 	  // IMPORTANT: keep all engine modules on the SAME revision.
 	  // This avoids mixed loads like market-engine?v=PHASE94R16 while trust-engine?v=PHASE94R16.
-	  const ENGINE_V = "PHASE94R18";
+    const ENGINE_V = "PHASE94R19_ALCHEMY_ONCHAIN";
 
   const $id = (id) => document.getElementById(id);
   const el = {
