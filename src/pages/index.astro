@@ -64,8 +64,13 @@ const roadmap = [
         Deep-green premium design, clear narrative, and verified links — built for adoption.
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
-</div>
-<div class="trust-score__hint small" id="trustHintHero">Loading official registry…</div>
+
+          <div class="trust-score__value"><span id="trustScoreHero">—</span> / 100</div>
+        </div>
+        <div class="trust-bar" aria-hidden="true">
+          <div class="trust-bar__fill" id="trustBarFill" style="width:0%"></div>
+        </div>
+        <div class="trust-score__hint small" id="trustHintHero">Loading official registry…</div>
       </div>
 
       <div class="actions">
@@ -79,28 +84,14 @@ const roadmap = [
         <a class="btn" href="#tokenomics">Tokenomics</a>
       </div>
 
-      <div class="stats-row" style="margin-top: 18px;">
-  {stats.map((s) => (
-    <div class="card stat-card">
-      <div class="small">{s.label}</div>
-      <div style="margin-top:6px; font-weight:800;">{s.value}</div>
-    </div>
-  ))}
-
-  <!-- Trust Score: compact "stat-card" (same look as Symbol card) -->
-  <div class="card stat-card">
-    <div class="small">Trust</div>
-    <div style="margin-top:6px; font-weight:800;">
-      <span id="trustScoreHero">—</span><span class="small" style="opacity:.8;"> / 100</span>
-    </div>
-
-    <!-- Keep these IDs for JS updates, but hide them so they don't affect layout -->
-    <div id="trustHintHero" class="sr-only">Loading official registry…</div>
-    <div class="sr-only">
-      <div id="trustBarFill" style="width:0%"></div>
-    </div>
-  </div>
-</div>
+      <div class="grid" style="margin-top: 18px;">
+        {stats.map((s) => (
+          <div class="card col-3">
+            <div class="small">{s.label}</div>
+            <div style="margin-top:6px; font-weight:800;">{s.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
