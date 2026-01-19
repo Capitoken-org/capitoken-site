@@ -33,14 +33,35 @@ export const CONFIG = {
   // Token image used by wallet_watchAsset (must be HTTPS public)
   TOKEN_IMAGE_URL: "https://www.capitoken.org/assets/capi-logo-256.png",
 
-  // Fallback RPC read-only
-  RPC_HTTP: (typeof window !== "undefined" && window.CAPI_RPC_HTTP) ? window.CAPI_RPC_HTTP : "https://cloudflare-eth.com",
+  // Default RPC. The actual RPC can be injected at runtime via:
+  // - window.CAPI_RPC_HTTP (preferred)
+  // - window.CAPI_CONFIG.rpcHttp (fallback)
+  RPC_HTTP_DEFAULT: "https://cloudflare-eth.com",
 
   // Liquidity threshold
   MIN_LIQ_WEI: 25n * (10n ** 16n), // 0.25 ETH
 };
 
 const CHAIN_ID_MAINNET = "0x1";
+
+function getRpcHttp() {
+  // Read at call-time so load order doesn’t matter (capi-config.js may load after this file)
+  if (typeof window === "undefined") return CONFIG.RPC_HTTP_DEFAULT;
+  const w = window;
+  const fromWin = (typeof w.CAPI_RPC_HTTP === "string" && w.CAPI_RPC_HTTP.trim()) ? w.CAPI_RPC_HTTP.trim() : "";
+  if (fromWin) return fromWin;
+  const cfg = w.CAPI_CONFIG && typeof w.CAPI_CONFIG === "object" ? w.CAPI_CONFIG : null;
+  const fromCfg = cfg && typeof cfg.rpcHttp === "string" ? cfg.rpcHttp.trim() : "";
+  return fromCfg || CONFIG.RPC_HTTP_DEFAULT;
+}
+
+// Helpful boot log (safe: does not print full key...)
+try {
+  if (typeof window !== "undefined") {
+    const u = new URL(getRpcHttp());
+    console.info(`[TrustPanel] rpc set to ${u.origin}...`);
+  }
+} catch (_) {}
 
 function shortAddr(a) {
   return a ? `${a.slice(0, 6)}...${a.slice(-4)}` : "";
@@ -77,7 +98,7 @@ async function rpcCall(rpcUrl, method, params = []) {
 async function readContractCall(to, data, useMetamask = true) {
   const params = [{ to, data }, "latest"];
   if (useMetamask && window.ethereum) return await ethRequest("eth_call", params);
-  return await rpcCall(CONFIG.RPC_HTTP, "eth_call", params);
+  return await rpcCall(getRpcHttp(), "eth_call", params);
 }
 
 // Precomputed selectors (no ABI dependency)
@@ -271,7 +292,7 @@ export async function getTrustState() {
   try {
     const code = state.metamask
       ? await ethRequest("eth_getCode", [CONFIG.CAPITOKEN_ADDRESS, "latest"])
-      : await rpcCall(CONFIG.RPC_HTTP, "eth_getCode", [CONFIG.CAPITOKEN_ADDRESS, "latest"]);
+      : await rpcCall(getRpcHttp(), "eth_getCode", [CONFIG.CAPITOKEN_ADDRESS, "latest"]);
     state.contractExists = !!code && code !== "0x";
     if (!state.contractExists) state.alerts.push("CONTRACT_NOT_FOUND");
   } catch {

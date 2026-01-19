@@ -630,6 +630,12 @@ export function computeMarketHealth(dsPair) {
   else if (score >= 50) label = 'RISK';
   else label = 'HIGH_RISK';
 
+  // If we are still within the early-launch window, we avoid showing HIGH_RISK/RISK labels
+  // because they are mostly reflecting low initial volume rather than a true red flag.
+  if (early) {
+    label = 'EARLY';
+  }
+
   const flags = [];
   if (!createdAt) flags.push('unknown_age');
   if (early) flags.push('early_launch');
