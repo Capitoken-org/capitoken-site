@@ -1,16 +1,33 @@
-window.CAPI_CONFIG = {
-  CHAIN_ID_HEX: "0x1",
-  RPC_HTTP: "https://eth-mainnet.g.alchemy.com/v2/QCaK5sYswRrOUNUTruubE",
+// Capitoken runtime config (public)
+// NOTE: This file MUST live at /public/capi-config.js so GitHub Pages serves it at /capi-config.js
+// Version: PHASE94R22_BASEURI_FIX
 
-  CONTRACT_ADDRESS: "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
-  DEX_PAIR_ADDRESS: "0xB98608b1270A89eA8A237d52dF38961f347AeA2",
+(function () {
+  // You can override in console for testing:
+  //   window.CAPI_RPC_HTTP = 'https://...'; location.reload();
 
-  TOKENS: {
-    ETH: "ETH",
-    USDC: "0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-  }
-};
+  window.CAPI_CONFIG = window.CAPI_CONFIG || {};
 
-window.CAPI_RPC_HTTP = window.CAPI_CONFIG.RPC_HTTP;
+  // Core network
+  window.CAPI_CONFIG.chainIdHex = window.CAPI_CONFIG.chainIdHex || '0x1';
+  window.CAPI_CONFIG.rpcHttp = window.CAPI_CONFIG.rpcHttp || 'https://cloudflare-eth.com';
+
+  // Token + DEX (Uniswap V2)
+  window.CAPI_CONFIG.token = window.CAPI_CONFIG.token || {};
+  window.CAPI_CONFIG.token.address = window.CAPI_CONFIG.token.address || '0xF2dA6C9B945c688A52D3B72340E622014920de6a';
+
+  window.CAPI_CONFIG.dex = window.CAPI_CONFIG.dex || {};
+  // Optional: set this if you already know the Uniswap V2 pair address.
+  // If null/empty, market-engine will resolve it on-chain via factory.getPair().
+  window.CAPI_CONFIG.dex.pairAddress = window.CAPI_CONFIG.dex.pairAddress || null;
+
+  // Back-compat aliases used by older code paths
+  window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || window.CAPI_CONFIG.rpcHttp;
+  window.CAPI_CONFIG.RPC_HTTP = window.CAPI_CONFIG.RPC_HTTP || window.CAPI_CONFIG.rpcHttp;
+
+  window.CAPI_CONFIG.CONTRACT_ADDRESS = window.CAPI_CONFIG.CONTRACT_ADDRESS || window.CAPI_CONFIG.token.address;
+  window.CAPI_CONFIG.DEX_PAIR_ADDRESS = window.CAPI_CONFIG.DEX_PAIR_ADDRESS || window.CAPI_CONFIG.dex.pairAddress;
+
+  // For super-legacy scripts
+  window.CAPI_RPC_HTTP = window.CAPI_RPC_HTTP || window.CAPI_CONFIG.RPC_HTTP;
+})();

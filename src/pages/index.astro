@@ -1,22 +1,1317 @@
 ---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TrustPanel from "../components/trustpanel.astro";
+
+const TITLE = "Capitoken (CAPI) — Official Website";
+const DESC =
+  "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
+
+// >>> EDITA AQUÍ cuando tengas data real <<<
+const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
+const DEX_PAIR_ADDRESS = "0xb96808b1270A89eA8A237d52df389619f347AeA2"; // opcional
+const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
+// >>> ------------------------------ <<<
+
+const stats = [
+  { label: "Chain", value: "Ethereum Mainnet" },
+  { label: "Status", value: "Building" },
+  { label: "Focus", value: "Community-first" },
+  { label: "Symbol", value: "CAPI" },
+];
+
+const tokenomics = [
+  { title: "97% Community", desc: "Broad distribution & liquidity-first mindset." },
+  { title: "2% Operations", desc: "Sustains development, infra, and execution." },
+  { title: "1% Marketing", desc: "Growth loops, listings, and content." },
+];
+
+const roadmap = [
+  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
+  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
+  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
+];
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capitoken – Launch Panel</title>
 
-  <link rel="icon" href="/favicon.ico" />
+<BaseLayout title={TITLE} description={DESC}>
+  <!-- HERO -->
+  <section class="hero" id="launch">
+    <div class="container reveal reveal--2">
+      <div class="trust-row">
+  <div class="trust-badge" id="trustBadgeHero">
+    <span class="trust-dot" aria-hidden="true"></span>
+    <span id="trustStatusHero">Checking trust…</span>
+  </div>
 
-  <script src="/js/capi-config.js?v=FINAL" defer></script>
-  <script src="/js/trust-engine.js?v=FINAL" defer></script>
-  <script src="/js/market-engine.js?v=FINAL" defer></script>
-</head>
-<body>
-  <main id="app">
-    <h1>Capitoken Launch Panel</h1>
-    <div id="launch-panel"></div>
-  </main>
-</body>
-</html>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <a class="pill" href={import.meta.env.BASE_URL + "verify/"} style="text-decoration:none;">
+      <span class="pill-dot" aria-hidden="true"></span>
+      <span class="iconwrap"><img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" /><span>Verify</span></span>
+    </a>
+    <span class="pill" id="networkPill">
+      <span class="pill-dot" aria-hidden="true"></span>
+      <span>Ethereum Mainnet</span>
+    </span>
+  </div>
+</div>
+
+
+      <h1>
+        Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
+      </h1>
+
+      <p class="hero__lead">
+        Deep-green premium design, clear narrative, and verified links — built for adoption.
+        Live market data will appear automatically once the verified contract/pair is published.
+      </p>
+<div class="trust-score" aria-live="polite">
+  <div class="trust-score__row">
+    <div class="small">Trust Score</div>
+    <div class="trust-score__value"><span id="trustScoreHero">—</span> / 100</div>
+  </div>
+  <div class="trust-bar" aria-hidden="true">
+    <div class="trust-bar__fill" id="trustBarFill" style="width:0%"></div>
+  </div>
+  <div class="trust-score__hint small" id="trustHintHero">Loading official registry…</div>
+</div>
+
+
+      <div class="actions">
+        <a class="btn btn--primary" href="#launchpanel"><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Launch Panel</span></span></a>
+        <a class="btn" href="#community">Community</a>
+        <a class="btn" href="#tokenomics">Tokenomics</a>
+      </div>
+
+      <div class="grid" style="margin-top: 18px;">
+        {stats.map((s) => (
+          <div class="card col-3">
+            <div class="small">{s.label}</div>
+            <div style="margin-top:6px; font-weight:800;">{s.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- LAUNCH PANEL -->
+  <section class="section" id="launchpanel">
+    <div class="container reveal reveal--3">
+      <h2><span class="iconwrap"><img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" /><span>Launch Panel</span></span></h2>
+      <p class="small">Single source of truth for contract, DEX pair, and status.</p>
+
+      <div class="trust-badges" aria-label="Trust badges">
+        <span class="badge" id="badgeContract">Contract: Pending</span>
+        <span class="badge" id="badgePair">Pair: Pending</span>
+        <span class="badge" id="badgeMarket">Market: Pending</span>
+      </div>
+
+      <div class="launch-grid">
+        <div class="launch-row">
+        <!-- Contract -->
+        <div class="card">
+          <div class="label">Contract</div>
+
+          <div class="card__body">
+            <div class="addr-row">
+              <span class="mono addr" id="contractShort">TBA — verify only here</span>
+              <div class="addr-actions">
+                <button class="btn btn--mini btn--primary" id="copyContractBtn" type="button">Copy</button>
+                <a class="btn btn--mini" id="verifyContractBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+              </div>
+            </div>
+
+            <details class="addr-details" id="contractDetails" style="display:none;">
+              <summary>Show full address</summary>
+              <div class="mono" id="contractFull"></div>
+            </details>
+
+            <div id="accountPill" class="pill" style="margin-top:12px; display:none;">
+              <span class="pill-dot"></span>
+              <span class="mono" id="acct">—</span>
+            </div>
+
+            <p class="small note" style="margin-top:12px;">
+              Read-only verification. No approvals. Never sign "verify" prompts. If it’s not listed on this site, assume it’s not official.
+            </p>
+          </div>
+
+          <div class="card__footer">
+            <div class="small">Wallet tools</div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
+              <button class="btn" id="watchTokenBtn" type="button">Add to MetaMask</button>
+            </div>
+          </div>
+        </div>
+<!-- DEX Pair -->
+        <div class="card">
+          <div class="label">DEX Pair</div>
+
+          <div class="card__body">
+            <div class="addr-row">
+              <span class="mono addr" id="pairShort">TBA</span>
+              <div class="addr-actions">
+                <button class="btn btn--mini btn--primary" id="copyPairBtn" type="button">Copy</button>
+                <a class="btn btn--mini" id="verifyPairBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+              </div>
+            </div>
+
+            <details class="addr-details" id="pairDetails" style="display:none;">
+              <summary>Show full pair</summary>
+              <div class="mono" id="pairFull"></div>
+            </details>
+
+            <p class="small note" style="margin-top:12px;">
+              Only use official swap links from this panel. Scammers often publish fake pairs.
+            </p>
+          </div>
+
+          <div class="card__footer">
+            <div class="actions">
+              <a class="btn btn--primary" id="buyOnUniswap" href="#" target="_blank" rel="noreferrer noopener nofollow">Buy $CAPI</a>
+              <a class="btn" id="openDexScreener" href="#" target="_blank" rel="noreferrer noopener">Live Market</a>
+            </div>
+
+            <div class="small" style="margin-top:10px;">Quick Uniswap routes</div>
+            <div class="actions" style="margin-top:10px;">
+              <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
+              <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
+            </div>
+          </div>
+        </div>
+
+        </div>
+
+        <div class="launch-row">
+        <!-- Live Market Snapshot -->
+        <div class="card">
+          <div class="h3">Live Market Snapshot</div>
+          <div class="small">Auto-populates via DexScreener once contract/pair is verified.</div>
+
+          <div class="pill" style="margin-top:10px;">
+            <span class="pill-dot"></span>
+            <span>Ethereum Mainnet</span>
+          </div>
+
+          <div class="stats" style="margin-top:14px;">
+            <!-- IMPORTANTE: IDs alineados con el script -->
+            <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
+            <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
+            <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
+            <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
+          </div>
+
+          <p class="small" style="margin-top:12px;">If it's not listed here, it's not official. Always cross-check the URL.</p>
+        </div>
+
+                <!-- Real Swap Activity (Phase 9.4) -->
+        <div class="card">
+          <div class="h3">Real Swap Activity</div>
+          <div class="small">Live swaps from DexScreener (cached, refreshes automatically).</div>
+
+          <div class="table-wrap" style="margin-top:12px;">
+            <table class="table" aria-label="Recent swaps">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Side</th>
+                  <th>USD</th>
+                  <th>Price</th>
+                  <th>Maker</th>
+                  <th>Tx</th>
+                </tr>
+              </thead>
+              <tbody id="swapRows">
+                <tr><td colspan="6" class="muted">Loading swaps…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+
+        <div class="launch-row">
+        <!-- Market Health Panel (Phase 9.4) -->
+        <div class="card">
+          <div class="h3">Market Health Panel</div>
+          <div class="small">Liquidity, slippage estimate, buy/sell ratio, concentration & LP lock status.</div>
+
+                    <div class="stats" style="margin-top:14px;">
+            <div class="stat"><div class="k">Health</div><div class="v" id="mhLabel">—</div></div>
+            <div class="stat"><div class="k">Score</div><div class="v" id="mhScore">—</div></div>
+            <div class="stat"><div class="k">Liquidity</div><div class="v" id="mhLiq">—</div></div>
+            <div class="stat"><div class="k">Slippage (1k)</div><div class="v" id="mhSlip">—</div></div>
+            <div class="stat"><div class="k">24h Volume</div><div class="v" id="mhVol">—</div></div>
+            <div class="stat"><div class="k">Buy/Sell Ratio</div><div class="v" id="mhBS">—</div></div>
+            <div class="stat"><div class="k">LP Lock</div><div class="v" id="mhLock">—</div></div>
+            <div class="stat"><div class="k">LP Provider</div><div class="v" id="mhLockSub">—</div></div>
+          </div>
+
+          <div class="muted" id="mhFlags" style="margin-top:12px;">&nbsp;</div>
+        </div>
+
+        <!-- How to read this -->
+        <div class="card">
+          <div class="h3">How to read this</div>
+          <div class="small">
+            This panel is informational. Early launches can show low liquidity and high slippage. If DexScreener is blocked by an extension, you may see placeholders.
+          </div>
+
+          <ul class="small" style="margin-top:12px; line-height:1.5;">
+            <li><b>Slippage:</b> lower is better (depth).</li>
+            <li><b>Buy/Sell:</b> &gt; 1 indicates stronger buy flow.</li>
+            <li><b>LP Lock:</b> locked is safer; unknown is common early.</li>
+          </ul>
+        </div>
+        </div>
+      </div>
+
+      <TrustPanel />
+    </div>
+  </section>
+
+<!-- PHASE 9 – Trading Venues (DEX / CEX) -->
+<section class="section" id="venues">
+  <div class="container reveal">
+    <div class="section__head">
+      <h2>Trading Venues</h2>
+      <p class="small">
+        Only use official links. If a venue is not listed here, assume it is not official.
+      </p>
+    </div>
+
+    <div class="venues">
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
+            <span>DEX Enabled</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">Live once the verified pair is published.</div>
+      </div>
+
+      <div class="venue-block">
+        <div class="venue-title">
+          <span class="iconwrap">
+            <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
+            <span>CEX Listings</span>
+          </span>
+        </div>
+        <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
+        <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  // Phase 9: Trading venues data (editable via /public/venues.json)
+  const makeEl = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else el.setAttribute(k, String(v));
+    }
+    for (const c of children) el.append(c);
+    return el;
+  };
+
+  const safeUrl = (u) => {
+    try { return new URL(u).toString(); } catch { return ""; }
+  };
+
+  const fallback = {
+    dex: [
+      { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
+      { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
+      { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
+      { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
+    ],
+    cex: [
+      { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
+      { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
+    ]
+  };
+
+  async function loadVenues(){
+    const url = new URL("venues.json", window.location.href).toString();
+    try{
+      const r = await fetch(url, { cache: "no-store" });
+      if(!r.ok) throw new Error("venues fetch failed");
+      const data = await r.json();
+      if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
+      return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
+    }catch{
+      return fallback;
+    }
+  }
+
+  function renderGrid(targetId, items){
+    const host = document.getElementById(targetId);
+    if(!host) return;
+
+    host.innerHTML = "";
+    items.forEach((it) => {
+      const href = safeUrl(it.url);
+      const enabled = Boolean(it.enabled) && href;
+      const a = makeEl(enabled ? "a" : "div", {
+        class: "venue-tile" + (enabled ? "" : " is-disabled"),
+        href: enabled ? href : undefined,
+        target: enabled ? "_blank" : undefined,
+        rel: enabled ? "noreferrer noopener" : undefined
+      });
+
+      const img = makeEl("img", {
+        class: "venue-icon",
+        src: it.icon || "",
+        alt: it.name || "Venue",
+        loading: "lazy",
+        referrerpolicy: "no-referrer"
+      });
+
+      const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
+      const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
+
+      a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
+      host.append(a);
+    });
+
+    if(!items.length){
+      host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const data = await loadVenues();
+    renderGrid("dexGrid", data.dex);
+    renderGrid("cexGrid", data.cex);
+  });
+</script>
+
+
+
+
+  <hr class="hr" />
+
+  <!-- TOKENOMICS -->
+  <section class="section" id="tokenomics">
+    <div class="container reveal">
+      <h2>Tokenomics</h2>
+      <p>Simple allocation — 97 / 2 / 1.</p>
+
+      <div class="grid" style="margin-top:14px;">
+        {tokenomics.map((t) => (
+          <div class="card col-6">
+            <h3>{t.title}</h3>
+            <p>{t.desc}</p>
+            <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div>
+          </div>
+        ))}
+        <div class="card col-12">
+          <div class="kv"><strong>Community</strong><span>97%</span></div>
+          <div class="kv"><strong>Operations</strong><span>2%</span></div>
+          <div class="kv"><strong>Marketing</strong><span>1%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="container reveal">
+      <h2>Roadmap</h2>
+      <p>Focused phases with clear deliverables.</p>
+
+      <div class="grid" style="margin-top:14px;">
+        {roadmap.map((r) => (
+          <div class="card col-6">
+            <div class="small">{r.phase}</div>
+            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
+              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- DAILY CAPI / NARRATIVE -->
+  <section class="section" id="daily">
+    <div class="container reveal">
+      <h2>Daily Capi</h2>
+      <p>
+        Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
+      </p>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Today’s prompt</h3>
+          <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p>
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
+        </div>
+        <div class="card col-6">
+          <h3>Build in public</h3>
+          <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p>
+          <a class="btn" href="#launchpanel">Back to Launch Panel</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- COMMUNITY -->
+  <section class="section" id="community">
+    <div class="container reveal">
+      <h2>Community</h2>
+      <p>
+        Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
+      </p>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-12">
+          <h3>Official X feed</h3>
+          <p class="small">If this embed is blank, your browser/extensions may block it. The link still works.</p>
+
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">
+            Open X profile
+          </a>
+
+          <div style="margin-top:14px;">
+            <a class="twitter-timeline"
+               data-theme="dark"
+               data-tweet-limit="3"
+               href={`https://twitter.com/${X_HANDLE}`}>
+               Tweets by {X_HANDLE}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container reveal">
+      <h2>FAQ</h2>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Where is the official contract?</h3>
+          <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>Is this financial advice?</h3>
+          <p class="small">No. Crypto is high risk. Always do your own research.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>Why verify only here?</h3>
+          <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>When live market data?</h3>
+          <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
+
+  <!-- X widget loader -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  <!-- Live + Wallet script -->
+  <script type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
+    const $ = (s) => document.querySelector(s);
+
+    // Registry-first runtime state (single source of truth)
+    let tokenAddr = (typeof TOKEN_ADDRESS === "string" ? TOKEN_ADDRESS : "");
+    let pairAddr = (typeof DEX_PAIR_ADDRESS === "string" ? DEX_PAIR_ADDRESS : "");
+    let explorerBase = "https://etherscan.io";
+    let networkName = "Ethereum Mainnet";
+    let tokenMeta = { symbol: "CAPI", decimals: 18, image: "" };
+    let registryLinks = {};
+
+
+// Phase 8 Trust UI: reads public/official-registry.json (same source as /verify)
+const FALLBACK_REGISTRY = {
+  officialDomain: "www.capitoken.org",
+  allowedDomains: ["www.capitoken.org", "capitoken.org"],
+  network: { name: "Ethereum Mainnet", chainId: 1, explorer: "https://etherscan.io" },
+  contract: { address: "", verified: false, token: { name: "Capitoken", symbol: "CAPI", decimals: 18 } },
+  security: { mirrorNotice: "You are viewing a mirror. The official site is https://www.capitoken.org" }
+};
+
+const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? "—"; };
+const setWidth = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = String(pct) + "%"; };
+
+function scoreFrom(data, isOfficialHost) {
+  let s = 0;
+  if (data?.contract?.address) s += 35;
+  if (data?.contract?.verified) s += 25;
+  if (data?.contract?.token?.name && data?.contract?.token?.symbol) s += 10;
+  if (data?.network?.chainId === 1) s += 10;
+  if (isOfficialHost) s += 20;
+  return Math.min(100, s);
+}
+
+async function loadRegistry() {
+  const url = new URL("official-registry.json", window.location.href).toString();
+  try {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("registry fetch failed");
+    return await r.json();
+  } catch {
+    return FALLBACK_REGISTRY;
+  }
+}
+
+async function initTrustHero() {
+  const data = await loadRegistry();
+
+  // Capture registry values for the whole page
+  explorerBase = String(data?.network?.explorer || explorerBase);
+  networkName = String(data?.network?.name || networkName);
+  tokenAddr = String(data?.contract?.address || tokenAddr || "");
+  pairAddr = String((data?.pair?.address) || pairAddr || "");
+  tokenMeta = {
+    symbol: String(data?.contract?.token?.symbol || tokenMeta.symbol || "CAPI"),
+    decimals: Number(data?.contract?.token?.decimals ?? tokenMeta.decimals ?? 18),
+    image: String(data?.links?.tokenImage || tokenMeta.image || "")
+  };
+  registryLinks = (data?.links && typeof data.links === "object") ? data.links : {};
+  const host = window.location.hostname;
+  const allowed = new Set((data.allowedDomains || []).map((x) => String(x).toLowerCase()));
+  const isOfficialHost = allowed.has(String(host).toLowerCase());
+
+  const score = scoreFrom(data, isOfficialHost);
+  setTxt("trustScoreHero", String(score));
+  setWidth("trustBarFill", score);
+
+  const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";
+  setTxt("trustStatusHero", status);
+
+  const hint = isOfficialHost
+    ? (data.contract?.verified ? "Etherscan verified. Always verify contract on /verify." : "Contract not verified yet. Use /verify.")
+    : (data.security?.mirrorNotice || "You are viewing a mirror. Verify on the official domain.");
+  setTxt("trustHintHero", hint);
+
+  const badge = document.getElementById("trustBadgeHero");
+  if (badge) {
+    badge.classList.remove("is-verified", "is-warn");
+    badge.classList.add(isOfficialHost ? "is-verified" : "is-warn");
+  }
+
+  const netPill = document.getElementById("networkPill");
+  if (netPill && data.network?.name) {
+    const spans = netPill.querySelectorAll("span");
+    if (spans.length) spans[spans.length - 1].textContent = data.network.name;
+  }
+}
+
+    const toast = (msg) => {
+      const el = $("#toast");
+      if(!el) return;
+      el.textContent = msg;
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(()=>{
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+      }, 1800);
+    };
+
+    async function copyText(val){
+      if(!val) return;
+      try{
+        await navigator.clipboard.writeText(val);
+        toast("Copied");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly","");
+        ta.style.position="absolute";
+        ta.style.left="-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied");
+      }
+    }
+
+    function short(a){
+      if(!a) return "";
+      return a.slice(0,6)+"…"+a.slice(-4);
+    }
+
+    function fmtUSD(n, d=2){
+      if(n === null || n === undefined || Number.isNaN(Number(n))) return "TBA";
+      return Number(n).toLocaleString(undefined, { style:"currency", currency:"USD", maximumFractionDigits:d });
+    }
+
+    function uniswapUrl(input, output){
+      const base = "https://app.uniswap.org/#/swap";
+      const p = new URLSearchParams({ inputCurrency: input, outputCurrency: output });
+      return `${base}?${p.toString()}`;
+    }
+
+    function setLaunchTexts(){
+      const c = tokenAddr ? tokenAddr : "";
+      const p = pairAddr ? pairAddr : "";
+      const explorer = (explorerBase || "https://etherscan.io") + "/address/";
+
+      // Contract
+      const cShort = c ? short(c) : "TBA — verify only here";
+      if($("#contractShort")) $("#contractShort").textContent = cShort;
+      if($("#contractFull")) $("#contractFull").textContent = c;
+      if($("#contractDetails")) $("#contractDetails").style.display = c ? "block" : "none";
+
+      const vc = $("#verifyContractBtn");
+      if(vc){
+        if(c){
+          vc.href = (registryLinks.etherscanToken || (explorer + c));
+          vc.removeAttribute("aria-disabled");
+          vc.classList.remove("is-disabled");
+        }else{
+          vc.href = "#";
+          vc.setAttribute("aria-disabled","true");
+          vc.classList.add("is-disabled");
+        }
+      }
+
+      // Pair
+      const pShort = p ? short(p) : "TBA";
+      if($("#pairShort")) $("#pairShort").textContent = pShort;
+      if($("#pairFull")) $("#pairFull").textContent = p;
+      if($("#pairDetails")) $("#pairDetails").style.display = p ? "block" : "none";
+
+      const vp = $("#verifyPairBtn");
+      if(vp){
+        if(p){
+          vp.href = (registryLinks.etherscanPair || (explorer + p));
+          vp.removeAttribute("aria-disabled");
+          vp.classList.remove("is-disabled");
+        }else{
+          vp.href = "#";
+          vp.setAttribute("aria-disabled","true");
+          vp.classList.add("is-disabled");
+        }
+      }
+
+      // Badges
+      const bc = document.getElementById("badgeContract");
+      const bp = document.getElementById("badgePair");
+      const bm = document.getElementById("badgeMarket");
+      if(bc) bc.textContent = c ? "Contract: Set" : "Contract: Pending";
+      if(bp) bp.textContent = p ? "Pair: Set" : "Pair: Pending";
+      if(bm) bm.textContent = (c || p) ? "Market: Loading" : "Market: Pending";
+
+      // Primary CTAs
+      const buy = $("#buyOnUniswap");
+      const mkt = $("#openDexScreener");
+      if(buy){
+        if(c){
+          buy.href = (registryLinks.buy || uniswapUrl("ETH", c));
+          buy.removeAttribute("aria-disabled");
+          buy.classList.remove("is-disabled");
+        }else{
+          buy.href = "#";
+          buy.setAttribute("aria-disabled","true");
+          buy.classList.add("is-disabled");
+        }
+      }
+      if(mkt){
+        if(p){
+          mkt.href = (registryLinks.market || `https://dexscreener.com/ethereum/${p}`);
+          mkt.removeAttribute("aria-disabled");
+          mkt.classList.remove("is-disabled");
+        }else if(c){
+          mkt.href = (registryLinks.market || `https://dexscreener.com/ethereum/${c}`);
+          mkt.removeAttribute("aria-disabled");
+          mkt.classList.add("is-disabled");
+        }else{
+          mkt.href = "#";
+          mkt.setAttribute("aria-disabled","true");
+          mkt.classList.add("is-disabled");
+        }
+      }
+    }
+
+    function setDexLinks(){
+      const a1 = $("#dexWethToCapi");
+      const a2 = $("#dexCapiToWeth");
+
+      if(!tokenAddr){
+        [a1,a2].forEach(a=>{
+          if(!a) return;
+          a.href = "#";
+          a.setAttribute("aria-disabled","true");
+          a.classList.add("is-disabled");
+        });
+        return;
+      }
+
+      if(a1) a1.href = uniswapUrl("ETH", tokenAddr);
+      if(a2) a2.href = uniswapUrl(tokenAddr, "ETH");
+    }
+
+    async function connectInjected(){
+      if(!window.ethereum){
+        alert("No injected wallet detected (MetaMask/Trust/Brave).");
+        return;
+      }
+      const accounts = await window.ethereum.request({ method:"eth_requestAccounts" });
+      const acc = accounts?.[0];
+      $("#acct").textContent = short(acc);
+      $("#accountPill").style.display = "inline-flex";
+    }
+
+    async function watchToken(){
+      if(!tokenAddr){
+        alert("Token address is still TBA.");
+        return;
+      }
+      if(!window.ethereum){
+        alert("MetaMask not detected.");
+        return;
+      }
+      try{
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddr,
+              symbol: "CAPI",
+              decimals: 18,
+              // Ajusta a tu asset real en /public/assets/
+              image: `${location.origin}${import.meta.env.BASE_URL}assets/capi-logo-256.png`,
+            },
+          },
+        });
+        toast("Token added");
+      }catch(e){
+        console.warn(e);
+        alert("Could not add token to wallet.");
+      }
+    }
+
+    async function loadDexScreener(){
+      const bm = document.getElementById("badgeMarket");
+      const setMarketBadge = (txt) => { if(bm) bm.textContent = txt; };
+
+      if(!tokenAddr && !pairAddr){
+        setMarketBadge("Market: Pending");
+        return;
+      }
+
+      // 1) Prefer pair endpoint (most reliable)
+      const tryFetch = async (url) => {
+        const r = await fetch(url, { cache: "no-store" });
+        if(!r.ok) throw new Error("HTTP " + r.status);
+        return await r.json();
+      };
+
+      try{
+        setMarketBadge("Market: Loading");
+
+        let pairs = [];
+        if(pairAddr){
+          const jPair = await tryFetch(`https://api.dexscreener.com/latest/dex/pairs/ethereum/${pairAddr}`);
+          pairs = jPair?.pairs || [];
+        }
+
+        // 2) Fallback to token endpoint (then filter by chain)
+        if(!pairs.length && tokenAddr){
+          const jTok = await tryFetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddr}`);
+          pairs = (jTok?.pairs || []).filter(x => (x?.chainId || "").toLowerCase() === "ethereum");
+        }
+
+        if(!pairs.length){
+          setMarketBadge("Market: Pending");
+          return;
+        }
+
+        // Choose the best pair (highest liquidity)
+        pairs = pairs.slice().sort((a,b) => (b?.liquidity?.usd||0) - (a?.liquidity?.usd||0));
+        const p = pairs[0];
+
+      setMarketBadge("Market: Live");
+
+      $("#mPrice").textContent = fmtUSD(p.priceUsd, 8);
+      $("#mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+      $("#mVol").textContent = fmtUSD(p?.volume?.h24, 0);
+
+      const mc = p?.marketCap ?? p?.fdv ?? null;
+      $("#mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
+
+      // IMPORTANT:
+      // Do NOT write into #swapRows here.
+      // #swapRows is owned by the Market Engine (market-engine.js) which renders
+      // *real swap rows* with columns: TIME / SIDE / USD / PRICE / MAKER / TX.
+      // Overwriting it here causes the "Real Swap Activity" table to flicker and
+      // the row values to stop matching the column headers.
+      }catch(e){
+        // Most common: adblock / privacy extension blocking api.dexscreener.com
+        setMarketBadge("Market: Blocked");
+        console.warn("DexScreener fetch failed", e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      await initTrustHero();
+      // Re-sync CTAs from registry values
+      setLaunchTexts();
+      setDexLinks();
+      syncNetworkLabels();
+      setDexLinks();
+
+      // Copy buttons
+      $("#copyContractBtn")?.addEventListener("click", ()=> copyText(tokenAddr));
+      $("#copyPairBtn")?.addEventListener("click", ()=> copyText(pairAddr));
+
+      // Wallet
+      $("#connectWalletBtn")?.addEventListener("click", connectInjected);
+      $("#watchTokenBtn")?.addEventListener("click", watchToken);
+
+      // Live data
+      await loadDexScreener();
+      setInterval(loadDexScreener, 45000);
+    });
+  
+
+    function syncNetworkLabels(){
+      // Update the Live Market card pill label (first .pill inside Live Market Snapshot card)
+      const pills = document.querySelectorAll('#launchpanel .h3 + .small + .pill span');
+      // Fallback: find any pill that contains 'Ethereum' in launch panel and replace.
+      document.querySelectorAll('#launchpanel .pill').forEach((pill) => {
+        const spans = pill.querySelectorAll('span');
+        if (spans.length) {
+          const last = spans[spans.length-1];
+          if (last && /ethereum/i.test(last.textContent || '')) last.textContent = networkName;
+        }
+      });
+    }
+</script>
+
+<hr class="hr" />
+
+
+<!-- Phase 9 – Cache bust (ensures visitors see latest HTML) -->
+<script is:inline>
+  (function(){
+    try{
+      var url = new URL("build.json", window.location.href).toString();
+      fetch(url, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+        if(!d || !d.buildId) return;
+        var key = "capitoken_build_id";
+        var prev = localStorage.getItem(key);
+        if(prev && prev !== d.buildId){
+          localStorage.setItem(key, d.buildId);
+          // One-time refresh to pick up new HTML/CSS after a deploy
+          location.reload();
+          return;
+        }
+        if(!prev) localStorage.setItem(key, d.buildId);
+      }).catch(function(){});
+    }catch(e){}
+  })();
+</script>
+<script is:inline type="module">
+  console.log("[TrustPanel] root script boot");
+
+	  // IMPORTANT: keep all engine modules on the SAME revision.
+	  // This avoids mixed loads like market-engine?v=PHASE94R16 while trust-engine?v=PHASE94R16.
+	  const ENGINE_V = "PHASE94R22_BASEURI_FIX";
+
+
+  const BASE_URL = new URL('./', document.baseURI).toString();
+
+  function _loadScriptOnce(src) {
+    return new Promise((resolve) => {
+      // if already on page
+      for (const s of document.scripts) {
+        if (s && s.src && s.src.split('?')[0] === src.split('?')[0]) return resolve(true);
+      }
+      const el = document.createElement('script');
+      el.src = src;
+      el.async = true;
+      el.onload = () => resolve(true);
+      el.onerror = () => resolve(false);
+      document.head.appendChild(el);
+    });
+  }
+
+  async function ensureRuntimeConfig() {
+    if (typeof window !== 'undefined' && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) return true;
+
+    const candidates = [
+      `${BASE_URL}capi-config.js?v=${ENGINE_V}`,
+      `${BASE_URL}js/capi-config.js?v=${ENGINE_V}`,
+    ];
+
+    for (const url of candidates) {
+      const ok = await _loadScriptOnce(url);
+      if (ok && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) return true;
+    }
+
+    console.warn('[LaunchPanel] capi-config.js not loaded; continuing with registry defaults');
+    return false;
+  }
+
+
+  const $id = (id) => document.getElementById(id);
+  const el = {
+    wallet: $id("tp_wallet"),
+    network: $id("tp_network"),
+    token: $id("tp_token"),
+    contract: $id("tp_contract"),
+    pair: $id("tp_pair"),
+    liq: $id("tp_liq"),
+    market: $id("tp_market"),
+    price: $id("tp_price"),
+    liqusd: $id("tp_liqusd"),
+    vol: $id("tp_vol"),
+    fdv: $id("tp_fdv"),
+    score: $id("tp_score"),
+    alerts: $id("tp_alerts"),
+    connect: $id("tp_connect"),
+    sw: $id("tp_switch"),
+    add: $id("tp_addtoken"),
+    etherscan: $id("tp_etherscan"),
+    uniswap: $id("tp_uniswap"),
+    dex: $id("tp_dex"),
+
+    // Launch Panel "Live Market Snapshot" (top cards)
+    mPrice: $id("mPrice"),
+    mMcap: $id("mMcap"),
+    mLiq: $id("mLiq"),
+    mVol: $id("mVol"),
+
+    // Phase 9.4 UI
+    swapRows: $id("swapRows"),
+    mhLabel: $id("mhLabel"),
+    mhScore: $id("mhScore"),
+    mhLiq: $id("mhLiq"),
+    mhSlip: $id("mhSlip"),
+    mhVol: $id("mhVol"),
+    mhBS: $id("mhBS"),
+    mhLock: $id("mhLock"),
+    mhLockSub: $id("mhLockSub"),
+    mhFlags: $id("mhFlags"),
+  };
+
+  const shortAddr = (a) => (a ? `${a.slice(0,6)}...${a.slice(-4)}` : "—");
+
+  function fmtWeiToEth(wei) {
+    if (wei === null || wei === undefined) return "—";
+    const s = wei.toString();
+    if (!s || s === "0") return "0.0000";
+    if (s.length <= 18) return "0." + s.padStart(18, "0").slice(0, 4);
+    const i = s.slice(0, s.length - 18);
+    const d = s.slice(s.length - 18, s.length - 14);
+    return i + "." + d;
+  }
+
+  function fmtUsd(v) {
+    if (v === null || v === undefined || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return String(v);
+    return n >= 1e9 ? `$${(n/1e9).toFixed(2)}B`
+         : n >= 1e6 ? `$${(n/1e6).toFixed(2)}M`
+         : n >= 1e3 ? `$${(n/1e3).toFixed(2)}K`
+         : `$${n.toFixed(6)}`;
+  }
+
+  function setAlerts(list) {
+    if (!el.alerts) return;
+    if (!list?.length) { el.alerts.innerHTML = ""; return; }
+
+    // Friendly alert copy (keep codes concise, avoid panic language)
+    const map = {
+      MARKET_NOT_INDEXED: "DexScreener: indexing in progress (can take minutes-hours).",
+      LOW_LIQUIDITY: "Liquidity is still low (early launch).",
+      DOMAIN_ALLOWLIST_EMPTY: "Domain allowlist not set in registry (set before production).",
+      DOMAIN_NOT_ALLOWED: "Domain not in allowlist (security check).",
+
+      // Phase 9.4 market health
+      HIGH_SLIPPAGE: "High slippage (low depth).",
+      NO_LP_LOCK: "LP is not locked (verify lock / ownership).",
+      LOW_VOLUME: "Low 24h volume (early launch or low activity).",
+      SELL_PRESSURE: "Sell pressure detected (24h).",
+      HIGH_HOLDER_CONCENTRATION: "High holder concentration (whale risk).",
+      MARKET_DATA_UNAVAILABLE: "Market data unavailable (blocked by extension / network)."
+    };
+
+    el.alerts.innerHTML = list
+      .map(a => `<div class="tp-alert">${map[a] || a}</div>`)
+      .join("");
+  }
+
+
+  async function loadEngine() {
+    // Browser-safe base resolver (works with Astro base like /capitoken-site/)
+    // Example: https://.../capitoken-site/  ->  /capitoken-site/js/trust-engine.js
+    const base = new URL('.', window.location.href);
+    // Cache-buster to guarantee we are NOT running an old JS file.
+    const url = new URL('js/trust-engine.js', base).toString() + `?v=${ENGINE_V}`;
+
+    const mod = await import(url);
+    console.log('[TrustPanel] engine loaded', url);
+    return mod;
+  }
+
+
+  let __marketEngine = null;
+
+  async function loadMarketEngine() {
+    if (__marketEngine) return __marketEngine;
+
+    const base = new URL('.', window.location.href);
+    // Cache-buster to guarantee we are NOT running an old JS file.
+    const url = new URL('js/market-engine.js', base).toString() + `?v=${ENGINE_V}`;
+
+    const mod = await import(url);
+    // Ensure market-engine resolves registry under base paths (GitHub Pages)
+    mod.setMarketConfig({ baseUrl: base.toString() });
+
+    __marketEngine = mod;
+    console.log('[Market] engine loaded', url);
+    return mod;
+  }
+
+  function renderSwaps(swaps) {
+    if (!el.swapRows) return;
+
+    if (!Array.isArray(swaps) || swaps.length === 0) {
+      el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">No swaps yet (or indexing).</td></tr>`;
+      return;
+    }
+
+    const fmtTime = (ts) => {
+      try { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }
+      catch { return '—'; }
+    };
+    const fmtUsdCompact = (n) => {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '—';
+      return x >= 1e6 ? `$${(x/1e6).toFixed(2)}M`
+           : x >= 1e3 ? `$${(x/1e3).toFixed(2)}K`
+           : `$${x.toFixed(2)}`;
+    };
+    const fmtPrice = (n) => {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '—';
+      return `$${x.toFixed(8)}`;
+    };
+    const short = (a) => (a ? `${a.slice(0,6)}...${a.slice(-4)}` : '—');
+
+    el.swapRows.innerHTML = swaps.map((x) => {
+      const side = (x.side || '').toUpperCase();
+      const pill = side === 'BUY'
+        ? `<span class="pill pill--good">BUY</span>`
+        : side === 'SELL'
+          ? `<span class="pill pill--warn">SELL</span>`
+          : `<span class="pill">—</span>`;
+
+      const txUrl = x.txHash ? `https://etherscan.io/tx/${x.txHash}` : '';
+      const tx = txUrl ? `<a href="${txUrl}" target="_blank" rel="noreferrer noopener">View</a>` : '—';
+
+      return `
+        <tr>
+          <td>${fmtTime(x.ts)}</td>
+          <td>${pill}</td>
+          <td>${fmtUsdCompact(x.amountUsd)}</td>
+          <td>${fmtPrice(x.priceUsd)}</td>
+          <td class="mono">${short(x.maker)}</td>
+          <td>${tx}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderMarketHealthFromTrustState(s) {
+    // Fill Phase 9.4 cards from Trust Engine state (already computed)
+    if (el.mhLabel) el.mhLabel.textContent = s.marketHealthLabel || '—';
+    if (el.mhScore) el.mhScore.textContent = (Number.isFinite(s.marketHealthScore) ? `${Math.round(s.marketHealthScore)}/100 (+${s.marketHealthBoost||0})` : `— (+${s.marketHealthBoost||0})`);
+
+    if (el.mhLiq) el.mhLiq.textContent = fmtUsd(s.liquidityUsd);
+    if (el.mhVol) el.mhVol.textContent = fmtUsd(s.volumeH24);
+
+    if (el.mhSlip) el.mhSlip.textContent = Number.isFinite(s.slippage1kPct) ? `${Number(s.slippage1kPct).toFixed(2)}%` : '—';
+    if (el.mhBS) el.mhBS.textContent = Number.isFinite(s.buySellRatio24h)
+      ? (s.buySellRatio24h === Infinity ? '∞' : Number(s.buySellRatio24h).toFixed(2))
+      : '—';
+
+    if (el.mhLock) el.mhLock.textContent = (s.lpLocked === true) ? 'LOCKED'
+      : (s.lpLocked === false) ? 'UNLOCKED'
+      : 'UNKNOWN';
+
+    if (el.mhLockSub) el.mhLockSub.textContent = s.lpLockProvider || '—';
+
+    if (el.mhFlags) {
+      const f = Array.isArray(s.marketHealthFlags) ? s.marketHealthFlags : [];
+      el.mhFlags.textContent = f.length ? `Flags: ${f.join(', ')}` : 'Flags: none';
+    }
+  }
+
+
+  async function render(engine) {
+    // Keep the UI stable: if market APIs temporarily rate-limit / return empty,
+    // don't wipe previously displayed values.
+    const last = window.__CAPI_LAST_TRUST_SNAPSHOT || null;
+    let sRaw;
+    try {
+      sRaw = await engine.getSnapshot();
+    } catch (e) {
+      console.error('[TrustPanel] getSnapshot failed', e);
+      if (!last) throw e;
+      sRaw = last;
+    }
+
+    // Merge: prefer new values, but never overwrite previous non-empty values with null/undefined/"".
+    const keepIfEmptyKeys = [
+      'priceUsd','liquidityUsd','volumeH24','fdv',
+      'marketStatus','dexId',
+      'uniswapPairOnChain','liquidityEthWei','pairMatchesExpected',
+      'trustScore','trustLabel','alerts'
+    ];
+    const s = last ? { ...last, ...sRaw } : sRaw;
+    if (last) {
+      for (const k of keepIfEmptyKeys) {
+        const v = sRaw[k];
+        const empty = (v === null || v === undefined || v === '');
+        if (empty && last[k] !== null && last[k] !== undefined && last[k] !== '') {
+          s[k] = last[k];
+        }
+      }
+      // If the new snapshot says UNAVAILABLE but we previously had LIVE data, keep LIVE fields.
+      if ((sRaw.marketStatus === 'UNAVAILABLE' || sRaw.marketStatus === 'NOT_INDEXED') && last.marketStatus === 'LIVE') {
+        s.marketStatus = last.marketStatus;
+        s.priceUsd = s.priceUsd ?? last.priceUsd;
+        s.liquidityUsd = s.liquidityUsd ?? last.liquidityUsd;
+        s.volumeH24 = s.volumeH24 ?? last.volumeH24;
+        s.fdv = s.fdv ?? last.fdv;
+      }
+    }
+
+    window.__CAPI_LAST_TRUST_SNAPSHOT = s;
+
+
+    el.wallet.textContent = s.accountShort || (s.metamask ? "Not connected" : "MetaMask not detected");
+    el.network.textContent = s.chainOk ? "Ethereum Mainnet ✅"
+      : (s.chainId ? `Wrong network (${s.chainId}) ❌` : "—");
+
+    el.token.textContent = s.tokenSymbol ? `${s.tokenName || "Token"} (${s.tokenSymbol})` : "—";
+    el.contract.textContent = s.contractExists ? "Verified (code present) ✅" : "Not found ❌";
+
+    const pair = s.uniswapPairOnChain || "—";
+    el.pair.textContent = s.pairMatchesExpected === false
+      ? `${shortAddr(pair)} ⚠️ mismatch`
+      : (pair !== "—" ? `${shortAddr(pair)} ✅` : "—");
+
+    el.liq.textContent = (s.liquidityEthWei !== null && s.liquidityEthWei !== undefined)
+      ? `${fmtWeiToEth(s.liquidityEthWei)} WETH`
+      : "—";
+
+    el.market.textContent =
+      s.marketStatus === "LIVE" ? `LIVE ✅ (${s.dexId || "DEX"})`
+      : s.marketStatus === "NOT_INDEXED" ? "Indexing on DexScreener ⏳"
+      : s.marketStatus === "UNAVAILABLE" ? "Unavailable ⚠️"
+      : (s.marketStatus || "—");
+
+    el.price.textContent = s.priceUsd ? `$${Number(s.priceUsd).toFixed(8)}` : "—";
+    el.liqusd.textContent = fmtUsd(s.liquidityUsd);
+    el.vol.textContent = fmtUsd(s.volumeH24);
+    el.fdv.textContent = fmtUsd(s.fdv);
+
+    // Keep Launch Panel "Live Market Snapshot" coherent with Trust Snapshot
+    if (el.mPrice) el.mPrice.textContent = s.priceUsd ? `$${Number(s.priceUsd).toFixed(8)}` : "—";
+    // Use FDV as market cap estimate until you have a better metric
+    if (el.mMcap) el.mMcap.textContent = fmtUsd(s.fdv);
+    // Prefer USD liquidity if available, fallback to WETH
+    if (el.mLiq) el.mLiq.textContent = (s.liquidityUsd != null && s.liquidityUsd !== undefined && s.liquidityUsd !== "")
+      ? fmtUsd(s.liquidityUsd)
+      : ((s.liquidityEthWei != null && s.liquidityEthWei !== undefined) ? `${fmtWeiToEth(s.liquidityEthWei)} WETH` : "—");
+    if (el.mVol) el.mVol.textContent = fmtUsd(s.volumeH24);
+
+    el.score.textContent = `${s.trustScore}/100 — ${s.trustLabel}`;
+    setAlerts(s.alerts);
+
+    // Phase 9.4: Market Health + Recent Swaps
+    renderMarketHealthFromTrustState(s);
+    try{
+      const m = await loadMarketEngine();
+      const swaps = await m.getRecentSwaps(10);
+            // If a transient fetch returns an empty list, keep the last rendered swaps instead of wiping the table.
+            if (Array.isArray(swaps) && swaps.length === 0 && Array.isArray(window.__CAPI_LAST_SWAPS) && window.__CAPI_LAST_SWAPS.length) {
+              // no-op: keep last table
+            } else {
+      renderSwaps(swaps);
+      window.__CAPI_LAST_SWAPS = swaps;
+      }
+    }catch(e){
+	      // Keep UI stable. If we already have swaps rendered, do NOT wipe them.
+	      if (el.swapRows) {
+	        const hasRows = el.swapRows.querySelector('tr') != null;
+	        if (!hasRows) {
+	          el.swapRows.innerHTML = `<tr><td colspan="6" class="muted">Market swaps unavailable (blocked or not indexed).</td></tr>`;
+	        }
+	      }
+    }
+
+    const C = engine.CONFIG;
+    el.etherscan.href = `https://etherscan.io/token/${C.CAPITOKEN_ADDRESS}`;
+    el.uniswap.href = `https://app.uniswap.org/#/swap?outputCurrency=${C.CAPITOKEN_ADDRESS}`;
+    const chain = s.registry?.pair?.chain || "ethereum";
+    el.dex.href = `https://dexscreener.com/${chain}/${C.UNISWAP_PAIR_EXPECTED}`;
+  }
+
+  (async () => {
+    try {
+      // si no existe el panel en el DOM, no hacemos nada
+      if (!document.getElementById("trustPanel")) return;
+
+      await ensureRuntimeConfig();
+    const engine = await loadEngine();
+      await render(engine);
+
+      el.connect?.addEventListener("click", async () => { try { await engine.connectWallet(); await render(engine); } catch(e){ console.error(e);} });
+      el.sw?.addEventListener("click", async () => { try { await engine.switchToMainnet(); await render(engine); } catch(e){ console.error(e);} });
+      el.add?.addEventListener("click", async () => { try { await engine.addTokenToWallet(); } catch(e){ console.error(e);} });
+
+      if (window.ethereum) {
+        window.ethereum.on?.("chainChanged", () => render(engine));
+        window.ethereum.on?.("accountsChanged", () => render(engine));
+      }
+
+      setInterval(() => render(engine), 45000);
+    } catch (e) {
+      console.error("[TrustPanel] failed", e);
+      setAlerts(["TRUST_ENGINE_LOAD_FAILED"]);
+    }
+  })();
+</script>
+
+</BaseLayout>
