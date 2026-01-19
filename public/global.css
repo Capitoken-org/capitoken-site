@@ -1549,10 +1549,10 @@ html, body{
   .trustbar-inline{flex-basis:100%;}
 }
 /* =========================================================
-   HERO STATS + TRUST BAR — Layout Fix (authoritative)
-   - 4 mini boxes left + trust bar right (like mock)
-   - Restores premium cosmetics
-   - Responsive: trust bar drops to full width on small screens
+   HERO STATS + TRUST BAR — Layout Fix (V2)
+   - Align TOP with left boxes
+   - Force progress bar to show
+   - Harmonize typography + spacing
    ========================================================= */
 
 .hero-stats-row{
@@ -1570,7 +1570,7 @@ html, body{
   flex-wrap:nowrap;
 }
 
-/* Restore "mini-card" premium look for the left boxes */
+/* Left mini boxes — premium look */
 .hero-stat{
   min-width: 132px;
   padding: 12px 12px 10px;
@@ -1579,6 +1579,9 @@ html, body{
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
   backdrop-filter: blur(10px);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
 .hero-stat .k{
@@ -1587,6 +1590,7 @@ html, body{
   text-transform:uppercase;
   color:rgba(242,245,244,0.62);
   margin-bottom:6px;
+  line-height:1.1;
 }
 
 .hero-stat .v{
@@ -1596,7 +1600,7 @@ html, body{
   line-height:1.2;
 }
 
-/* Right-side trust bar should FLEX and occupy remaining width */
+/* Right trust panel should align to TOP, not centered */
 .hero-trustbar{
   flex: 1 1 420px;
   min-width: 320px;
@@ -1607,17 +1611,19 @@ html, body{
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
   backdrop-filter: blur(10px);
+
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:flex-start; /* <<< key fix: align top */
 }
 
+/* Head row alignment */
 .hero-trustbar .trustbar-head{
   display:flex;
-  align-items:baseline;
+  align-items:center;          /* <<< keeps label/value aligned */
   justify-content:space-between;
   gap:10px;
-  margin-bottom:10px;
+  margin: 0 0 10px 0;          /* <<< remove any vertical drift */
 }
 
 .hero-trustbar .trustbar-label{
@@ -1625,12 +1631,17 @@ html, body{
   letter-spacing:0.04em;
   text-transform:uppercase;
   color:rgba(242,245,244,0.62);
+  line-height:1.1;
 }
 
 .hero-trustbar .trustbar-value{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
   font-weight:800;
   font-size:16px;
   color:rgba(242,245,244,0.92);
+  line-height:1.1;
 }
 
 .hero-trustbar .muted{
@@ -1639,30 +1650,36 @@ html, body{
   color:rgba(242,245,244,0.55);
 }
 
-/* Scope trustbar styling inside the hero trustbar so nothing else breaks */
+/* Force progress bar visible (protect against earlier CSS) */
 .hero-trustbar .trustbar{
-  height:8px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.08);
+  display:block;
+  height: 8px !important;
+  min-height: 8px !important;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
   overflow:hidden;
 }
 
 .hero-trustbar .trustbar__fill{
-  height:100%;
-  border-radius:999px;
+  display:block;
+  height: 100% !important;
+  min-height: 8px !important;
+  border-radius: 999px;
   background: linear-gradient(90deg, rgba(233,144,44,1), rgba(242,245,244,0.85));
   box-shadow: 0 0 0 4px rgba(233,144,44,0.10);
   transition: width .35s ease;
 }
 
+/* Hint alignment */
 .hero-trustbar .trustbar-hint{
   margin-top:10px;
   font-size:13px;
   color: rgba(242,245,244,0.72);
+  line-height:1.25;
 }
 
-/* Responsive: allow wrap; trustbar becomes full width under the boxes */
+/* Responsive */
 @media (max-width: 980px){
   .hero-stats-row{flex-wrap:wrap;}
   .hero-stats-mini{flex-wrap:wrap;}
