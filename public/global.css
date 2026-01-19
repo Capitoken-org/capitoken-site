@@ -1452,108 +1452,12 @@ html, body{
 }
 
 
-/* === Capi Vibes: Hero Trust Bar (contained, right-aligned) === */
-.hero-trustbar{
-  margin-top: 10px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  max-width: 520px;
-}
-/* If your hero uses a grid, this keeps it aligned with the right edge of the hero copy area */
-.hero-trustbar{ justify-content:flex-start; }
-.hero-trustbar__left{
-  min-width: 120px;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  opacity:.95;
-}
-.hero-trustbar__label{
-  font-size:12px;
-  letter-spacing:.02em;
-  opacity:.85;
-}
-.hero-trustbar__value{
-  font-size:13px;
-  font-weight:700;
-}
-.hero-trustbar__track{
-  position:relative;
-  flex:1;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.14);
-  overflow:hidden;
-}
-.hero-trustbar__fill{
-  position:absolute;
-  inset:0 auto 0 0;
-  width:0%;
-  border-radius:999px;
-  background: rgba(255, 172, 64, .95);
-  box-shadow: 0 0 0 1px rgba(0,0,0,.18) inset;
-  transition: width 400ms ease;
-}
-
-/* ------------------------------
-   Inline hero mini boxes (left) + trust bar (right)
-   Used by index.astro (stats row)
------------------------------- */
-
-.hero-stats-row{
-  display:flex;
-  align-items:stretch;
-  gap:12px;
-  margin-top:14px;
-}
-
-.hero-stats-mini{
-  display:flex;
-  gap:12px;
-  flex:0 0 auto;
-}
-
-.hero-stat{
-  min-width: 120px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(18,18,18,.38);
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 10px 28px rgba(0,0,0,.28);
-  backdrop-filter: blur(10px);
-}
-
-.hero-stat .k{
-  font-size: 11px;
-  letter-spacing: .02em;
-  color: rgba(255,255,255,.68);
-  margin-bottom: 4px;
-}
-
-.hero-stat .v{
-  font-size: 13px;
-  font-weight: 800;
-  color: rgba(255,255,255,.92);
-}
-
-.trustbar-inline{
-  flex: 1 1 auto;
-  min-width: 260px;
-}
-
-@media (max-width: 980px){
-  .hero-stats-row{flex-wrap:wrap;}
-  .hero-stats-mini{flex-wrap:wrap;}
-  .trustbar-inline{flex-basis:100%;}
-}
-/* =========================================================
-   HERO STATS + TRUST BAR — Layout Fix (V2)
-   - Align TOP with left boxes
-   - Force progress bar to show
-   - Harmonize typography + spacing
-   ========================================================= */
+/* === HERO: Inline mini boxes (left) + Trust Score panel (right) ===
+   Authoritative layout for GitHub Pages build.
+   Matches index.astro markup:
+   .hero-stats-row > (.hero-stats-mini) + (.hero-trustbar)
+   .hero-trustbar contains: .trustbar-head, .trustbar, .trustbar__fill, .trustbar-hint
+*/
 
 .hero-stats-row{
   display:flex;
@@ -1570,7 +1474,7 @@ html, body{
   flex-wrap:nowrap;
 }
 
-/* Left mini boxes — premium look */
+/* Left mini boxes — premium */
 .hero-stat{
   min-width: 132px;
   padding: 12px 12px 10px;
@@ -1600,9 +1504,9 @@ html, body{
   line-height:1.2;
 }
 
-/* Right trust panel should align to TOP, not centered */
+/* Trust Score panel (right) — aligned to TOP with the mini boxes */
 .hero-trustbar{
-  flex: 1 1 420px;
+  flex: 1 1 520px;
   min-width: 320px;
   max-width: none;
   padding: 12px 14px 12px;
@@ -1614,16 +1518,15 @@ html, body{
 
   display:flex;
   flex-direction:column;
-  justify-content:flex-start; /* <<< key fix: align top */
+  justify-content:flex-start;
 }
 
-/* Head row alignment */
 .hero-trustbar .trustbar-head{
   display:flex;
-  align-items:center;          /* <<< keeps label/value aligned */
+  align-items:center;
   justify-content:space-between;
   gap:10px;
-  margin: 0 0 10px 0;          /* <<< remove any vertical drift */
+  margin: 0 0 10px 0;
 }
 
 .hero-trustbar .trustbar-label{
@@ -1650,36 +1553,36 @@ html, body{
   color:rgba(242,245,244,0.55);
 }
 
-/* Force progress bar visible (protect against earlier CSS) */
+/* Force progress bar visible (protect against earlier overrides) */
 .hero-trustbar .trustbar{
   display:block;
-  height: 8px !important;
-  min-height: 8px !important;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  height:8px !important;
+  min-height:8px !important;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
   overflow:hidden;
+  margin-top:0;
 }
 
 .hero-trustbar .trustbar__fill{
   display:block;
-  height: 100% !important;
-  min-height: 8px !important;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(233,144,44,1), rgba(242,245,244,0.85));
-  box-shadow: 0 0 0 4px rgba(233,144,44,0.10);
-  transition: width .35s ease;
+  height:100% !important;
+  min-height:8px !important;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(233,144,44,1), rgba(242,245,244,0.85));
+  box-shadow:0 0 0 4px rgba(233,144,44,0.10);
+  transition:width .35s ease;
 }
 
-/* Hint alignment */
 .hero-trustbar .trustbar-hint{
   margin-top:10px;
   font-size:13px;
-  color: rgba(242,245,244,0.72);
+  color:rgba(242,245,244,0.72);
   line-height:1.25;
 }
 
-/* Responsive */
 @media (max-width: 980px){
   .hero-stats-row{flex-wrap:wrap;}
   .hero-stats-mini{flex-wrap:wrap;}
