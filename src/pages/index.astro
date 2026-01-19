@@ -88,6 +88,12 @@ const roadmap = [
   <div class="stat-value">
     <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
   </div>
+
+  <!-- Progress (filled by trust-engine.js via #trustBarFill) -->
+  <div class="trust-mini-bar" aria-hidden="true">
+    <div class="trust-mini-bar__fill" id="trustBarFill" style="width:0%"></div>
+  </div>
+
   <div id="trustHintHero" class="sr-only">Loading official registry…</div>
 </div>
 </div>

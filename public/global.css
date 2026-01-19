@@ -1400,3 +1400,22 @@ html, body{
   font-weight:700;
   font-size:.92em;
 }
+
+/* =========================================================
+   Patch v8 — Trust progress bar INSIDE the Trust tile
+   (aligned, full-width, no hero bar)
+   ========================================================= */
+.trust-mini-bar{
+  margin-top:10px;
+  height:8px;
+  width:100%;
+  background: rgba(255,255,255,0.10);
+  border-radius: 999px;
+  overflow:hidden;
+}
+.trust-mini-bar__fill{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg, rgba(255,200,90,0.95), rgba(90,220,140,0.95));
+  border-radius: 999px;
+}
