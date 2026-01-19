@@ -1381,130 +1381,20 @@ html, body{
   object-fit: contain;
 }
 
-/* =========================================================
-   Patch v7 — Trust tile only (remove legacy hero trust bar)
-   - Ensures Trust tile aligns with other stat cards
-   ========================================================= */
-.stat-tile{ 
-  /* Use same padding/shape as .card — do NOT override it */
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-.stat-tile .stat-value{
-  margin-top:6px;
-  font-weight:800;
-}
-.stat-tile .stat-suffix{
-  opacity:.8;
-  font-weight:700;
-  font-size:.92em;
-}
+/* ===== Phase 9.4 UI: Trust Score tile ===== */
+.stat-value{ margin-top:6px; font-weight:800; }
+.stat-suffix{ opacity:.75; font-weight:700; font-size:12px; }
 
-/* =========================================================
-   Patch v8 — Trust progress bar INSIDE the Trust tile
-   (aligned, full-width, no hero bar)
-   ========================================================= */
 .trust-mini-bar{
+  height:6px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.12);
   margin-top:10px;
-  height:8px;
-  width:100%;
-  background: rgba(255,255,255,0.10);
-  border-radius: 999px;
   overflow:hidden;
 }
 .trust-mini-bar__fill{
   height:100%;
   width:0%;
   background: linear-gradient(90deg, rgba(255,200,90,0.95), rgba(90,220,140,0.95));
-  border-radius: 999px;
-}
-
-/* =========================================================
-   Patch v9 — Trust tile UX polish
-   - Left-align content like other tiles
-   - Make progress bar thicker and full-width
-   ========================================================= */
-#trustTile{
-  align-items:flex-start;
-}
-
-#trustTile .stat-value{
-  width:100%;
-}
-
-.trust-mini-bar{
-  display:block;
-  align-self:stretch;
-  width:100%;
-  box-sizing:border-box;
-  height:10px;
-  margin-top:10px;
-  background: rgba(255,255,255,0.12);
-}
-
-.trust-mini-bar__fill{
-  height:100%;
-}
-
-/* =========================================================
-   Patch v12 — Premium Capi Vibes Bars
-   - Hero bar constrained to content width
-   - Smooth animated fill + subtle glow
-   ========================================================= */
-
-.hero-trustbar{
-  margin-top: 14px;
-  max-width: 860px;
-}
-
-.hero-trustbar__label{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-  font-size: 12px;
-  opacity: .92;
-}
-
-.hero-trustbar__name{
-  font-weight: 800;
-  letter-spacing: .2px;
-}
-
-.hero-trustbar__track{
-  margin-top: 8px;
-  height: 10px;
-  width: 100%;
-  background: rgba(255,255,255,0.12);
-  border-radius: 999px;
-  overflow:hidden;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-.hero-trustbar__fill{
-  height:100%;
-  width:0%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255,200,90,0.95), rgba(90,220,140,0.95));
-  transition: width 700ms ease;
-  box-shadow: 0 0 18px rgba(90,220,140,0.18);
-}
-
-/* Tile bar: keep existing id trustBarFill for engine compatibility */
-#trustTile .trust-mini-bar{
-  width: 100% !important;
-  height: 10px;
-  margin-top: 10px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 999px;
-  overflow:hidden;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-#trustTile #trustBarFill{
-  height:100%;
-  width:0%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255,200,90,0.95), rgba(90,220,140,0.95));
-  transition: width 700ms ease;
+  border-radius:999px;
 }
