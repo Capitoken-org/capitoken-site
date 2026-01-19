@@ -1,4 +1,4 @@
-// [market-engine] PHASE94R24_FINAL
+// [market-engine] PHASE94R25_FINAL
 // Phase 9.4 – Real Swap Activity + Market Health
 // Snapshot: DexScreener pairs endpoint
 // Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
@@ -20,18 +20,37 @@ const CFG = {
   earlyLaunchDays: 15,
 };
 
+// --- Uniswap V2 helpers (on-chain discovery, avoids relying on DexScreener indexing) ---
+// Uniswap V2 Factory: getPair(address,address)
+const UNIV2_GETPAIR_SELECTOR = '0xe6a43905';
+const UNIV2_FACTORY_MAINNET = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
+const WETH_MAINNET = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+function pad32(hexNo0x) {
+  const h = String(hexNo0x).replace(/^0x/, '').toLowerCase();
+  return h.padStart(64, '0');
+}
+
+function encAddr(addr) {
+  return pad32(String(addr).toLowerCase().replace(/^0x/, ''));
+}
+
+function encodeGetPairCall(a, b) {
+  // calldata = selector + a + b
+  return UNIV2_GETPAIR_SELECTOR + encAddr(a) + encAddr(b);
+}
+
+function decodeAddressFromWord(hexWord) {
+  const h = String(hexWord).replace(/^0x/, '').toLowerCase();
+  if (h.length < 40) return null;
+  return '0x' + h.slice(h.length - 40);
+}
+
 // Prefer configured RPC (Alchemy) if present, then legacy override.
 if (typeof window !== 'undefined') {
   const cfgRpc = window.CAPI_CONFIG && window.CAPI_CONFIG.RPC_HTTP ? String(window.CAPI_CONFIG.RPC_HTTP) : (window.CAPI_CONFIG && window.CAPI_CONFIG.rpcHttp ? String(window.CAPI_CONFIG.rpcHttp) : '');
   const legacyRpc = window.CAPI_RPC_HTTP ? String(window.CAPI_RPC_HTTP) : '';
   const pick = cfgRpc || legacyRpc;
-  if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
-}
-if (typeof window !== 'undefined') {
-  const cfg = window.CAPI_CONFIG || {};
-  const cfgRpc = String(cfg.rpcHttp || cfg.RPC_HTTP || '').trim();
-  const legacy = String(window.CAPI_RPC_HTTP || '').trim();
-  const pick = cfgRpc || legacy;
   if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
 }
 
@@ -266,18 +285,49 @@ function estimateSlippagePct(liquidityUsd, tradeUsd) {
 
 async function resolvePairAddress() {
   if (CFG.pairAddress) return CFG.pairAddress;
-  // Try registry if present
+
+  // 0) runtime config (capi-config.js)
+  if (typeof window !== 'undefined' && window.CAPI_CONFIG) {
+    const p0 = normAddr(window.CAPI_CONFIG.DEX_PAIR_ADDRESS || window.CAPI_CONFIG.dexPairAddress || null);
+    const t0 = normAddr(window.CAPI_CONFIG.CONTRACT_ADDRESS || window.CAPI_CONFIG.tokenAddress || null);
+    if (t0) CFG.tokenAddress = t0;
+    if (p0) {
+      CFG.pairAddress = p0;
+      return p0;
+    }
+  }
+
+  // 1) Try registry if present
   try {
     const regUrl = `${CFG.baseUrl}official-registry.json`;
     const reg = await safeFetchJson(regUrl);
     const p = normAddr(reg?.dexPair?.address || reg?.pairAddress || reg?.pair || null);
-    if (p) CFG.pairAddress = p;
+    if (p) {
+      CFG.pairAddress = p;
+      return p;
+    }
     const t = normAddr(reg?.token?.address || reg?.tokenAddress || null);
     if (t) CFG.tokenAddress = t;
-    return p;
   } catch {
-    return null;
+    // ignore
   }
+
+  // 2) Deterministic on-chain discovery via Uniswap V2 factory getPair(token, WETH)
+  try {
+    const tokenAddr = normAddr(CFG.tokenAddress || (typeof window !== 'undefined' && window.CAPI_CONFIG && window.CAPI_CONFIG.CONTRACT_ADDRESS) || null);
+    if (!tokenAddr) return null;
+    const data = encodeGetPairCall(tokenAddr, WETH_MAINNET);
+    const out = await rpcCall('eth_call', [{ to: UNIV2_FACTORY_MAINNET, data }, 'latest']);
+    const pair = normAddr(decodeAddressFromWord(out));
+    if (pair && pair !== '0x0000000000000000000000000000000000000000') {
+      CFG.pairAddress = pair;
+      return pair;
+    }
+  } catch {
+    // ignore
+  }
+
+  return null;
 }
 
 async function ensureTokenOrder(pairAddress) {
