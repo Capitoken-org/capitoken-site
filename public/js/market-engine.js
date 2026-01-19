@@ -1,692 +1,187 @@
-// [market-engine] PHASE94R20_ALCHEMY_STABLE
-// Phase 9.4 – Real Swap Activity + Market Health
-// Snapshot: DexScreener pairs endpoint
-// Swaps: on-chain Uniswap V2 Swap logs (eth_getLogs) with adaptive lookback + RPC fallback
-
+// market-engine.js (PHASE94R26_ONCHAIN)
+// Recent swaps pulled from Uniswap V2 Swap logs via RPC (eth_getLogs).
 
 export const ENGINE_VERSION = (() => {
-  try {
-    const fromModule = new URL(import.meta.url).searchParams.get('v');
-    if (fromModule) return fromModule;
-    if (typeof window !== 'undefined') {
-      const fromPage = new URL(window.location.href).searchParams.get('v');
-      if (fromPage) return fromPage;
-    }
-  } catch {}
-  return 'PHASE94R24_FINAL';
+  try { return new URL(import.meta.url).searchParams.get('v') || 'PHASE94R26_ONCHAIN'; }
+  catch { return 'PHASE94R26_ONCHAIN'; }
 })();
-    'https://eth.llamarpc.com'
-  ],
-  cacheTtlMs: 60_000,
-  // Expand lookback if no swaps found
-  swapsLookbacks: [5000, 20000, 100000, 250000],
-  // Early launch window to avoid harsh labeling
-  earlyLaunchDays: 15,
-};
 
-// Prefer configured RPC (Alchemy) if present, then legacy override.
-if (typeof window !== 'undefined') {
-  const cfgRpc = window.CAPI_CONFIG && window.CAPI_CONFIG.RPC_HTTP ? String(window.CAPI_CONFIG.RPC_HTTP) : (window.CAPI_CONFIG && window.CAPI_CONFIG.rpcHttp ? String(window.CAPI_CONFIG.rpcHttp) : '');
-  const legacyRpc = window.CAPI_RPC_HTTP ? String(window.CAPI_RPC_HTTP) : '';
-  const pick = cfgRpc || legacyRpc;
-  if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
-}
-if (typeof window !== 'undefined') {
-  const cfg = window.CAPI_CONFIG || {};
-  const cfgRpc = String(cfg.rpcHttp || cfg.RPC_HTTP || '').trim();
-  const legacy = String(window.CAPI_RPC_HTTP || '').trim();
-  const pick = cfgRpc || legacy;
-  if (pick && !CFG.rpcUrls.includes(pick)) CFG.rpcUrls.unshift(pick);
+const STATE = { baseUrl: '/', cache: { registry: null, ts: 0 }, blockTs: new Map(), token0: null, token1: null };
+
+export function setMarketConfig(cfg = {}) {
+  STATE.baseUrl = cfg.baseUrl || '/';
 }
 
-
-const LS_SNAPSHOT = 'capitoken:market:snapshot';
-const LS_SWAPS = 'capitoken:market:swaps';
-
-let memSnapshot = null; // { ts, data }
-let memSwaps = null; // { ts, data }
-
-let token0Cache = null;
-let token1Cache = null;
-const blockTsCache = new Map(); // blockNumber -> tsMs
-
-// Uniswap V2 Swap(address,uint256,uint256,uint256,uint256,address)
-const UNIV2_SWAP_TOPIC0 = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822';
-
-export function setMarketConfig(opts = {}) {
-  if (opts.baseUrl != null) CFG.baseUrl = String(opts.baseUrl);
-  if (opts.chain != null) CFG.chain = String(opts.chain);
-  if (opts.pairAddress != null) CFG.pairAddress = normAddr(opts.pairAddress);
-  if (opts.tokenAddress != null) CFG.tokenAddress = normAddr(opts.tokenAddress);
-  if (Array.isArray(opts.rpcUrls) && opts.rpcUrls.length) {
-    CFG.rpcUrls = opts.rpcUrls.map(String);
-  }
-  if (Number.isFinite(opts.cacheTtlMs)) CFG.cacheTtlMs = Math.max(5_000, opts.cacheTtlMs);
-  if (Number.isFinite(opts.earlyLaunchDays)) CFG.earlyLaunchDays = Math.max(1, opts.earlyLaunchDays);
+function cfgRuntime() {
+  const c = (typeof window !== 'undefined' && window.CAPI_CONFIG) ? window.CAPI_CONFIG : {};
+  const rpc = c.RPC_HTTP || window.CAPI_RPC_HTTP || '';
+  const contract = c.CONTRACT_ADDRESS || '';
+  return { rpc, contract };
 }
 
-export async function getMarketSnapshot() {
-  const cached = readCache(LS_SNAPSHOT, memSnapshot);
-  if (cached) return cached;
+async function rpcCall(url, method, params = []) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params })
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.message || 'RPC error');
+  return json.result;
+}
 
-  try {
-    const token = (window?.CAPI_CONFIG?.token?.address || window?.CAPI_CONFIG?.CONTRACT_ADDRESS || '').toLowerCase();
-    const pairFromCfg = (window?.CAPI_CONFIG?.dex?.pairAddress || window?.CAPI_CONFIG?.DEX_PAIR_ADDRESS || '').toLowerCase();
+function pad32(h) { return h.padStart(64, '0'); }
+function addrToWord(addr) { return pad32(addr.replace(/^0x/, '').toLowerCase()); }
+function hexToBigInt(h) { return (!h || h === '0x') ? 0n : BigInt(h); }
+function bigToNum(bi, dec = 18) {
+  const s = bi.toString();
+  if (dec === 0) return Number(s);
+  const neg = s.startsWith('-');
+  const t = neg ? s.slice(1) : s;
+  const pad = t.padStart(dec + 1, '0');
+  const intPart = pad.slice(0, -dec);
+  const fracPart = pad.slice(-dec).replace(/0+$/, '');
+  const out = fracPart ? `${intPart}.${fracPart}` : intPart;
+  return Number(neg ? `-${out}` : out);
+}
 
-    let ds = null;
-    if (token) {
-      ds = await fetchDexScreenerByToken(token);
-    }
+// UniswapV2Pair Swap event signature hash
+const UNIV2_SWAP_TOPIC = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822';
 
-    const snapshot = {
-      tokenAddress: token || null,
-      pairAddress: pairFromCfg || null,
-      chainId: 'ethereum',
-      priceUsd: toNum(ds?.priceUsd),
-      fdv: toNum(ds?.fdv),
-      marketCap: toNum(ds?.marketCap),
-      liquidityUsd: toNum(ds?.liquidity?.usd),
-      volumeH24: toNum(ds?.volume?.h24),
-      txnsH24: toNum(ds?.txns?.h24?.buys) + toNum(ds?.txns?.h24?.sells),
-      buysH24: toNum(ds?.txns?.h24?.buys),
-      sellsH24: toNum(ds?.txns?.h24?.sells),
-      pairCreatedAt: Number.isFinite(ds?.pairCreatedAt) ? ds.pairCreatedAt : null,
-      dexId: ds?.dexId || null,
-      url: ds?.url || null,
-      updatedAt: Date.now(),
-    };
+// Function selectors (4 bytes)
+const SEL_TOKEN0 = '0x0dfe1681'; // token0()
+const SEL_TOKEN1 = '0xd21220a7'; // token1()
+const SEL_LATEST_ROUND = '0xfeaf968c'; // latestRoundData()
 
-    const enriched = computeHealth(snapshot);
-    writeCache(LS_SNAPSHOT, enriched, (v) => { memSnapshot = v; });
-    return enriched;
-  } catch (e) {
-    // If DexScreener blips / CORS blocks, do NOT blank the panel.
-    if (memSnapshot) return memSnapshot;
-    return computeHealth({ updatedAt: Date.now() });
-  }
+// Chainlink ETH/USD feed (mainnet)
+const CHAINLINK_ETH_USD = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
+
+async function getRegistry(baseUrl) {
+  const now = Date.now();
+  if (STATE.cache.registry && (now - STATE.cache.ts) < 60_000) return STATE.cache.registry;
+  const url = `${baseUrl.replace(/\/$/, '')}/official-registry.json`;
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('official-registry.json not found');
+  const j = await res.json();
+  STATE.cache.registry = j;
+  STATE.cache.ts = now;
+  return j;
+}
+
+async function ensureTokenOrder(rpcUrl, pairAddr) {
+  if (STATE.token0 && STATE.token1) return;
+  const t0 = await rpcCall(rpcUrl, 'eth_call', [{ to: pairAddr, data: SEL_TOKEN0 }, 'latest']);
+  const t1 = await rpcCall(rpcUrl, 'eth_call', [{ to: pairAddr, data: SEL_TOKEN1 }, 'latest']);
+  STATE.token0 = `0x${t0.slice(-40)}`.toLowerCase();
+  STATE.token1 = `0x${t1.slice(-40)}`.toLowerCase();
+}
+
+async function getEthUsd(rpcUrl) {
+  // latestRoundData() returns: (uint80,int256,uint256,uint256,uint80)
+  // We only need answer (int256) which is 2nd return word.
+  const data = SEL_LATEST_ROUND;
+  const out = await rpcCall(rpcUrl, 'eth_call', [{ to: CHAINLINK_ETH_USD, data }, 'latest']);
+  const hex = out.replace(/^0x/, '').padStart(64 * 5, '0');
+  const answerHex = hex.slice(64, 128);
+  const ans = BigInt(`0x${answerHex}`);
+  // Chainlink ETH/USD has 8 decimals
+  return Number(ans) / 1e8;
+}
+
+function decodeSwapData(data) {
+  const hex = data.replace(/^0x/, '');
+  const w = (i) => hex.slice(i * 64, (i + 1) * 64);
+  const amount0In = BigInt(`0x${w(0)}`);
+  const amount1In = BigInt(`0x${w(1)}`);
+  const amount0Out = BigInt(`0x${w(2)}`);
+  const amount1Out = BigInt(`0x${w(3)}`);
+  return { amount0In, amount1In, amount0Out, amount1Out };
+}
+
+function shortAddr(a) {
+  if (!a || a.length < 10) return a || '';
+  return `${a.slice(0, 6)}...${a.slice(-4)}`;
+}
+
+async function blockTimestampMs(rpcUrl, blockNumberHex) {
+  const bn = Number(blockNumberHex);
+  if (STATE.blockTs.has(bn)) return STATE.blockTs.get(bn);
+  const blk = await rpcCall(rpcUrl, 'eth_getBlockByNumber', [blockNumberHex, false]);
+  const ts = Number(hexToBigInt(blk.timestamp)) * 1000;
+  STATE.blockTs.set(bn, ts);
+  return ts;
 }
 
 export async function getRecentSwaps(limit = 10) {
-  const cached = readCache(LS_SWAPS, memSwaps);
-  if (cached) return cached.slice(0, limit);
+  const { rpc: rpcUrl } = cfgRuntime();
+  if (!rpcUrl) throw new Error('RPC not configured');
 
-  const pairAddress = await resolvePairAddress();
-  if (!pairAddress) {
-    return (memSwaps || []).slice(0, limit);
-  }
+  const registry = await getRegistry(STATE.baseUrl);
+  const pairAddr = (registry && registry.dex && registry.dex.pair) ? registry.dex.pair.toLowerCase() : null;
+  const tokenAddr = (registry && registry.contract && registry.contract.address) ? registry.contract.address.toLowerCase() : null;
+  const wethAddr = (registry && registry.dex && registry.dex.weth) ? registry.dex.weth.toLowerCase() : '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
-  // Ensure token0/token1 cached (needed for BUY/SELL side)
-  await ensureTokenOrder(pairAddress);
+  if (!pairAddr || !tokenAddr) return [];
 
-  // Fetch latest price for USD estimation (best-effort)
-  let snapshot = null;
-  try { snapshot = await getMarketSnapshot(); } catch { snapshot = null; }
-  const priceUsd = toNum(snapshot?.priceUsd);
+  await ensureTokenOrder(rpcUrl, pairAddr);
+  const ethUsd = await getEthUsd(rpcUrl).catch(() => 0);
 
-  let latestBlock;
-  try {
-    latestBlock = await rpcCall('eth_blockNumber', []);
-  } catch (e) {
-    return (memSwaps || []).slice(0, limit);
-  }
-  const latestBn = hexToInt(latestBlock);
-  if (!Number.isFinite(latestBn) || latestBn <= 0) {
-    return (memSwaps || []).slice(0, limit);
-  }
+  const latestHex = await rpcCall(rpcUrl, 'eth_blockNumber', []);
+  const latest = Number(hexToBigInt(latestHex));
+  const fromBlock = Math.max(0, latest - 20_000);
 
-  let logs = [];
-  for (const lookback of CFG.swapsLookbacks) {
-    const fromBn = Math.max(1, latestBn - lookback);
-    try {
-      logs = await getSwapLogs(pairAddress, fromBn, latestBn);
-    } catch (e) {
-      // RPC hiccup: keep last known swaps
-      return (memSwaps || []).slice(0, limit);
-    }
-    if (logs && logs.length) break;
-  }
+  const logs = await rpcCall(rpcUrl, 'eth_getLogs', [{
+    fromBlock: '0x' + fromBlock.toString(16),
+    toBlock: 'latest',
+    address: pairAddr,
+    topics: [UNIV2_SWAP_TOPIC]
+  }]);
 
-  if (!logs || logs.length === 0) {
-    // Soft-fail: no swaps visible via RPC/logs. Keep last known swaps to avoid flicker.
-    return (memSwaps || []).slice(0, limit);
-  }
+  // newest first
+  logs.sort((a, b) => Number(hexToBigInt(b.blockNumber)) - Number(hexToBigInt(a.blockNumber)));
 
-  // Normalize logs to swaps (newest first)
-  const swaps = [];
-  for (let i = logs.length - 1; i >= 0 && swaps.length < Math.max(50, limit * 5); i--) {
-    const lg = logs[i];
-    const swap = await decodeUniV2SwapLog(lg, snapshot, priceUsd);
-    if (swap) swaps.push(swap);
-  }
-
-  writeCache(LS_SWAPS, swaps, (v) => { memSwaps = v; });
-  return swaps.slice(0, limit);
-}
-
-// ---------------------------
-// Health scoring (early launch friendly)
-// ---------------------------
-
-function computeHealth(s) {
-  const liquidityUsd = toNum(s?.liquidityUsd);
-  const volumeH24 = toNum(s?.volumeH24);
-  const buys = toNum(s?.txns24h?.buys);
-  const sells = toNum(s?.txns24h?.sells);
-
-  // Slippage estimate (very rough): 1k USD vs liquidity depth
-  const slip = estimateSlippagePct(liquidityUsd, 1000);
-
-  const now = Date.now();
-  const createdAt = Number.isFinite(s?.pairCreatedAt) ? s.pairCreatedAt : null;
-  const ageMs = createdAt ? (now - createdAt) : null;
-  const ageDays = (ageMs != null && Number.isFinite(ageMs)) ? (ageMs / (24 * 3600 * 1000)) : null;
-  // If DexScreener doesn't report pairCreatedAt (or it is filtered/blocked), we assume *early launch* to avoid
-  // showing a scary "HIGH RISK" purely because the age couldn't be determined.
-  const isEarlyLaunch = (ageDays == null) ? true : (ageDays < CFG.earlyLaunchDays);
-
-  const flags = [];
-  if (!Number.isFinite(liquidityUsd) || liquidityUsd <= 0) flags.push('LOW_LIQUIDITY');
-  else if (liquidityUsd < 5_000) flags.push('LOW_LIQUIDITY');
-
-  if (!Number.isFinite(volumeH24) || volumeH24 < 50) flags.push('LOW_VOLUME');
-  if (Number.isFinite(slip) && slip >= 5) flags.push('HIGH_SLIPPAGE');
-
-  const buySellRatio = (buys + sells) > 0 ? (buys / Math.max(1, sells)) : 0;
-
-  // Score base 0..100
-  let score = 60;
-  // Liquidity contribution
-  if (Number.isFinite(liquidityUsd)) {
-    if (liquidityUsd < 1_000) score -= isEarlyLaunch ? 8 : 20;
-    else if (liquidityUsd < 5_000) score -= isEarlyLaunch ? 4 : 10;
-    else if (liquidityUsd < 25_000) score += 2;
-    else score += 6;
-  } else {
-    score -= isEarlyLaunch ? 6 : 12;
-  }
-  // Volume contribution
-  if (Number.isFinite(volumeH24)) {
-    if (volumeH24 < 10) score -= isEarlyLaunch ? 6 : 14;
-    else if (volumeH24 < 100) score -= isEarlyLaunch ? 3 : 8;
-    else if (volumeH24 > 5_000) score += 6;
-  }
-  // Slippage contribution
-  if (Number.isFinite(slip)) {
-    if (slip >= 20) score -= isEarlyLaunch ? 6 : 18;
-    else if (slip >= 10) score -= isEarlyLaunch ? 4 : 12;
-    else if (slip >= 5) score -= isEarlyLaunch ? 2 : 6;
-    else score += 4;
-  }
-  // Buy/sell
-  if (Number.isFinite(buySellRatio)) {
-    if (buySellRatio > 1.2) score += 2;
-    else if (buySellRatio < 0.8) score -= 2;
-  }
-
-  score = clamp(score, 0, 100);
-
-  // Labeling (early launch friendly)
-  // Friendly labels: avoid 'HIGH RISK' style callouts on brand-new pairs
-  // or when pair age is unknown (DexScreener sometimes omits it / transient fetch issues).
-  let label = 'CAUTION';
-  if (isEarlyLaunch || ageDays == null) {
-    // In the early window we show an "EARLY" banner and clamp the score so UI doesn't scream risk
-    // while liquidity/volume are still warming up.
-    label = 'EARLY';
-    score = Math.max(score, 60);
-  } else {
-    label = score >= 75 ? 'HEALTHY' : (score >= 50 ? 'CAUTION' : 'RISK');
-  }
-
-  // Market health boost 0..15 used by trust-engine
-  // Avoid huge swings early.
-  const boost = clamp(Math.round((score - 50) / 3), 0, 15);
-
-  return {
-    ...s,
-    slippageEst: { buy1kPct: slip },
-    buySellRatio,
-    marketHealthScore: score,
-    marketHealthLabel: label,
-    healthBoost: boost,
-    healthFlags: uniq(flags),
-    isEarlyLaunch,
-    // LP info left as unknown unless you wire a lock registry
-    lp: s?.lp || { locked: null, lockProvider: null, lockPct: 0 },
-  };
-}
-
-function estimateSlippagePct(liquidityUsd, tradeUsd) {
-  const L = toNum(liquidityUsd);
-  const T = toNum(tradeUsd);
-  if (!Number.isFinite(L) || L <= 0 || !Number.isFinite(T) || T <= 0) return null;
-  // Very rough heuristic: slippage ~ trade / (2 * liquidity)
-  return clamp((T / (2 * L)) * 100, 0, 99);
-}
-
-// ---------------------------
-// On-chain swaps (Uniswap V2)
-// ---------------------------
-
-async function resolvePairAddress() {
-  if (CFG.pairAddress) return CFG.pairAddress;
-  // Try registry if present
-  try {
-    const regUrl = `${CFG.baseUrl}official-registry.json`;
-    const reg = await safeFetchJson(regUrl);
-    const p = normAddr(reg?.dexPair?.address || reg?.pairAddress || reg?.pair || null);
-    if (p) CFG.pairAddress = p;
-    const t = normAddr(reg?.token?.address || reg?.tokenAddress || null);
-    if (t) CFG.tokenAddress = t;
-    return p;
-  } catch {
-    return null;
-  }
-}
-
-async function ensureTokenOrder(pairAddress) {
-  if (token0Cache && token1Cache) return;
-  // Uniswap V2 pair ABI selectors
-  const TOKEN0_SIG = '0x0dfe1681'; // token0()
-  const TOKEN1_SIG = '0xd21220a7'; // token1()
-
-  try {
-    const r0 = await rpcCall('eth_call', [{ to: pairAddress, data: TOKEN0_SIG }, 'latest']);
-    const r1 = await rpcCall('eth_call', [{ to: pairAddress, data: TOKEN1_SIG }, 'latest']);
-    token0Cache = decodeAddrFrom32(r0);
-    token1Cache = decodeAddrFrom32(r1);
-  } catch {
-    // leave caches null; decoding will still work, but side may be UNKNOWN
-  }
-}
-
-async function getSwapLogs(pairAddress, fromBn, toBn) {
-  const params = [{
-    address: pairAddress,
-    fromBlock: intToHex(fromBn),
-    toBlock: intToHex(toBn),
-    topics: [UNIV2_SWAP_TOPIC0],
-  }];
-  try {
-    const logs = await rpcCall('eth_getLogs', params);
-    return Array.isArray(logs) ? logs : [];
-  } catch {
-    return [];
-  }
-}
-
-async function decodeUniV2SwapLog(log, snapshot, priceUsd) {
-  try {
-    const data = String(log?.data || '');
-    if (!data.startsWith('0x') || data.length < 2 + 64 * 4) return null;
-
-    const amounts = decode4xUint256(data);
-    const amount0In = amounts[0];
-    const amount1In = amounts[1];
-    const amount0Out = amounts[2];
-    const amount1Out = amounts[3];
-
-    const bn = hexToInt(log.blockNumber);
-    const ts = await getBlockTimestampMs(bn);
-
-    const txHash = log.transactionHash || null;
-
-    // topics: [topic0, sender, to]
-    const maker = log.topics && log.topics[1] ? decodeAddrFromTopic(log.topics[1]) : null;
-
-    // Determine base token and token0/token1
-    const baseAddr = normAddr(snapshot?.baseToken?.address) || CFG.tokenAddress;
-    const t0 = token0Cache;
-    const t1 = token1Cache;
-
-    let side = 'UNKNOWN';
-    let baseAmountRaw = null;
-
-    if (baseAddr && t0 && t1) {
-      if (baseAddr === t0) {
-        // base is token0
-        if (amount0Out > 0n) { side = 'BUY'; baseAmountRaw = amount0Out; }
-        else if (amount0In > 0n) { side = 'SELL'; baseAmountRaw = amount0In; }
-      } else if (baseAddr === t1) {
-        // base is token1
-        if (amount1Out > 0n) { side = 'BUY'; baseAmountRaw = amount1Out; }
-        else if (amount1In > 0n) { side = 'SELL'; baseAmountRaw = amount1In; }
-      }
-    } else {
-      // Fallback: infer direction by which out leg is non-zero
-      if (amount0Out > 0n || amount1Out > 0n) side = 'BUY';
-      else if (amount0In > 0n || amount1In > 0n) side = 'SELL';
-    }
-
-    // Amount token + USD estimation (best-effort)
-    // We do NOT know decimals here without token calls; approximate with 18 decimals.
-    // For your CAPI token, if decimals != 18, you can wire registry.decimals and use it.
-    const decimals = 18;
-    const amountToken = baseAmountRaw != null ? bigToFloat(baseAmountRaw, decimals) : null;
-    const amountUsd = (Number.isFinite(priceUsd) && Number.isFinite(amountToken)) ? amountToken * priceUsd : null;
-
-    return {
-      ts: ts || Date.now(),
-      side,
-      amountUsd,
-      amountToken,
-      priceUsd: Number.isFinite(priceUsd) ? priceUsd : null,
-      maker,
-      txHash,
-      blockNumber: bn || null,
-    };
-  } catch {
-    return null;
-  }
-}
-
-async function getBlockTimestampMs(blockNumber) {
-  if (!Number.isFinite(blockNumber)) return null;
-  if (blockTsCache.has(blockNumber)) return blockTsCache.get(blockNumber);
-  try {
-    const blk = await rpcCall('eth_getBlockByNumber', [intToHex(blockNumber), false]);
-    const tsSec = hexToInt(blk?.timestamp);
-    if (!Number.isFinite(tsSec)) return null;
-    const tsMs = tsSec * 1000;
-    blockTsCache.set(blockNumber, tsMs);
-    // Prevent unbounded growth
-    if (blockTsCache.size > 500) {
-      const firstKey = blockTsCache.keys().next().value;
-      blockTsCache.delete(firstKey);
-    }
-    return tsMs;
-  } catch {
-    return null;
-  }
-}
-
-// ---------------------------
-// RPC + HTTP helpers
-// ---------------------------
-
-async function rpcCall(method, params) {
-  const body = {
-    jsonrpc: '2.0',
-    id: 1,
-    method,
-    params,
-  };
-  let lastErr = null;
-  for (const url of CFG.rpcUrls) {
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        lastErr = new Error(`RPC ${method} failed: ${res.status}`);
-        continue;
-      }
-      const json = await res.json();
-      if (json?.error) {
-        lastErr = new Error(json.error?.message || 'RPC error');
-        continue;
-      }
-      return json?.result;
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr || new Error('RPC failed');
-}
-
-async function safeFetchJson(url) {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
-}
-
-// ---------------------------
-// Cache
-// ---------------------------
-
-function readCache(lsKey, mem) {
-  const now = Date.now();
-  if (mem && mem.ts && (now - mem.ts) < CFG.cacheTtlMs) return mem.data;
-  try {
-    const raw = localStorage.getItem(lsKey);
-    if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (!obj?.ts || (now - obj.ts) >= CFG.cacheTtlMs) return null;
-    return obj.data;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(lsKey, data, setMem) {
-  const obj = { ts: Date.now(), data };
-  try { localStorage.setItem(lsKey, JSON.stringify(obj)); } catch {}
-  if (setMem) setMem(obj);
-}
-
-// ---------------------------
-// Utils
-// ---------------------------
-
-function toNum(x) {
-  const n = Number(x);
-  return Number.isFinite(n) ? n : null;
-}
-
-function clamp(n, a, b) {
-  const x = Number(n);
-  if (!Number.isFinite(x)) return a;
-  return Math.min(b, Math.max(a, x));
-}
-
-function uniq(arr) {
   const out = [];
-  const seen = new Set();
-  for (const x of arr || []) {
-    if (!x || seen.has(x)) continue;
-    seen.add(x);
-    out.push(x);
+  for (const log of logs) {
+    const { amount0In, amount1In, amount0Out, amount1Out } = decodeSwapData(log.data);
+
+    // Determine which token is WETH based on token0/token1.
+    const t0 = STATE.token0;
+    const t1 = STATE.token1;
+
+    const isWeth0 = t0 === wethAddr;
+    const wethIn = isWeth0 ? amount0In : amount1In;
+    const wethOut = isWeth0 ? amount0Out : amount1Out;
+
+    const tokenIn = (!isWeth0) ? amount0In : amount1In;
+    const tokenOut = (!isWeth0) ? amount0Out : amount1Out;
+
+    // Buy: WETH in, token out. Sell: token in, WETH out.
+    const isBuy = wethIn > 0n && tokenOut > 0n;
+    const isSell = tokenIn > 0n && wethOut > 0n;
+
+    if (!isBuy && !isSell) continue;
+
+    const wethAmt = bigToNum(isBuy ? wethIn : wethOut, 18);
+    const tokenAmt = bigToNum(isBuy ? tokenOut : tokenIn, 18);
+
+    const priceWeth = tokenAmt > 0 ? (wethAmt / tokenAmt) : 0;
+    const priceUsd = ethUsd > 0 ? priceWeth * ethUsd : 0;
+
+    const usd = ethUsd > 0 ? (wethAmt * ethUsd) : 0;
+
+    const senderTopic = (log.topics && log.topics[1]) ? `0x${log.topics[1].slice(-40)}` : '';
+
+    out.push({
+      ts: await blockTimestampMs(rpcUrl, log.blockNumber),
+      side: isBuy ? 'Buy' : 'Sell',
+      usd,
+      price: priceUsd,
+      maker: shortAddr(senderTopic.toLowerCase()),
+      tx: log.transactionHash
+    });
+
+    if (out.length >= limit) break;
   }
+
   return out;
-}
-
-function normAddr(a) {
-  if (!a || typeof a !== 'string') return null;
-  const s = a.trim();
-  if (!s) return null;
-  // Accept already-lowercased
-  if (s.startsWith('0x') && s.length === 42) return s.toLowerCase();
-  return null;
-}
-
-function hexToInt(hex) {
-  if (typeof hex !== 'string' || !hex.startsWith('0x')) return NaN;
-  try { return parseInt(hex, 16); } catch { return NaN; }
-}
-
-function intToHex(n) {
-  const x = Number(n);
-  if (!Number.isFinite(x) || x < 0) return '0x0';
-  return '0x' + Math.trunc(x).toString(16);
-}
-
-function decodeAddrFrom32(hex) {
-  if (typeof hex !== 'string' || !hex.startsWith('0x') || hex.length < 66) return null;
-  // last 20 bytes
-  const h = hex.slice(-40);
-  return ('0x' + h).toLowerCase();
-}
-
-function decodeAddrFromTopic(topic) {
-  if (typeof topic !== 'string' || !topic.startsWith('0x') || topic.length !== 66) return null;
-  return ('0x' + topic.slice(26)).toLowerCase();
-}
-
-function decode4xUint256(dataHex) {
-  // returns [a,b,c,d] as BigInt
-  const hex = dataHex.startsWith('0x') ? dataHex.slice(2) : dataHex;
-  const out = [];
-  for (let i = 0; i < 4; i++) {
-    const chunk = hex.slice(i * 64, (i + 1) * 64);
-    out.push(BigInt('0x' + chunk));
-  }
-  return out;
-}
-
-function bigToFloat(bi, decimals) {
-  try {
-    const s = bi.toString(10);
-    if (decimals <= 0) return Number(s);
-    if (s.length <= decimals) {
-      const pad = '0'.repeat(decimals - s.length + 1);
-      const full = pad + s;
-      const intPart = '0';
-      const fracPart = full.slice(-decimals);
-      return Number(`${intPart}.${fracPart}`);
-    }
-    const intPart = s.slice(0, s.length - decimals);
-    const fracPart = s.slice(-decimals);
-    // Limit precision to avoid huge floats
-    const fracTrim = fracPart.slice(0, 6);
-    return Number(`${intPart}.${fracTrim}`);
-  } catch {
-    return null;
-  }
-}
-
-// ------------------------------
-// Phase94R12: Compatibility helpers (used by trust-engine.js)
-// ------------------------------
-
-/**
- * Fetch a single DexScreener pair object for a given pair address.
- * Returns the *pair* object (not the wrapper), or null.
- */
-export async function getDexScreenerPair(pairAddress, chainId = 1) {
-  try {
-    if (!pairAddress) return null;
-    const chain = Number(chainId) === 1 ? 'ethereum' : 'ethereum';
-    const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pairAddress}`;
-    const j = await fetchJson(url, { timeoutMs: 12_000 });
-    const p = Array.isArray(j?.pairs) ? j.pairs[0] : null;
-    return p || null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Compute a normalized market health summary from a DexScreener pair object.
- * Returns an object with fields expected by trust-engine / index renderer.
- */
-export function computeMarketHealth(dsPair) {
-  if (!dsPair || typeof dsPair !== 'object') {
-    return {
-      marketHealthScore: null,
-      marketHealthLabel: null,
-      marketHealthStats: null,
-      marketHealthExplain: null,
-      marketHealthFlags: ['no_data'],
-    };
-  }
-
-  const now = Date.now();
-  const createdAt = Number(dsPair.pairCreatedAt || 0) || 0;
-  const ageDays = createdAt > 0 ? Math.max(0, (now - createdAt) / 86_400_000) : null;
-
-  const liquidityUsd = Number(dsPair?.liquidity?.usd || 0) || 0;
-  const vol24 = Number(dsPair?.volume?.h24 || 0) || 0;
-  const buys = Number(dsPair?.txns?.h24?.buys || 0) || 0;
-  const sells = Number(dsPair?.txns?.h24?.sells || 0) || 0;
-  const buySellRatio = sells > 0 ? buys / sells : (buys > 0 ? Infinity : 0);
-
-  // Slippage heuristic (very rough): higher liquidity relative to typical trade size => lower slippage.
-  // We don't have trade-size here, so we approximate with volume; clamp to avoid absurdities.
-  const slip = liquidityUsd > 0 ? Math.min(0.25, Math.max(0.001, (vol24 / 24) / liquidityUsd)) : null;
-
-  // Score components (0..100)
-  let score = 50;
-
-  // Liquidity score
-  if (liquidityUsd >= 250_000) score += 25;
-  else if (liquidityUsd >= 100_000) score += 18;
-  else if (liquidityUsd >= 25_000) score += 10;
-  else if (liquidityUsd >= 5_000) score += 3;
-  else score -= 10;
-
-  // Volume score
-  if (vol24 >= 250_000) score += 15;
-  else if (vol24 >= 50_000) score += 10;
-  else if (vol24 >= 10_000) score += 5;
-  else if (vol24 >= 1_000) score += 2;
-  else score -= 6;
-
-  // Flow score
-  if (buys + sells >= 20) {
-    if (buySellRatio >= 1.25) score += 6;
-    else if (buySellRatio >= 0.8) score += 2;
-    else score -= 4;
-  }
-
-  // Early launch smoothing (user requested 15 days)
-  // If age < earlyLaunchDays, we soften negative bias from low activity.
-  const early = (ageDays !== null && ageDays < CFG.earlyLaunchDays);
-  if (early && score < 55) score = 55; // floor for early phase
-
-  score = Math.max(0, Math.min(100, Math.round(score)));
-
-  let label = 'OK';
-  if (score >= 80) label = 'GOOD';
-  else if (score >= 65) label = 'MODERATE';
-  else if (score >= 50) label = 'RISK';
-  else label = 'HIGH_RISK';
-
-  // If we are still within the early-launch window, we avoid showing HIGH_RISK/RISK labels
-  // because they are mostly reflecting low initial volume rather than a true red flag.
-  if (early) {
-    label = 'EARLY';
-  }
-
-  const flags = [];
-  if (!createdAt) flags.push('unknown_age');
-  if (early) flags.push('early_launch');
-  if (liquidityUsd < 10_000) flags.push('low_liquidity');
-  if (vol24 < 2_000) flags.push('low_volume');
-  if (buys + sells < 6) flags.push('low_activity');
-  if (sells > buys * 2 && buys + sells >= 10) flags.push('sell_pressure');
-
-  const stats = {
-    ageDays: ageDays !== null ? Number(ageDays.toFixed(2)) : null,
-    liquidityUsd,
-    volume24hUsd: vol24,
-    buys24h: buys,
-    sells24h: sells,
-    buySellRatio: Number.isFinite(buySellRatio) ? Number(buySellRatio.toFixed(2)) : null,
-    slippage1k: slip !== null ? Number((slip * 100).toFixed(2)) : null,
-  };
-
-  const explain = early
-    ? `Early launch (< ${CFG.earlyLaunchDays}d). Scoring is softened while liquidity/volume ramps up.`
-    : `Heuristic score based on liquidity, volume, and buy/sell flow.`;
-
-  return {
-    marketHealthScore: score,
-    marketHealthLabel: label,
-    marketHealthStats: stats,
-    marketHealthExplain: explain,
-    marketHealthFlags: flags.length ? flags : ['none'],
-  };
-}
-
-/**
- * Helper used by trust-engine / index renderers.
- * Accepts either the computeMarketHealth() output or a health flags array.
- */
-export function getMarketFlags(mh) {
-  if (!mh) return ['no_data'];
-  if (Array.isArray(mh)) return mh;
-  if (Array.isArray(mh.marketHealthFlags)) return mh.marketHealthFlags;
-  return ['none'];
 }
