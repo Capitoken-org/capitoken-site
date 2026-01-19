@@ -1,17 +1,50 @@
-// Capitoken — capi-dex.js
-// Minimal helper to wire DEX buttons/routes if present.
+// public/js/capi-dex.js
+// Sets safe, official DEX links based on DOM values. No deps.
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function getAddr(id){
+    const v = ($(id)?.textContent || '').trim();
+    return (v.startsWith('0x') && v.length >= 10) ? v : '';
+  }
 
-export function initCapiDex(options = {}) {
-  const btns = document.querySelectorAll("[data-dex-route]");
-  if (!btns.length) return;
+  const WETH_MAINNET = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
-  btns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const href = btn.getAttribute("data-dex-route");
-      if (!href) return;
-      window.open(href, "_blank", "noopener,noreferrer");
-    });
-  });
-}
+  function setHref(id, href){
+    const a = $(id);
+    if(a && href){ a.setAttribute('href', href); }
+  }
 
-try { initCapiDex(); } catch (e) { /* noop */ }
+  function wire(){
+    const token = getAddr('contractFull');
+    const pair  = getAddr('pairFull');
+
+    // Etherscan buttons (if present as <a>)
+    setHref('etherscanContract', token ? `https://etherscan.io/token/${token}` : '');
+    setHref('etherscanPair', pair ? `https://etherscan.io/address/${pair}` : '');
+
+    // Uniswap swap links
+    // token0/token1 order doesn't matter for UI; Uniswap will resolve.
+    if(token){
+      const uniSwap = `https://app.uniswap.org/#/swap?inputCurrency=${WETH_MAINNET}&outputCurrency=${token}`;
+      const uniSwapReverse = `https://app.uniswap.org/#/swap?inputCurrency=${token}&outputCurrency=${WETH_MAINNET}`;
+
+      setHref('buyOnUniswap', uniSwap);
+      setHref('routeWethCapi', uniSwap);
+      setHref('routeCapiWeth', uniSwapReverse);
+
+      // If there is a "Live Market" link, point to Dexscreener if pair known, else token.
+      const dex = pair
+        ? `https://dexscreener.com/ethereum/${pair}`
+        : `https://dexscreener.com/ethereum/${token}`;
+      setHref('liveMarket', dex);
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wire);
+  }else{
+    wire();
+  }
+
+  window.CAPI_DEX = { wire };
+})();
