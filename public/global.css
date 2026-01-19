@@ -1303,33 +1303,64 @@ h3{margin:0 0 6px;font-size:18px}
 }
 
 /* =========================================================
-   Patch v4 — Trust Score as a 5th stat tile (no big bar)
-   + Keep row aligned + prevent "shift left" on zoom
+   Capitoken UI Patch v6 — Stats row alignment + zoom drift fix
+   - Keeps Trust as a compact tile (no hero bar)
+   - Prevents horizontal drift when zooming out
+   - Fixes favicon "double background" tiles
    ========================================================= */
 
-.stats-row{
-  display:flex;
-  gap:12px;
-  align-items:stretch;
-  width:100%;
+/* Prevent horizontal drift/overflow when zooming */
+html, body{
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Desktop: keep all tiles on one line when space allows */
+/* Make sure main containers remain centered */
+.container{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* If any old trust progress bar survives in markup, hide it (we use the Trust tile now) */
+.trust-bar,
+.trust-bar__fill{
+  display: none !important;
+}
+
+/* Stat tiles row (Chain / Status / Focus / Symbol / Trust) */
+.stats-row{
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Desktop: keep on one line; smaller screens: wrap naturally */
 @media (min-width: 1100px){
   .stats-row{ flex-wrap: nowrap; }
 }
-
-/* Smaller widths: allow wrapping (prevents overflow/clipping) */
 @media (max-width: 1099px){
   .stats-row{ flex-wrap: wrap; }
 }
 
-/* Make the tiles visually consistent */
+/* Match vertical rhythm so Trust tile aligns with others */
 .stat-tile{
-  border-radius:14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+}
+.stat-tile .small{
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+.stat-tile b,
+.stat-tile strong{
+  line-height: 1.15;
 }
 
-/* Accessible visually-hidden helper */
+/* Accessible visually-hidden helper (used by Trust tile hint) */
 .sr-only{
   position:absolute !important;
   width:1px !important;
@@ -1342,10 +1373,10 @@ h3{margin:0 0 6px;font-size:18px}
   border:0 !important;
 }
 
-/* Fix: icon tiles with "double background" (favicons already include their own tile) */
+/* Fix: remove extra background/border around favicons that already include their own tile */
 .venue-icon{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  object-fit:contain;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  object-fit: contain;
 }

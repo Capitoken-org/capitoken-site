@@ -64,7 +64,6 @@ const roadmap = [
         Deep-green premium design, clear narrative, and verified links — built for adoption.
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
-
           <div class="trust-score__value"><span id="trustScoreHero">—</span> / 100</div>
         </div>
         <div class="trust-bar" aria-hidden="true">
@@ -91,6 +90,14 @@ const roadmap = [
             <div style="margin-top:6px; font-weight:800;">{s.value}</div>
           </div>
         ))}
+
+<div class="card col-3 stat-tile">
+  <div class="small">Trust</div>
+  <div style="margin-top:6px; font-weight:800;">
+    <span id="trustScoreHero">—</span><span class="small" style="opacity:.8;"> / 100</span>
+  </div>
+  <div id="trustHintHero" class="sr-only">Loading official registry…</div>
+</div>
       </div>
     </div>
   </section>
@@ -192,9 +199,9 @@ const roadmap = [
         </div>
 
         <div class="launch-row">
-          <!-- Capi Vitals (Live)  ✅ replaces extra Phase 9.4 panels -->
+          <!-- CAPI Pulse (Live)  ✅ replaces extra Phase 9.4 panels -->
           <div class="card">
-            <div class="h3">Capi Vitals (Live)</div>
+            <div class="h3">CAPI Pulse (Live)</div>
             <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
 
             <div class="pill" style="margin-top:10px;">
