@@ -65,7 +65,7 @@ const roadmap = [
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
 
-<!-- Hero Trust Bar (fills within content width; no overflow) -->
+<!-- Hero Trust Bar (Capi Vibes) -->
 <div class="hero-trustbar" aria-hidden="true">
   <div class="hero-trustbar__label">
     <span class="hero-trustbar__name">Capi Vibes</span>
@@ -96,18 +96,19 @@ const roadmap = [
         ))}
 
 <div class="card col-3 stat-tile" id="trustTile">
-  <div class="small">Capi Vibes</div>
+  <div class="small">Trust Score</div>
   <div class="stat-value">
     <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
   </div>
 
+  <!-- Progress (filled by trust-engine.js via #trustBarFill) -->
   <div class="trust-mini-bar" aria-hidden="true">
-    <div class="trust-mini-bar__fill" id="trustBarFillTile" style="width:0%"></div>
+    <div class="trust-mini-bar__fill" id="trustBarFill" style="width:0%"></div>
   </div>
 
   <div id="trustHintHero" class="sr-only">Loading official registry…</div>
 </div>
-  <div class="stat-value">
+<div class="stat-value">
     <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
   </div>
 
@@ -590,8 +591,16 @@ const roadmap = [
       if(el) el.textContent = v;
     }
     function setWidth(id, pct){
-      const el = $id(id);
-      if(el) el.style.width = `${Math.max(0, Math.min(100, Number(pct)||0))}%`;
+  const n = Math.max(0, Math.min(100, Number(pct || 0)));
+  const el = $id(id);
+  if (el) el.style.width = n + "%";
+
+  // Also update Hero bar if present (keeps UI in sync)
+  if (id === "trustBarFill") {
+    const hero = $id("trustBarFillHero");
+    if (hero) hero.style.width = n + "%";
+  }
+}%`;
     }
 
     async function loadRegistry(){
@@ -636,6 +645,7 @@ const roadmap = [
 
       const score = scoreFrom(data, isOfficialHost);
       setTxt("trustScoreHero", String(score));
+      setTxt("trustScoreHeroLabel", String(score));
       setWidth("trustBarFill", score);
 
       const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";
