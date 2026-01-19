@@ -329,3 +329,65 @@ export async function getSnapshot() {
   return base;
 }
 
+
+/* =========================================================
+   UI Sync — Trust Tile Progress Bar
+   Keeps the Trust mini bar (#trustBarFill) in sync with the
+   displayed Trust score (#trustScoreHero), even if the score
+   is set by another script (registry / verify flow).
+   ========================================================= */
+
+function __capiParseScore(v) {
+  if (v == null) return null;
+  const s = String(v).trim();
+  const m = s.match(/(\d{1,3})/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.min(100, n));
+}
+
+function __capiSyncTrustTileOnce() {
+  try {
+    if (typeof document === 'undefined') return;
+    const scoreEl = document.getElementById('trustScoreHero');
+    const fillEl  = document.getElementById('trustBarFill');
+    if (!scoreEl || !fillEl) return;
+
+    let score = __capiParseScore(scoreEl.textContent);
+
+    // If still unknown, do NOT override (another script may set it shortly).
+    if (score == null) return;
+
+    fillEl.style.width = score + '%';
+    fillEl.setAttribute('data-score', String(score));
+  } catch (_) {}
+}
+
+function __capiInitTrustTileSync() {
+  try {
+    if (typeof document === 'undefined') return;
+
+    // Run once immediately (in case DOM is already ready)
+    __capiSyncTrustTileOnce();
+
+    // Observe score changes (most reliable)
+    const scoreEl = document.getElementById('trustScoreHero');
+    if (scoreEl && typeof MutationObserver !== 'undefined') {
+      const obs = new MutationObserver(() => __capiSyncTrustTileOnce());
+      obs.observe(scoreEl, { characterData: true, childList: true, subtree: true });
+    }
+
+    // Fallback: periodic sync (covers initial hydration timing)
+    setInterval(__capiSyncTrustTileOnce, 1000);
+  } catch (_) {}
+}
+
+// Start after DOM is ready
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', __capiInitTrustTileSync, { once: true });
+  } else {
+    __capiInitTrustTileSync();
+  }
+}
