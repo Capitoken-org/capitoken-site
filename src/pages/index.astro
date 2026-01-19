@@ -64,6 +64,18 @@ const roadmap = [
         Deep-green premium design, clear narrative, and verified links — built for adoption.
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
+
+<!-- Hero Trust Bar (fills within content width; no overflow) -->
+<div class="hero-trustbar" aria-hidden="true">
+  <div class="hero-trustbar__label">
+    <span class="hero-trustbar__name">Capi Vibes</span>
+    <span class="hero-trustbar__value"><span id="trustScoreHeroLabel">—</span>/100</span>
+  </div>
+  <div class="hero-trustbar__track">
+    <div class="hero-trustbar__fill" id="trustBarFillHero" style="width:0%"></div>
+  </div>
+</div>
+
       <div class="actions">
         <a class="btn btn--primary" href="#launchpanel">
           <span class="iconwrap">
@@ -84,7 +96,17 @@ const roadmap = [
         ))}
 
 <div class="card col-3 stat-tile" id="trustTile">
-  <div class="small">Trust Score</div>
+  <div class="small">Capi Vibes</div>
+  <div class="stat-value">
+    <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
+  </div>
+
+  <div class="trust-mini-bar" aria-hidden="true">
+    <div class="trust-mini-bar__fill" id="trustBarFillTile" style="width:0%"></div>
+  </div>
+
+  <div id="trustHintHero" class="sr-only">Loading official registry…</div>
+</div>
   <div class="stat-value">
     <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
   </div>

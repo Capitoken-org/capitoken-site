@@ -391,3 +391,62 @@ if (typeof window !== 'undefined') {
     __capiInitTrustTileSync();
   }
 }
+
+
+/* =========================================================
+   UI Sync v11 — Hero + Tile Trust Bars
+   Targets:
+   - #trustScoreHero (numeric)
+   - #trustBarFillTile (tile progress)
+   - #trustBarFillHero (hero progress)
+   - #trustScoreHeroLabel (hero label)
+   ========================================================= */
+
+(function(){
+  function parseScore(v){
+    if (v == null) return null;
+    const s = String(v).trim();
+    const m = s.match(/(\d{1,3})/);
+    if (!m) return null;
+    const n = Number(m[1]);
+    if (!Number.isFinite(n)) return null;
+    return Math.max(0, Math.min(100, n));
+  }
+
+  function syncOnce(){
+    try{
+      if (typeof document === 'undefined') return;
+      const scoreEl = document.getElementById('trustScoreHero');
+      if (!scoreEl) return;
+      const score = parseScore(scoreEl.textContent);
+      if (score == null) return;
+
+      const tileFill = document.getElementById('trustBarFillTile');
+      if (tileFill) tileFill.style.width = score + '%';
+
+      const heroFill = document.getElementById('trustBarFillHero');
+      if (heroFill) heroFill.style.width = score + '%';
+
+      const heroLabel = document.getElementById('trustScoreHeroLabel');
+      if (heroLabel) heroLabel.textContent = String(score);
+    }catch(_){}
+  }
+
+  function init(){
+    syncOnce();
+    const scoreEl = document.getElementById('trustScoreHero');
+    if (scoreEl && typeof MutationObserver !== 'undefined'){
+      const obs = new MutationObserver(syncOnce);
+      obs.observe(scoreEl, {characterData:true, childList:true, subtree:true});
+    }
+    setInterval(syncOnce, 1000);
+  }
+
+  if (typeof window !== 'undefined'){
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init, {once:true});
+    }else{
+      init();
+    }
+  }
+})();
