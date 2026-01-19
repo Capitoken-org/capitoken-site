@@ -12,9 +12,9 @@
 // intermittent / mixed behavior (seen as R3/R7/etc. in Network).
 export const ENGINE_VERSION = (() => {
   try {
-    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R22_BASEURI_FIX";
+    return new URL(import.meta.url).searchParams.get('v') || "PHASE94R23_FINAL";
   } catch {
-    return "PHASE94R20_ALCHEMY_STABLE";
+    return "PHASE94R23_FINAL";
   }
 })();
 
@@ -36,7 +36,7 @@ export const CONFIG = {
   // Default RPC. The actual RPC can be injected at runtime via:
   // - window.CAPI_RPC_HTTP (preferred)
   // - window.CAPI_CONFIG.rpcHttp (fallback)
-  RPC_HTTP_DEFAULT: "https://cloudflare-eth.com",
+  RPC_HTTP_DEFAULT: "",
 
   // Liquidity threshold
   MIN_LIQ_WEI: 25n * (10n ** 16n), // 0.25 ETH
