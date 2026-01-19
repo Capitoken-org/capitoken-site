@@ -65,7 +65,6 @@ const roadmap = [
         Live market data will appear automatically once the verified contract/pair is published.
       </p>
 
-      <!-- Hero Mini-Boxes (restore the 5 tiles) -->
       <!-- Mini-boxes (left) + Trust bar (right) in ONE ROW -->
       <div class="hero-stats-row" aria-label="Quick status">
         <div class="hero-stats-mini">
@@ -87,24 +86,33 @@ const roadmap = [
           </div>
         </div>
 
-        <!-- Trust bar (RIGHT SIDE like your red-box mock) -->
+        <!-- Trust bar (RIGHT SIDE like your mock) -->
         <div class="hero-trustbar" data-trust="bar">
           <div class="trustbar-head">
-            <div class="trustbar-label" id="trustStatusHero">Trust Score</div>
+            <div class="trustbar-label" id="trustLabelHero">Trust Score</div>
             <div class="trustbar-value">
               <span id="trustScoreHero">80</span>
               <span class="muted">/ 100</span>
             </div>
           </div>
-          <div class="trustbar" role="progressbar" aria-label="Trust Score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80">
+
+          <div
+            class="trustbar"
+            id="trustBarHero"
+            role="progressbar"
+            aria-label="Trust Score"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="80"
+          >
             <div class="trustbar__fill" id="trustBarFill" style="width: 80%"></div>
           </div>
+
           <div class="trustbar-hint" id="trustHintHero" hidden>
             You are viewing a mirror. The official site is <span id="trustMirrorUrl">https://www.capitoken.org</span>
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -205,7 +213,7 @@ const roadmap = [
         </div>
 
         <div class="launch-row">
-          <!-- CAPI Pulse (Live)  ✅ replaces extra Phase 9.4 panels -->
+          <!-- CAPI Pulse (Live) -->
           <div class="card">
             <div class="h3">CAPI Pulse (Live)</div>
             <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
@@ -513,20 +521,15 @@ const roadmap = [
 
   <!-- Live + Wallet script -->
   <script is:inline type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
-    // IMPORTANT: keep all engine modules on the SAME revision.
-    // This avoids mixed loads and also gives you cache-busting control.
     const ENGINE_V = new URL(window.location.href).searchParams.get("v") || "PHASE9PULSE_R1";
 
-    const $ = (sel) => document.querySelector(sel);
     const $id = (id) => document.getElementById(id);
 
-    // Defaults (can be overridden by official-registry.json)
     let explorerBase = "https://etherscan.io";
     let networkName = "Ethereum Mainnet";
     let tokenAddr = TOKEN_ADDRESS || "";
     let pairAddr = DEX_PAIR_ADDRESS || "";
     let tokenMeta = { symbol: "CAPI", decimals: 18, image: "" };
-    let registryLinks = {};
 
     const toast = (msg) => {
       const el = $id("toast");
@@ -591,7 +594,6 @@ const roadmap = [
     }
 
     function scoreFrom(reg, isOfficialHost){
-      // Simple + safe scoring (no heavy onchain logic; just trust signals)
       let s = 60;
       if(isOfficialHost) s += 20;
       if(reg?.contract?.verified) s += 10;
@@ -603,7 +605,6 @@ const roadmap = [
     async function initTrustHero(){
       const data = await loadRegistry();
 
-      // Capture registry values for the whole page
       explorerBase = String(data?.network?.explorer || explorerBase);
       networkName = String(data?.network?.name || networkName);
       tokenAddr = String(data?.contract?.address || tokenAddr || "");
@@ -613,7 +614,6 @@ const roadmap = [
         decimals: Number(data?.contract?.token?.decimals ?? tokenMeta.decimals ?? 18),
         image: String(data?.links?.tokenImage || tokenMeta.image || "")
       };
-      registryLinks = (data?.links && typeof data.links === "object") ? data.links : {};
 
       const host = window.location.hostname;
       const allowed = new Set((data?.allowedDomains || []).map((x) => String(x).toLowerCase()));
@@ -623,13 +623,25 @@ const roadmap = [
       setTxt("trustScoreHero", String(score));
       setWidth("trustBarFill", score);
 
+      const pb = $id("trustBarHero");
+      if (pb) pb.setAttribute("aria-valuenow", String(score));
+
       const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";
       setTxt("trustStatusHero", status);
 
-      const hint = isOfficialHost
-        ? (data?.contract?.verified ? "Etherscan verified. Always verify contract on /verify." : "Contract not verified yet. Use /verify.")
-        : (data?.security?.mirrorNotice || "You are viewing a mirror. Verify on the official domain.");
-      setTxt("trustHintHero", hint);
+      const hintEl = $id("trustHintHero");
+      const mirrorEl = $id("trustMirrorUrl");
+
+      if(!isOfficialHost){
+        const hint = data?.security?.mirrorNotice || "You are viewing a mirror. Verify on the official domain.";
+        if(hintEl){
+          hintEl.hidden = false;
+          hintEl.textContent = hint;
+        }
+        if(mirrorEl && data?.security?.officialUrl) mirrorEl.textContent = String(data.security.officialUrl);
+      }else{
+        if(hintEl) hintEl.hidden = true;
+      }
 
       const badge = $id("trustBadgeHero");
       if (badge) {
@@ -637,7 +649,6 @@ const roadmap = [
         badge.classList.add(isOfficialHost ? "is-verified" : "is-warn");
       }
 
-      // Network labels
       const netPill = $id("networkPill");
       if (netPill) {
         const spans = netPill.querySelectorAll("span");
@@ -652,7 +663,6 @@ const roadmap = [
     }
 
     function setLaunchTexts(){
-      // Contract UI
       if(tokenAddr){
         setBadge("badgeContract", "Contract: Live");
         setTxt("contractShort", short(tokenAddr));
@@ -664,7 +674,6 @@ const roadmap = [
         setBadge("badgeContract", "Contract: Pending");
       }
 
-      // Pair UI
       if(pairAddr){
         setBadge("badgePair", "Pair: Live");
         setTxt("pairShort", short(pairAddr));
@@ -678,12 +687,11 @@ const roadmap = [
     }
 
     function setDexLinks(){
-      // Uniswap V2 routes (safe simple defaults)
-      const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"; // WETH mainnet
+      const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
       if(tokenAddr){
         const buy = `https://app.uniswap.org/#/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
         const sell = `https://app.uniswap.org/#/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
-        const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : (tokenAddr ? `https://dexscreener.com/ethereum/${tokenAddr}` : "#");
+        const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : `https://dexscreener.com/ethereum/${tokenAddr}`;
 
         const aBuy = $id("buyOnUniswap"); if(aBuy) aBuy.href = buy;
         const aDex = $id("openDexScreener"); if(aDex) aDex.href = dex;
@@ -763,7 +771,6 @@ const roadmap = [
 
         setMarketBadge("Market: Live");
 
-        // Core live metrics
         $id("mPrice").textContent = fmtUSD(p.priceUsd, 8);
         $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
         $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
@@ -771,7 +778,6 @@ const roadmap = [
         const mc = p?.marketCap ?? p?.fdv ?? null;
         $id("mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
 
-        // Pulse extras
         const buys = p?.txns?.h24?.buys ?? null;
         const sells = p?.txns?.h24?.sells ?? null;
         setTxt("pulseBS", (Number.isFinite(buys) && Number.isFinite(sells)) ? `${buys} / ${sells}` : "—");
@@ -779,7 +785,6 @@ const roadmap = [
         const created = p?.pairCreatedAt ?? null;
         setTxt("pulseAge", created ? humanAge(created) : "—");
       }catch(e){
-        // Most common: adblock / privacy extension blocking api.dexscreener.com
         setMarketBadge("Market: Blocked");
         console.warn("DexScreener fetch failed", e);
       }
@@ -834,9 +839,7 @@ const roadmap = [
     }
 
     function syncNetworkLabels(){
-      // Update the Live Market card pill label
       setTxt("pulseNetwork", networkName);
-      // Also update any pill that contains Ethereum in Launch Panel
       document.querySelectorAll('#launchpanel .pill').forEach((pill) => {
         const spans = pill.querySelectorAll('span');
         if (spans.length) {
@@ -853,21 +856,17 @@ const roadmap = [
       syncNetworkLabels();
       renderWalletHangar();
 
-      // Copy buttons
       $id("copyContractBtn")?.addEventListener("click", ()=> copyText(tokenAddr));
       $id("copyPairBtn")?.addEventListener("click", ()=> copyText(pairAddr));
 
-      // Wallet
       $id("connectWalletBtn")?.addEventListener("click", connectInjected);
       $id("watchTokenBtn")?.addEventListener("click", watchToken);
 
-      // Live data
       await loadDexScreener();
       setInterval(loadDexScreener, 45000);
     });
   </script>
 
-  <!-- Phase 9 – Cache bust (ensures visitors see latest HTML) -->
   <script is:inline>
     (function(){
       try{
