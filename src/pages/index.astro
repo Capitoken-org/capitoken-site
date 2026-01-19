@@ -84,8 +84,19 @@ const roadmap = [
         ))}
 
 <div class="card col-3 stat-tile" id="trustTile">
-  <div class="small">Trust</div>
+  <div class="small">Trust Score</div>
   <div class="stat-value">
+    <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
+  </div>
+
+  <!-- Progress (filled by trust-engine.js via #trustBarFill) -->
+  <div class="trust-mini-bar" aria-hidden="true">
+    <div class="trust-mini-bar__fill" id="trustBarFill" style="width:0%"></div>
+  </div>
+
+  <div id="trustHintHero" class="sr-only">Loading official registry…</div>
+</div>
+<div class="stat-value">
     <span id="trustScoreHero">—</span><span class="stat-suffix"> / 100</span>
   </div>
 
