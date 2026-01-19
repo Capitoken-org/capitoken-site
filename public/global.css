@@ -1380,3 +1380,23 @@ html, body{
   box-shadow: none !important;
   object-fit: contain;
 }
+
+/* =========================================================
+   Patch v7 — Trust tile only (remove legacy hero trust bar)
+   - Ensures Trust tile aligns with other stat cards
+   ========================================================= */
+.stat-tile{ 
+  /* Use same padding/shape as .card — do NOT override it */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.stat-tile .stat-value{
+  margin-top:6px;
+  font-weight:800;
+}
+.stat-tile .stat-suffix{
+  opacity:.8;
+  font-weight:700;
+  font-size:.92em;
+}
