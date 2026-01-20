@@ -498,7 +498,8 @@ function iconCandidates(it){
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
         <div class="tokenomics-ring" id="tokenomicsNarrative" data-seg="community">
-          <div class="tokenomics-ringrow">
+          <!-- Stage keeps the ring at a fixed visual size and places notes OUTSIDE the ring (no blur, no overlap) -->
+          <div class="tokenomics-stage">
             <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
               <div class="trust-ring__core">
                 <div class="trust-ring__pct" id="trustRingPct">97%</div>
@@ -507,11 +508,15 @@ function iconCandidates(it){
               </div>
             </div>
 
-            <!-- Notes (crisp, beside the ring — not on top) -->
-            <div class="tokenomics-notes" aria-hidden="true">
-              <div class="whisper whisper--note whisper--community">🦫 No whales here. Just chill capis.</div>
-              <div class="whisper whisper--note whisper--ops">🦫 Yes, devs eat too. But just a snack.</div>
-              <div class="whisper whisper--note whisper--growth">🦫 Marketing = memes, not Lambos.</div>
+            <!-- Notes anchored around the ring, outside (crisp). They highlight based on data-seg. -->
+            <div class="whisper whisper--note whisper--ops whisper--anchor whisper--anchor-top" aria-hidden="true">
+              🦫 Yes, devs eat too. But just a snack.
+            </div>
+            <div class="whisper whisper--note whisper--community whisper--anchor whisper--anchor-mid" aria-hidden="true">
+              🦫 No whales here. Just chill capis.
+            </div>
+            <div class="whisper whisper--note whisper--growth whisper--anchor whisper--anchor-bot" aria-hidden="true">
+              🦫 Marketing = memes, not Lambos.
             </div>
           </div>
 
