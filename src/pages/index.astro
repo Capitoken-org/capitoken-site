@@ -345,29 +345,55 @@ const roadmap = [
     // Sources (in order): explicit icon URL -> icon.horse -> clearbit -> Google S2.
     // Some venues (Binance / 1inch) may return generic icons from favicon services.
     // We force a first-choice icon from a CDN that tends to be more stable.
-    function forcedIcon(it){
+    function forcedIcons(it){
       const n = (it && it.name) ? String(it.name).toLowerCase() : "";
+      const out = [];
+
       // External icon overrides (micro-fix): force reliable logos for venues that often return generic favicons.
       // We still keep the normal cascade (icon.horse -> clearbit -> Google S2) below.
-      if(n === "binance"){
-        // Color version (Binance yellow) from Simple Icons CDN.
-        return "https://cdn.simpleicons.org/binance/f0b90b";
-      }
-      // NOTE: Simple Icons uses the slug "oneinch" (not "1inch").
-      if(n === "1inch" || n.includes("1inch")) return "https://cdn.simpleicons.org/oneinch/ffffff";
 
-      // Additional selective overrides for venues that frequently resolve to generic favicons.
-      // These are purely cosmetic and keep the same cascade below.
-      if(n === "balancer") return "https://cdn.simpleicons.org/balancer/ffffff";
-      if(n === "0x" || n === "0x protocol" || n.includes("0x")) return "https://cdn.simpleicons.org/0x/ffffff";
-      if(n === "kucoin" || n.includes("kucoin")) return "https://cdn.simpleicons.org/kucoin/ffffff";
-      if(n === "upbit" || n.includes("upbit")) return "https://cdn.simpleicons.org/upbit/ffffff";
-      return "";
+      // Binance: brand yellow
+      if(n === "binance"){
+        out.push("https://cdn.simpleicons.org/binance/f0b90b");
+      }
+
+      // 1inch: Simple Icons slug is usually "1inch" (we also try legacy/alt slug)
+      if(n === "1inch" || n.includes("1inch")){
+        out.push("https://cdn.simpleicons.org/1inch/ffffff");
+        out.push("https://cdn.simpleicons.org/oneinch/ffffff");
+      }
+
+      // Balancer
+      if(n === "balancer"){
+        out.push("https://cdn.simpleicons.org/balancer/ffffff");
+      }
+
+      // 0x: try multiple slugs + direct brand domains
+      if(n === "0x" || n === "0x protocol" || n.includes("0x")){
+        out.push("https://cdn.simpleicons.org/0x/ffffff");
+        out.push("https://cdn.simpleicons.org/0xprotocol/ffffff");
+        out.push("https://logo.clearbit.com/0x.org?size=64");
+        out.push("https://icon.horse/icon/0x.org?size=64");
+      }
+
+      // KuCoin: prefer brand green (then white fallback)
+      if(n === "kucoin" || n.includes("kucoin")){
+        out.push("https://cdn.simpleicons.org/kucoin/31cb9e");
+        out.push("https://cdn.simpleicons.org/kucoin/ffffff");
+      }
+
+      // Upbit: prefer brand blue (then white fallback)
+      if(n === "upbit" || n.includes("upbit")){
+        out.push("https://cdn.simpleicons.org/upbit/093687");
+        out.push("https://cdn.simpleicons.org/upbit/ffffff");
+      }
+
+      return out.filter(Boolean);
     }
-    function iconCandidates(it){
+function iconCandidates(it){
       const out = [];
-      const forced = forcedIcon(it);
-      if(forced) out.push(forced);
+      const forced = forcedIcons(it);
+      if(forced && forced.length) forced.forEach((u)=>out.push(u));
       if(it && it.icon) out.push(String(it.icon));
       const d = (it && it.iconDomain) ? String(it.iconDomain).trim() : "";
       if(d){
@@ -422,12 +448,10 @@ const roadmap = [
             addFallback();
             return;
           }
-          // Simple-icons SVGs are monochrome; make them visible on dark glass UI.
-          if(next.includes("cdn.jsdelivr.net/npm/simple-icons")){
-            img.classList.add("is-mono");
-          }else{
-            img.classList.remove("is-mono");
-          }
+          // Simple-icons SVGs can be monochrome. If no explicit color is provided, we boost contrast on dark glass UI.
+          const isSimple = next.includes("cdn.simpleicons.org/");
+          const hasColor = /cdn\.simpleicons\.org\/[^\/]+\/[0-9a-fA-F]{3,6}$/.test(next);
+          img.classList.toggle("is-mono", isSimple && !hasColor);
           img.setAttribute("src", next);
         };
 
