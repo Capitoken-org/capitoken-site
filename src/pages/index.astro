@@ -292,20 +292,29 @@ const roadmap = [
       try { return new URL(u).toString(); } catch { return ""; }
     };
 
+    // Fallback local (si /public/venues.json no está disponible)
+    // Nota: La lista exacta por “top volumen” cambia día a día.
+    // Aquí dejamos una selección estable de venues grandes y reconocibles.
     const fallback = {
       dex: [
-        { name: "Uniswap", url: "https://app.uniswap.org/", icon: "https://app.uniswap.org/favicon.ico", enabled: true },
-        { name: "SushiSwap", url: "https://www.sushi.com/swap", icon: "https://www.sushi.com/favicon.ico", enabled: false, note: "Pending" },
-        { name: "1inch", url: "https://app.1inch.io/", icon: "https://app.1inch.io/favicon.ico", enabled: false, note: "Pending" },
-        { name: "Matcha", url: "https://matcha.xyz/", icon: "https://matcha.xyz/favicon.ico", enabled: false, note: "Pending" }
+        { name: "Uniswap", url: "https://app.uniswap.org/", iconDomain: "uniswap.org", enabled: true, note: "Enabled" },
+        { name: "PancakeSwap", url: "https://pancakeswap.finance/swap", iconDomain: "pancakeswap.finance", enabled: false, note: "Pending" },
+        { name: "Curve", url: "https://curve.fi/", iconDomain: "curve.fi", enabled: false, note: "Pending" },
+        { name: "Raydium", url: "https://raydium.io/swap/", iconDomain: "raydium.io", enabled: false, note: "Pending" },
+        { name: "Orca", url: "https://www.orca.so/", iconDomain: "orca.so", enabled: false, note: "Pending" },
+        { name: "Aerodrome", url: "https://aerodrome.finance/swap", iconDomain: "aerodrome.finance", enabled: false, note: "Pending" },
+        { name: "SushiSwap", url: "https://www.sushi.com/swap", iconDomain: "sushi.com", enabled: false, note: "Pending" },
+        { name: "1inch", url: "https://app.1inch.io/", iconDomain: "1inch.io", enabled: false, note: "Pending" }
       ],
       cex: [
-        { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", enabled: false, note: "Coming soon" },
-        { name: "Coinbase", url: "https://www.coinbase.com/", icon: "https://www.coinbase.com/favicon.ico", enabled: false, note: "Coming soon" },
-        { name: "OKX", url: "https://www.okx.com/", icon: "https://www.okx.com/favicon.ico", enabled: false, note: "Coming soon" },
-        { name: "Bybit", url: "https://www.bybit.com/", icon: "https://www.bybit.com/favicon.ico", enabled: false, note: "Coming soon" },
-        { name: "Kraken", url: "https://www.kraken.com/", icon: "https://www.kraken.com/favicon.ico", enabled: false, note: "Coming soon" },
-        { name: "Gate.io", url: "https://www.gate.io/", icon: "https://www.gate.io/favicon.ico", enabled: false, note: "Coming soon" }
+        { name: "Binance", url: "https://www.binance.com/", iconDomain: "binance.com", enabled: false, note: "Coming soon" },
+        { name: "Coinbase", url: "https://www.coinbase.com/", iconDomain: "coinbase.com", enabled: false, note: "Coming soon" },
+        { name: "Upbit", url: "https://upbit.com/", iconDomain: "upbit.com", enabled: false, note: "Coming soon" },
+        { name: "OKX", url: "https://www.okx.com/", iconDomain: "okx.com", enabled: false, note: "Coming soon" },
+        { name: "Bybit", url: "https://www.bybit.com/", iconDomain: "bybit.com", enabled: false, note: "Coming soon" },
+        { name: "Bitget", url: "https://www.bitget.com/", iconDomain: "bitget.com", enabled: false, note: "Coming soon" },
+        { name: "Gate", url: "https://www.gate.io/", iconDomain: "gate.io", enabled: false, note: "Coming soon" },
+        { name: "KuCoin", url: "https://www.kucoin.com/", iconDomain: "kucoin.com", enabled: false, note: "Coming soon" }
       ]
     };
 
@@ -320,6 +329,14 @@ const roadmap = [
       }catch{
         return fallback;
       }
+    }
+
+    function makeIconFallback(name){
+      const s = (name || "?").trim();
+      const parts = s.split(/\s+/).filter(Boolean);
+      const a = (parts[0] || "?").slice(0, 1);
+      const b = (parts[1] || "").slice(0, 1);
+      return (a + b).toUpperCase();
     }
 
     function renderGrid(targetId, items){
@@ -337,18 +354,43 @@ const roadmap = [
           rel: enabled ? "noreferrer noopener" : undefined
         });
 
+        // Icon: evitamos que el texto del alt se renderice cuando el icono falla.
+        // Accesibilidad: ponemos el nombre en aria-label del tile.
+        a.setAttribute("aria-label", it.name || "Venue");
+
+        const iconWrap = makeEl("div", { class: "venue-iconwrap" });
+
         const img = makeEl("img", {
           class: "venue-icon",
           src: it.icon || "",
-          alt: it.name || "Venue",
+          alt: "", // <- clave para evitar texto superpuesto si falla
           loading: "lazy",
           referrerpolicy: "no-referrer"
         });
 
+        const addFallback = () => {
+          if(iconWrap.querySelector(".venue-icon-fallback")) return;
+          const fb = makeEl("div", { class: "venue-icon-fallback", html: makeIconFallback(it.name) });
+          iconWrap.append(fb);
+        };
+
+        const iconSrc = it.icon || (it.iconDomain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(it.iconDomain)}&sz=64` : "");
+
+        if(!iconSrc){
+          addFallback();
+        }else{
+          img.addEventListener("error", () => {
+            try { img.remove(); } catch {}
+            addFallback();
+          }, { once: true });
+          img.setAttribute("src", iconSrc);
+          iconWrap.append(img);
+        }
+
         const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
         const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
 
-        a.append(img, makeEl("div", { class: "venue-meta" }, [name, note]));
+        a.append(iconWrap, makeEl("div", { class: "venue-meta" }, [name, note]));
         host.append(a);
       });
 
