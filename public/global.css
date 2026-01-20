@@ -1725,15 +1725,18 @@ html, body{
 .tokenomics-wrap{
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  gap: 14px;
-  align-items: start;
+  gap: 12px;
+  /* Bottom-align both columns so we can create more air above the first bubble */
+  align-items: end;
 }
 
 .tokenomics-ring{
   position: relative;
   min-height: 420px;
   display: grid;
-  place-items: center;
+  /* Push the ring + notes down (more breathing room under the section title) */
+  place-items: end center;
+  padding-bottom: 6px;
 }
 
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
@@ -1749,24 +1752,27 @@ html, body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 14px;
+  /* Tiny optical centering: the notes block makes the ring feel right-shifted.
+     This nudges the whole stage left so the ring sits more centered between notes + rules. */
+  margin-left: -22px;
 }
 
 /* Notes stack (left of ring): 4 bubbles, same width, veiled by default.
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 320px;
-  max-width: 320px;
+  width: 300px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   pointer-events: none;
 }
 
 .whisper--stack{
-  width: 320px;
-  max-width: 320px;
+  width: 300px;
+  max-width: 300px;
   overflow: hidden;
 }
 
@@ -1774,6 +1780,11 @@ html, body{
   display: block;
   transform: translateX(-420px);
   transition: transform .28s ease;
+}
+
+/* Safety reset: never show any bubble text unless a specific state is active */
+.tokenomics-ringrow[data-active="none"] .whisper--stack .whisper__text{
+  transform: translateX(-420px) !important;
 }
 
 /* Veil overlay to make "hidden" state feel intentional */
@@ -1939,7 +1950,7 @@ html, body{
   .tokenomics-ring{ min-height: auto; }
   .tokenomics-stage{ width: 340px; max-width: 100%; }
   .trust-ring{ width: 340px; max-width: 100%; }
-  .tokenomics-ringrow{ flex-direction: column; align-items: center; }
+  .tokenomics-ringrow{ flex-direction: column; align-items: center; margin-left: 0; }
   .tokenomics-notes-stack{ width: 100%; max-width: 520px; }
   .whisper--stack{ width: 100%; max-width: 100%; }
   .whisper--stack .whisper__text{ transform: translateX(0); }
