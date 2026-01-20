@@ -448,7 +448,7 @@ h3{margin:0 0 6px;font-size:18px}
 #launchpanel .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* =====================================================
@@ -1189,7 +1189,7 @@ h3{margin:0 0 6px;font-size:18px}
 #launchpanel .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 /* --- Brand / Navbar --- */
 .brand{
@@ -1723,17 +1723,20 @@ html, body{
    ===================================================== */
 
 .tokenomics-wrap{
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 14px;
-  align-items: start;
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  /* Gives more breathing room between title and the bubble stack */
+  min-height: 520px;
 }
 
 .tokenomics-ring{
   position: relative;
-  min-height: 420px;
-  display: grid;
-  place-items: center;
+  flex: 0 0 720px;
+  max-width: 720px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
@@ -1747,7 +1750,7 @@ html, body{
 /* Ring + notes layout (notes sit beside the ring; fixed positions, no hover motion) */
 .tokenomics-ringrow{
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   gap: 18px;
 }
@@ -1760,7 +1763,8 @@ html, body{
   max-width: 320px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  justify-content: flex-end;
   pointer-events: none;
 }
 
@@ -1898,9 +1902,12 @@ html, body{
 
 
 .tokenomics-rules{
+  flex: 0 0 520px;
+  max-width: 520px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  align-content: end;
 }
 
 .tokenomics-rule{
@@ -1922,7 +1929,7 @@ html, body{
   display:flex;
   align-items:center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   padding: 8px 10px;
   border-radius: 14px;
   background: rgba(0,0,0,0.18);
@@ -1935,8 +1942,8 @@ html, body{
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
 @media (max-width: 980px){
-  .tokenomics-wrap{ grid-template-columns: 1fr; }
-  .tokenomics-ring{ min-height: auto; }
+  .tokenomics-wrap{ display:block; min-height: auto; }
+  .tokenomics-ring{ width: 100%; max-width: 100%; flex: none; }
   .tokenomics-stage{ width: 340px; max-width: 100%; }
   .trust-ring{ width: 340px; max-width: 100%; }
   .tokenomics-ringrow{ flex-direction: column; align-items: center; }

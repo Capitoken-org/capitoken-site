@@ -569,11 +569,14 @@ function iconCandidates(it){
       const label = document.getElementById('trustRingLabel');
       const sub = document.getElementById('trustRingSub');
       if(!ring || !pct || !label || !sub) return;
+      if(row) row.dataset.active = 'none';
       const segments = {
         community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
         ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
         growth: { pct: '1%', label: 'Growth / Marketing', sub: 'Marketing = memes, not Lambos.' }
       };
+
+      let hoveringRing = false;
 
       // Degrees: conic-gradient starts at 0deg (top) and goes clockwise.
       const pCommunity = 97;
@@ -584,7 +587,6 @@ function iconCandidates(it){
       function setSeg(key){
         const s = segments[key] || segments.community;
         ring.dataset.seg = key;
-        if(row) row.dataset.active = key;
         pct.textContent = s.pct;
         label.textContent = s.label;
         sub.textContent = s.sub;
@@ -609,15 +611,28 @@ function iconCandidates(it){
         return 'growth';
       }
 
-      // Desktop: hover/move
-      ring.addEventListener('mousemove', (ev) => {
+      // Desktop: hover/move (do not reveal anything until the pointer is actually over the ring)
+      ring.addEventListener('mouseenter', (ev) => {
+        hoveringRing = true;
         const deg = angleFromEvent(ev);
-        setSeg(segFromDeg(deg));
+        const seg = segFromDeg(deg);
+        if(row) row.dataset.active = seg;
+        setSeg(seg);
       });
+
+      ring.addEventListener('mousemove', (ev) => {
+        if(!hoveringRing) return;
+        const deg = angleFromEvent(ev);
+        const seg = segFromDeg(deg);
+        if(row) row.dataset.active = seg;
+        setSeg(seg);
+      });
+
       ring.addEventListener('mouseleave', () => {
-        // Resting state: notes stay veiled (no active reveal).
+        hoveringRing = false;
         if(row) row.dataset.active = 'none';
         setSeg('community');
+      });
       });
 
       // Mobile: tap cycles (no precision required)
