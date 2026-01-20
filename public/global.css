@@ -1210,6 +1210,7 @@ h3{margin:0 0 6px;font-size:18px}
   line-height:1;
 }
 
+/* =========================
    Phase 8.4 – Icon System (SVG)
    Public assets in /public/icons
    ========================= */
@@ -1670,21 +1671,36 @@ html, body{
   text-align: left;
 }
 
-/* Tokenomics: place the "Simple. Honest..." line inline after the title */
-.section-title--tokenomics{
+/* Split section titles: White main title + orange kicker after a "/" */
+.section-title--split{
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 0;
   flex-wrap: wrap;
 }
 
-.tokenomics-kicker{
+.section-title--split .title-main{
+  color: rgba(242,245,244,0.98);
+}
+
+.section-title--split .title-slash{
+  margin: 0 10px;
+  color: rgba(233,144,44,0.95);
+  opacity: 0.92;
+}
+
+.section-title--split .title-kicker{
   font-size: 0.62em;
   font-style: italic;
   letter-spacing: 0.01em;
   color: rgba(233,144,44,0.95);
   opacity: 0.92;
 }
+
+/* Backwards compatibility (older tokenomics markup) */
+.section-title--tokenomics{ display:flex; align-items: baseline; gap:12px; flex-wrap:wrap; }
+.tokenomics-kicker{ font-size:0.62em; font-style: italic; letter-spacing:0.01em; color: rgba(233,144,44,0.95); opacity:0.92; }
+.tokenomics-sep{ margin: 0 10px; color: rgba(233,144,44,0.95); opacity:0.92; }
 
 /* A small subtitle under section titles, if present */
 .section-block > .small,

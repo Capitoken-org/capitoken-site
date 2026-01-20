@@ -119,8 +119,7 @@ const roadmap = [
   <section class="section" id="launchpanel">
     <div class="container reveal reveal--3">
       <div class="section-block">
-      <h2 class="section-title">Launch Panel</h2>
-      <p class="small">Single source of truth for contract, DEX pair, and status.</p>
+      <h2 class="section-title section-title--split"><span class="title-main">Launch Panel</span><span class="title-slash"> / </span><span class="title-kicker">Single source of truth for contract, DEX pair, and status.</span></h2>
 
       <div class="trust-badges" aria-label="Trust badges">
         <span class="badge" id="badgeContract">Contract: Pending</span>
@@ -132,7 +131,7 @@ const roadmap = [
         <div class="launch-row">
           <!-- Contract -->
           <div class="card">
-            <div class="card__title">Contract</div>
+            <div class="card__title">CAPI Contract</div>
 
             <div class="card__body">
               <div class="addr-row">
@@ -169,7 +168,7 @@ const roadmap = [
 
           <!-- DEX Pair -->
           <div class="card">
-            <div class="card__title">DEX Pair</div>
+            <div class="card__title">CAPI DEX Pair</div>
 
             <div class="card__body">
               <div class="addr-row">
@@ -208,7 +207,7 @@ const roadmap = [
         <div class="launch-row">
           <!-- CAPI Pulse (Live) -->
           <div class="card">
-            <div class="card__title">CAPI Pulse (Live)</div>
+            <div class="card__title">CAPI Pulse</div>
             <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
 
             <div class="pill" style="margin-top:10px;">
@@ -232,7 +231,7 @@ const roadmap = [
 
           <!-- Wallet Hangar -->
           <div class="card">
-            <div class="card__title">Wallet Hangar</div>
+            <div class="card__title">CAPI Wallet Hangar</div>
             <div class="small">Pick your wallet. (Connecting is optional; Launch Panel stays read-only by default.)</div>
 
             <div class="venue-grid" id="walletGrid" aria-live="polite" style="margin-top:12px;"></div>
@@ -252,21 +251,18 @@ const roadmap = [
     <div class="container reveal">
       <div class="section-block">
       <div class="section__head">
-        <h2 class="section-title">Trading Venues</h2>
-        <p class="small">
-          Only use official links. If a venue is not listed here, assume it is not official.
-        </p>
+        <h2 class="section-title section-title--split"><span class="title-main">Trading Venues</span><span class="title-slash"> / </span><span class="title-kicker">Official links only. If it’s not here, it’s not official.</span></h2>
       </div>
 
       <div class="venues">
         <div class="venue-block">
-          <div class="venue-title">DEX Enabled</div>
+          <div class="venue-title">CAPI DEX Venues</div>
           <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
           <div class="small venue-hint">Live once the verified pair is published.</div>
         </div>
 
         <div class="venue-block">
-          <div class="venue-title">CEX Listings</div>
+          <div class="venue-title">CAPI CEX Watchlist</div>
           <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
           <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
         </div>
@@ -492,7 +488,7 @@ function iconCandidates(it){
   <section class="section" id="tokenomics">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--tokenomics">Tokenomics<span class="tokenomics-sep"> / </span><span class="tokenomics-kicker">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Tokenomics</span><span class="title-slash"> / </span><span class="title-kicker">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</span></h2>
 
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
@@ -671,8 +667,7 @@ function iconCandidates(it){
   <section class="section" id="roadmap">
     <div class="container reveal">
       <div class="section-block">
-      <h2>Roadmap</h2>
-      <p>Focused phases with clear deliverables.</p>
+      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Phases, progress, and what’s next.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         {roadmap.map((r) => (
@@ -695,10 +690,7 @@ function iconCandidates(it){
   <section class="section" id="daily">
     <div class="container reveal">
       <div class="section-block">
-      <h2>Daily Capi</h2>
-      <p>
-        Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
-      </p>
+      <h2 class="section-title section-title--split"><span class="title-main">Daily Capi</span><span class="title-slash"> / </span><span class="title-kicker">Small updates. Big chill.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         <div class="card col-6">
@@ -722,10 +714,7 @@ function iconCandidates(it){
   <section class="section" id="community">
     <div class="container reveal">
       <div class="section-block">
-      <h2>Community</h2>
-      <p>
-        Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
-      </p>
+      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Links, socials, and vibes.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         <div class="card col-12">
@@ -756,7 +745,7 @@ function iconCandidates(it){
   <section class="section" id="faq">
     <div class="container reveal">
       <div class="section-block">
-      <h2>FAQ</h2>
+      <h2 class="section-title section-title--split"><span class="title-main">FAQ</span><span class="title-slash"> / </span><span class="title-kicker">Quick answers. Zero fluff.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         <div class="card col-6">
