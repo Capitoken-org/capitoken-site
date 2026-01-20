@@ -340,6 +340,22 @@ const roadmap = [
       return (a + b).toUpperCase();
     }
 
+    // External icon strategy (Option B): multi-source cascade.
+    // Goal: never break layout; if all sources fail -> initials fallback.
+    // Sources (in order): explicit icon URL -> icon.horse -> clearbit -> Google S2.
+    function iconCandidates(it){
+      const out = [];
+      if(it && it.icon) out.push(String(it.icon));
+      const d = (it && it.iconDomain) ? String(it.iconDomain).trim() : "";
+      if(d){
+        out.push(`https://icon.horse/icon/${encodeURIComponent(d)}?size=64`);
+        out.push(`https://logo.clearbit.com/${encodeURIComponent(d)}?size=64`);
+        out.push(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=64`);
+      }
+      // De-dup while preserving order
+      return out.filter((u, i) => u && out.indexOf(u) === i);
+    }
+
     function renderGrid(targetId, items){
       const host = document.getElementById(targetId);
       if(!host) return;
@@ -363,7 +379,6 @@ const roadmap = [
 
         const img = makeEl("img", {
           class: "venue-icon",
-          src: it.icon || "",
           alt: "", // <- clave para evitar texto superpuesto si falla
           loading: "lazy",
           referrerpolicy: "no-referrer"
@@ -375,16 +390,27 @@ const roadmap = [
           iconWrap.append(fb);
         };
 
-        const iconSrc = it.icon || (it.iconDomain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(it.iconDomain)}&sz=64` : "");
+        const candidates = iconCandidates(it);
 
-        if(!iconSrc){
+        const setNext = () => {
+          const next = candidates.shift();
+          if(!next){
+            try { img.remove(); } catch {}
+            addFallback();
+            return;
+          }
+          img.setAttribute("src", next);
+        };
+
+        if(!candidates.length){
           addFallback();
         }else{
           img.addEventListener("error", () => {
-            try { img.remove(); } catch {}
-            addFallback();
-          }, { once: true });
-          img.setAttribute("src", iconSrc);
+            // Try next external source. If all fail, fallback initials.
+            setNext();
+          });
+          // Start with best candidate.
+          setNext();
           iconWrap.append(img);
         }
 
