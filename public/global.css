@@ -1598,3 +1598,65 @@ html, body{
   .hero-stats-mini{flex-wrap:wrap;}
   .hero-trustbar{flex-basis:100%; min-width:0;}
 }
+
+/* =========================================================
+   OPTION D – UX polish patch (ADD ONLY)
+   - No architecture/path changes
+   - No JS changes
+   ========================================================= */
+
+/* Avoid rare horizontal drift when zooming */
+.hero-stats-row,
+.hero-stats-mini{
+  max-width: 100%;
+}
+
+/* Premium micro-interactions (no layout shifts) */
+.hero-stat,
+.hero-trustbar,
+.card,
+.venue-tile,
+.btn,
+.pill{
+  transition:
+    transform .12s ease,
+    background .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease,
+    filter .12s ease;
+}
+
+.hero-stat:hover,
+.hero-trustbar:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.36);
+  box-shadow: 0 14px 46px rgba(0,0,0,0.26);
+}
+
+/* Accessible focus states */
+.btn:focus-visible,
+.pill:focus-visible,
+a.btn:focus-visible,
+.route-btn:focus-visible{
+  outline: 2px solid rgba(242,201,76,0.65);
+  outline-offset: 2px;
+}
+
+/* Ensure Trust bar always shows even if some old rule hides it */
+.hero-trustbar .trustbar{
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.hero-trustbar .trustbar__fill{
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Make the Trust bar read better in small widths (keeps harmony) */
+@media (max-width: 520px){
+  .hero-trustbar{ padding: 12px 12px 11px; }
+  .hero-trustbar .trustbar-value{ font-size: 15px; }
+}
