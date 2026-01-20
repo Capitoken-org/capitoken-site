@@ -1769,7 +1769,7 @@ html, body{
   align-items: center;
   justify-content: center;
   /* Bring bubbles closer to the ring (no negative offsets that can affect other sections) */
-  gap: 10px;
+  gap: 6px;
   margin-left: 0;
 }
 
@@ -1783,6 +1783,7 @@ html, body{
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
+  margin-right: -12px;
 }
 
 .whisper--stack{
