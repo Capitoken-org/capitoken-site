@@ -492,21 +492,53 @@ function iconCandidates(it){
   <section class="section" id="tokenomics">
     <div class="container reveal">
       <div class="section-block">
-      <h2>Tokenomics</h2>
-      <p>Simple allocation — 97 / 2 / 1.</p>
+      <h2 class="section-title">Tokenomics</h2>
+      <p class="small">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</p>
 
-      <div class="grid" style="margin-top:14px;">
-        {tokenomics.map((t) => (
-          <div class="card col-6">
-            <h3>{t.title}</h3>
-            <p>{t.desc}</p>
-            <div style="margin-top:12px; height:4px; width:72px; border-radius:999px; background: rgba(248,168,64,0.55);"></div>
+      <div class="tokenomics-wrap" style="margin-top:16px;">
+        <!-- TRUST RING (narrative) -->
+        <div class="tokenomics-ring">
+          <div class="trust-ring" aria-label="Tokenomics allocation ring" role="img">
+            <div class="trust-ring__core">
+              <div class="trust-ring__pct">97%</div>
+              <div class="trust-ring__label">Community</div>
+              <div class="trust-ring__sub small">wow, this really is community-first</div>
+            </div>
+
+            <!-- Whisper bubbles (subtle, glassy) -->
+            <div class="whisper whisper--community" aria-hidden="true">🦫 No whales here. Just chill capis.</div>
+            <div class="whisper whisper--ops" aria-hidden="true">🦫 Yes, devs eat too. But just a snack.</div>
+            <div class="whisper whisper--growth" aria-hidden="true">🦫 Marketing = memes, not Lambos.</div>
           </div>
-        ))}
-        <div class="card col-12">
-          <div class="kv"><strong>Community</strong><span>97%</span></div>
-          <div class="kv"><strong>Operations</strong><span>2%</span></div>
-          <div class="kv"><strong>Marketing</strong><span>1%</span></div>
+
+          <div class="whisper whisper--ambient" aria-hidden="true">🦫 Capibara doesn’t rush. Neither does supply.</div>
+        </div>
+
+        <!-- TRUST BADGES / RULES -->
+        <div class="tokenomics-rules">
+          <div class="card tokenomics-rule">
+            <div class="tokenomics-rule__top">🔒 Fixed Supply</div>
+            <div class="small">No minting. Ever.</div>
+          </div>
+          <div class="card tokenomics-rule">
+            <div class="tokenomics-rule__top">🧯 No Hidden Taxes</div>
+            <div class="small">What you see is what you trade.</div>
+          </div>
+          <div class="card tokenomics-rule">
+            <div class="tokenomics-rule__top">🧠 Anti-bot Phase</div>
+            <div class="small">Temporary. Transparent. Timed.</div>
+          </div>
+          <div class="card tokenomics-rule">
+            <div class="tokenomics-rule__top">🔑 Ownership Renounce</div>
+            <div class="small">Planned. Announced. Verifiable.</div>
+          </div>
+
+          <div class="card tokenomics-split">
+            <div class="tokenomics-split__row"><span>🟢 Community</span><strong>97%</strong></div>
+            <div class="tokenomics-split__row"><span>🟡 Ops / Dev</span><strong>2%</strong></div>
+            <div class="tokenomics-split__row"><span>🟠 Growth / Marketing</span><strong>1%</strong></div>
+            <div class="small" style="margin-top:10px;">Tip: Treat this page as the truth source. If it’s not listed here, assume it’s not official.</div>
+          </div>
         </div>
       </div>
       </div>

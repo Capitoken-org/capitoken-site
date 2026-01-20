@@ -1716,3 +1716,192 @@ html, body{
   .section-block{ padding: 16px 14px 18px; border-radius: 20px; }
   .section-title{ text-align:left; }
 }
+
+/* =====================================================
+   Tokenomics – Trust Ring Narrative (Phase 9 UX)
+   Additive only.
+   ===================================================== */
+
+.tokenomics-wrap{
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.tokenomics-ring{
+  position: relative;
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+}
+
+/* The ring uses a conic gradient to exaggerate 97% visually */
+.trust-ring{
+  --p-community: 97;
+  --p-ops: 2;
+  --p-growth: 1;
+
+  position: relative;
+  width: min(360px, 100%);
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  padding: 16px;
+  background:
+    conic-gradient(
+      rgba(15,157,88,0.95) 0deg,
+      rgba(15,157,88,0.95) calc(var(--p-community) * 3.6deg),
+      rgba(244, 212, 89, 0.92) calc(var(--p-community) * 3.6deg),
+      rgba(244, 212, 89, 0.92) calc((var(--p-community) + var(--p-ops)) * 3.6deg),
+      rgba(233,144,44,0.95) calc((var(--p-community) + var(--p-ops)) * 3.6deg),
+      rgba(233,144,44,0.95) 360deg
+    );
+  box-shadow:
+    0 30px 90px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  animation: ringBreathe 4.6s ease-in-out infinite;
+}
+
+.trust-ring::after{
+  content:"";
+  position:absolute;
+  inset: 18px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.34);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.trust-ring__core{
+  position: absolute;
+  inset: 18px;
+  border-radius: 999px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 22px;
+}
+
+.trust-ring__pct{
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-size: clamp(46px, 6vw, 64px);
+}
+
+.trust-ring__label{
+  margin-top: 2px;
+  font-weight: 800;
+  font-size: 16px;
+  color: rgba(242,245,244,0.92);
+}
+
+.trust-ring__sub{
+  margin-top: 10px;
+  color: rgba(242,245,244,0.70);
+  max-width: 22ch;
+}
+
+@keyframes ringBreathe{
+  0%,100%{ transform: translateY(0) scale(1); filter: saturate(1.02); }
+  50%{ transform: translateY(-3px) scale(1.015); filter: saturate(1.10); }
+}
+
+/* Whisper bubbles: subtle + premium (not comic) */
+.whisper{
+  position: absolute;
+  z-index: 3;
+  max-width: 30ch;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 18px 55px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  color: rgba(242,245,244,0.90);
+  font-size: 12px;
+  line-height: 1.25;
+  backdrop-filter: blur(10px);
+  opacity: 0.86;
+  transform: translateY(0);
+  animation: whisperFloat 6.2s ease-in-out infinite;
+}
+
+.whisper:hover{ opacity: 1; }
+
+.whisper::after{
+  content:"";
+  position:absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+@keyframes whisperFloat{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-5px); }
+}
+
+.whisper--community{ top: -8px; left: -8px; }
+.whisper--community::after{ left: 22px; bottom: -7px; }
+
+.whisper--ops{ top: 18px; right: -10px; animation-delay: -1.5s; }
+.whisper--ops::after{ right: 26px; bottom: -7px; }
+
+.whisper--growth{ bottom: -6px; right: 10px; animation-delay: -3.0s; }
+.whisper--growth::after{ right: 28px; top: -7px; }
+
+.whisper--ambient{
+  position: relative;
+  margin-top: 14px;
+  opacity: 0.76;
+  animation-duration: 7.2s;
+}
+
+.tokenomics-rules{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tokenomics-rule{
+  padding: 14px;
+}
+
+.tokenomics-rule__top{
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.tokenomics-split{
+  grid-column: 1 / -1;
+  padding: 14px;
+}
+
+.tokenomics-split__row{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin: 8px 0;
+}
+
+@media (max-width: 980px){
+  .tokenomics-wrap{ grid-template-columns: 1fr; }
+  .tokenomics-ring{ min-height: 380px; }
+}
+
+@media (max-width: 520px){
+  .tokenomics-rules{ grid-template-columns: 1fr; }
+  .whisper--community{ left: 0; }
+  .whisper--ops{ right: 0; }
+}
