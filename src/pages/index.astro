@@ -569,14 +569,11 @@ function iconCandidates(it){
       const label = document.getElementById('trustRingLabel');
       const sub = document.getElementById('trustRingSub');
       if(!ring || !pct || !label || !sub) return;
-      if(row) row.dataset.active = 'none';
       const segments = {
         community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
         ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
         growth: { pct: '1%', label: 'Growth / Marketing', sub: 'Marketing = memes, not Lambos.' }
       };
-
-      let hoveringRing = false;
 
       // Degrees: conic-gradient starts at 0deg (top) and goes clockwise.
       const pCommunity = 97;
@@ -611,21 +608,19 @@ function iconCandidates(it){
         return 'growth';
       }
 
-      // Desktop: hover/move (do not reveal anything until the pointer is actually over the ring)
-      ring.addEventListener('mouseenter', (ev) => {
+      // Desktop: hover/move (notes reveal ONLY while hovering the ring)
+      let hoveringRing = false;
+
+      ring.addEventListener('mouseenter', () => {
         hoveringRing = true;
-        const deg = angleFromEvent(ev);
-        const seg = segFromDeg(deg);
-        if(row) row.dataset.active = seg;
-        setSeg(seg);
       });
 
       ring.addEventListener('mousemove', (ev) => {
         if(!hoveringRing) return;
         const deg = angleFromEvent(ev);
-        const seg = segFromDeg(deg);
-        if(row) row.dataset.active = seg;
-        setSeg(seg);
+        const k = segFromDeg(deg);
+        if(row) row.dataset.active = k;
+        setSeg(k);
       });
 
       ring.addEventListener('mouseleave', () => {
@@ -633,15 +628,16 @@ function iconCandidates(it){
         if(row) row.dataset.active = 'none';
         setSeg('community');
       });
-      });
 
-      // Mobile: tap cycles (no precision required)
+// Mobile: tap cycles (no precision required)
       const order = ['community','ops','growth'];
       ring.addEventListener('touchstart', (ev) => {
         ev.preventDefault();
         const cur = ring.dataset.seg || 'community';
         const next = order[(order.indexOf(cur)+1) % order.length];
+        if(row) row.dataset.active = next;
         setSeg(next);
+        window.setTimeout(()=>{ if(row) row.dataset.active='none'; }, 1200);
       }, { passive: false });
       // Reveal the ambient note when hovering the Anti-bot card (no layout change on the right)
       const antiBotCard = document.getElementById('tokenomicsAntiBot');
