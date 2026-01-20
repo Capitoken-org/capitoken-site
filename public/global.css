@@ -213,15 +213,6 @@ section{padding:24px 0}
 
 @media (max-width: 980px){
   .hero-stats{grid-template-columns:repeat(2, minmax(0, 1fr));max-width:680px}
-  .tokenomics-notes-stack{
-  width: 300px;
-  max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: none;
-  /* Pull the stack toward the ring without moving the ring itself */
-  margin-right: -22px;
 }
 @media (max-width: 520px){
   .hero-stats{grid-template-columns:1fr;}
@@ -1679,6 +1670,22 @@ html, body{
   text-align: left;
 }
 
+/* Tokenomics: place the "Simple. Honest..." line inline after the title */
+.section-title--tokenomics{
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tokenomics-kicker{
+  font-size: 0.62em;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: rgba(233,144,44,0.95);
+  opacity: 0.92;
+}
+
 /* A small subtitle under section titles, if present */
 .section-block > .small,
 .section-block .section__head .small{
@@ -1761,8 +1768,8 @@ html, body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  /* Keep the ring position, but bring the left bubble stack closer to the ring */
+  /* Bring bubbles closer to the ring (no negative offsets that can affect other sections) */
+  gap: 10px;
   margin-left: 0;
 }
 
@@ -1770,19 +1777,17 @@ html, body{
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 300px;
-  max-width: 300px;
+  width: 290px;
+  max-width: 290px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* Pull bubbles toward the ring without shifting the ring itself */
-  margin-right: -24px;
   pointer-events: none;
 }
 
 .whisper--stack{
-  width: 300px;
-  max-width: 300px;
+  width: 290px;
+  max-width: 290px;
   overflow: hidden;
 }
 
@@ -1828,10 +1833,6 @@ html, body{
   opacity: 0.12;
 }
 
-
-@media (max-width: 980px){
-  .tokenomics-notes-stack{ margin-right: 0; }
-}
 /* The ring uses a conic gradient to exaggerate 97% visually */
 .trust-ring{
   --p-community: 97;
