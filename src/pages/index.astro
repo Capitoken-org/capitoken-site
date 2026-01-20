@@ -497,18 +497,22 @@ function iconCandidates(it){
 
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
-        <div class="tokenomics-ring">
-          <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
-            <div class="trust-ring__core">
-              <div class="trust-ring__pct" id="trustRingPct">97%</div>
-              <div class="trust-ring__label" id="trustRingLabel">Community</div>
-              <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
+        <div class="tokenomics-ring" id="tokenomicsNarrative" data-seg="community">
+          <div class="tokenomics-ringrow">
+            <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
+              <div class="trust-ring__core">
+                <div class="trust-ring__pct" id="trustRingPct">97%</div>
+                <div class="trust-ring__label" id="trustRingLabel">Community</div>
+                <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
+              </div>
             </div>
 
-            <!-- Whisper bubbles (subtle, glassy) -->
-            <div class="whisper whisper--community" aria-hidden="true">🦫 No whales here. Just chill capis.</div>
-            <div class="whisper whisper--ops" aria-hidden="true">🦫 Yes, devs eat too. But just a snack.</div>
-            <div class="whisper whisper--growth" aria-hidden="true">🦫 Marketing = memes, not Lambos.</div>
+            <!-- Notes (crisp, beside the ring — not on top) -->
+            <div class="tokenomics-notes" aria-hidden="true">
+              <div class="whisper whisper--note whisper--community">🦫 No whales here. Just chill capis.</div>
+              <div class="whisper whisper--note whisper--ops">🦫 Yes, devs eat too. But just a snack.</div>
+              <div class="whisper whisper--note whisper--growth">🦫 Marketing = memes, not Lambos.</div>
+            </div>
           </div>
 
           <div class="whisper whisper--ambient" aria-hidden="true">🦫 Capibara doesn’t rush. Neither does supply.</div>
@@ -549,10 +553,14 @@ function iconCandidates(it){
     // Tokenomics WOW: change ring center copy by hovering segments (no heavy JS)
     (function(){
       const ring = document.getElementById('tokenomicsRing');
+      const narrative = document.getElementById('tokenomicsNarrative');
       const pct = document.getElementById('trustRingPct');
       const label = document.getElementById('trustRingLabel');
       const sub = document.getElementById('trustRingSub');
       if(!ring || !pct || !label || !sub) return;
+      // Mirror current segment on the outer narrative wrapper so side notes can highlight too.
+      if(narrative) narrative.dataset.seg = ring.dataset.seg || 'community';
+      // Keep notes in sync (notes are beside the ring)
 
       const segments = {
         community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
@@ -569,6 +577,9 @@ function iconCandidates(it){
       function setSeg(key){
         const s = segments[key] || segments.community;
         ring.dataset.seg = key;
+        if(narrative) narrative.dataset.seg = key;
+        if(narrative) narrative.dataset.seg = key;
+        if(narrative) narrative.dataset.seg = key;
         pct.textContent = s.pct;
         label.textContent = s.label;
         sub.textContent = s.sub;
