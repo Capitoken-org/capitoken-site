@@ -498,11 +498,11 @@ function iconCandidates(it){
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
         <div class="tokenomics-ring">
-          <div class="trust-ring" aria-label="Tokenomics allocation ring" role="img">
+          <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
             <div class="trust-ring__core">
-              <div class="trust-ring__pct">97%</div>
-              <div class="trust-ring__label">Community</div>
-              <div class="trust-ring__sub small">wow, this really is community-first</div>
+              <div class="trust-ring__pct" id="trustRingPct">97%</div>
+              <div class="trust-ring__label" id="trustRingLabel">Community</div>
+              <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
             </div>
 
             <!-- Whisper bubbles (subtle, glassy) -->
@@ -543,6 +543,76 @@ function iconCandidates(it){
       </div>
       </div>
     </div>
+
+
+  <script>
+    // Tokenomics WOW: change ring center copy by hovering segments (no heavy JS)
+    (function(){
+      const ring = document.getElementById('tokenomicsRing');
+      const pct = document.getElementById('trustRingPct');
+      const label = document.getElementById('trustRingLabel');
+      const sub = document.getElementById('trustRingSub');
+      if(!ring || !pct || !label || !sub) return;
+
+      const segments = {
+        community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
+        ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
+        growth: { pct: '1%', label: 'Growth / Marketing', sub: 'Marketing = memes, not Lambos.' }
+      };
+
+      // Degrees: conic-gradient starts at 0deg (top) and goes clockwise.
+      const pCommunity = 97;
+      const pOps = 2;
+      const endCommunity = pCommunity * 3.6;          // 349.2
+      const endOps = (pCommunity + pOps) * 3.6;       // 356.4
+
+      function setSeg(key){
+        const s = segments[key] || segments.community;
+        ring.dataset.seg = key;
+        pct.textContent = s.pct;
+        label.textContent = s.label;
+        sub.textContent = s.sub;
+      }
+
+      function angleFromEvent(ev){
+        const rect = ring.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const x = (ev.clientX ?? (ev.touches && ev.touches[0] && ev.touches[0].clientX)) - cx;
+        const y = (ev.clientY ?? (ev.touches && ev.touches[0] && ev.touches[0].clientY)) - cy;
+        if(!isFinite(x) || !isFinite(y)) return null;
+        let deg = Math.atan2(y, x) * 180 / Math.PI; // -180..180, 0 at +x
+        deg = (deg + 90 + 360) % 360; // 0 at top, clockwise
+        return deg;
+      }
+
+      function segFromDeg(deg){
+        if(deg == null) return 'community';
+        if(deg < endCommunity) return 'community';
+        if(deg < endOps) return 'ops';
+        return 'growth';
+      }
+
+      // Desktop: hover/move
+      ring.addEventListener('mousemove', (ev) => {
+        const deg = angleFromEvent(ev);
+        setSeg(segFromDeg(deg));
+      });
+      ring.addEventListener('mouseleave', () => setSeg('community'));
+
+      // Mobile: tap cycles (no precision required)
+      const order = ['community','ops','growth'];
+      ring.addEventListener('touchstart', (ev) => {
+        ev.preventDefault();
+        const cur = ring.dataset.seg || 'community';
+        const next = order[(order.indexOf(cur)+1) % order.length];
+        setSeg(next);
+      }, { passive: false });
+
+      // initial
+      setSeg('community');
+    })();
+  </script>
   </section>
 
   <hr class="hr" />

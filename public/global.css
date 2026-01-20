@@ -1862,6 +1862,25 @@ html, body{
   animation-duration: 7.2s;
 }
 
+
+/* WOW interaction: ring hover changes center copy + focuses the active whisper */
+.trust-ring{ cursor: pointer; }
+.trust-ring .whisper{
+  opacity: 0.40;
+  transition: opacity .18s ease, filter .18s ease, transform .18s ease;
+}
+.trust-ring[data-seg="community"] .whisper--community,
+.trust-ring[data-seg="ops"] .whisper--ops,
+.trust-ring[data-seg="growth"] .whisper--growth{
+  opacity: 0.95;
+  filter: saturate(1.18);
+  transform: translateY(-2px);
+}
+.trust-ring[data-seg="ops"] .trust-ring__pct,
+.trust-ring[data-seg="growth"] .trust-ring__pct{
+  letter-spacing: -0.01em;
+}
+
 .tokenomics-rules{
   display: grid;
   grid-template-columns: 1fr 1fr;
