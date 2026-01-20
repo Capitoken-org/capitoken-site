@@ -353,9 +353,15 @@ const roadmap = [
         // Color version (Binance yellow) from Simple Icons CDN.
         return "https://cdn.simpleicons.org/binance/f0b90b";
       }
-      if(n === "1inch" || n.includes("1inch")){
-        return "https://cdn.simpleicons.org/1inch/ffffff";
-      }
+      // NOTE: Simple Icons uses the slug "oneinch" (not "1inch").
+      if(n === "1inch" || n.includes("1inch")) return "https://cdn.simpleicons.org/oneinch/ffffff";
+
+      // Additional selective overrides for venues that frequently resolve to generic favicons.
+      // These are purely cosmetic and keep the same cascade below.
+      if(n === "balancer") return "https://cdn.simpleicons.org/balancer/ffffff";
+      if(n === "0x" || n === "0x protocol" || n.includes("0x")) return "https://cdn.simpleicons.org/0x/ffffff";
+      if(n === "kucoin" || n.includes("kucoin")) return "https://cdn.simpleicons.org/kucoin/ffffff";
+      if(n === "upbit" || n.includes("upbit")) return "https://cdn.simpleicons.org/upbit/ffffff";
       return "";
     }
     function iconCandidates(it){
