@@ -2082,7 +2082,7 @@ html, body{
    ===================================================== */
 
 /* Single source of truth for sticky navbar height */
-:root{ --nav-h: 110px; }
+:root{ --nav-h: 132px; }
 
 /* Make anchors respect sticky navbar */
 html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
@@ -2099,7 +2099,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 .brand:hover{ background: rgba(233,144,44,0.06); }
 
 .brand__img{
-  height: 78px;
+  height: 92px;
   width: auto;
   max-height: calc(var(--nav-h) - 22px);
   border-radius: 12px;
@@ -2112,6 +2112,9 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   border-radius: 14px;
 }
 
+/* Keep many nav items readable when they wrap */
+.nav__links{ gap: 10px; }
+
 .nav__links a:hover{
   color: var(--accent);
   background: rgba(233,144,44,0.08);
@@ -2120,13 +2123,13 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 @media (max-width: 900px){
-  :root{ --nav-h: 96px; }
-  .brand__img{ height: 68px; }
+  :root{ --nav-h: 108px; }
+  .brand__img{ height: 76px; }
   .nav__links a{ font-size: 14px; padding: 10px 12px; }
 }
 
 @media (max-width: 520px){
-  :root{ --nav-h: 86px; }
-  .brand__img{ height: 60px; }
+  :root{ --nav-h: 96px; }
+  .brand__img{ height: 66px; }
   .nav__links{ gap: 6px; }
 }
