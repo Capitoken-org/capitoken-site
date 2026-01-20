@@ -307,7 +307,8 @@ const roadmap = [
         { name: "1inch", url: "https://app.1inch.io/", iconDomain: "1inch.io", enabled: false, note: "Pending" }
       ],
       cex: [
-        { name: "Binance", url: "https://www.binance.com/", iconDomain: "binance.com", enabled: false, note: "Coming soon" },
+        // Binance: icono explícito (favicon oficial). Si falla, cae al fallback (iniciales).
+        { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", iconDomain: "binance.com", enabled: false, note: "Coming soon" },
         { name: "Coinbase", url: "https://www.coinbase.com/", iconDomain: "coinbase.com", enabled: false, note: "Coming soon" },
         { name: "Upbit", url: "https://upbit.com/", iconDomain: "upbit.com", enabled: false, note: "Coming soon" },
         { name: "OKX", url: "https://www.okx.com/", iconDomain: "okx.com", enabled: false, note: "Coming soon" },
@@ -833,14 +834,16 @@ const roadmap = [
       if(!host) return;
 
       const wallets = [
-        { name:"MetaMask", url:"https://metamask.io/", icon:"https://metamask.io/favicon.ico", note:"Browser / Mobile" },
-        { name:"Trust Wallet", url:"https://trustwallet.com/", icon:"https://trustwallet.com/favicon.ico", note:"Mobile" },
-        { name:"Coinbase Wallet", url:"https://www.coinbase.com/wallet", icon:"https://www.coinbase.com/favicon.ico", note:"Mobile / Browser" },
-        { name:"Rainbow", url:"https://rainbow.me/", icon:"https://rainbow.me/favicon.ico", note:"Mobile" },
-        { name:"Rabby", url:"https://rabby.io/", icon:"https://rabby.io/favicon.ico", note:"Browser" },
-        { name:"Phantom", url:"https://phantom.app/", icon:"https://phantom.app/favicon.ico", note:"Multi-chain" },
-        { name:"WalletConnect", url:"https://walletconnect.com/", icon:"https://walletconnect.com/favicon.ico", note:"Connector" },
-        { name:"Safe", url:"https://safe.global/", icon:"https://safe.global/favicon.ico", note:"Multisig" },
+        // Nota: usamos el servicio de favicons de Google por dominio para evitar "alt text" superpuesto cuando un favicon falla.
+        // Si igual falla, mostramos un fallback con iniciales.
+        { name:"MetaMask", url:"https://metamask.io/", iconDomain:"metamask.io", note:"Browser / Mobile" },
+        { name:"Trust Wallet", url:"https://trustwallet.com/", iconDomain:"trustwallet.com", note:"Mobile" },
+        { name:"Coinbase Wallet", url:"https://www.coinbase.com/wallet", iconDomain:"coinbase.com", note:"Mobile / Browser" },
+        { name:"Rainbow", url:"https://rainbow.me/", iconDomain:"rainbow.me", note:"Mobile" },
+        { name:"Rabby", url:"https://rabby.io/", iconDomain:"rabby.io", note:"Browser" },
+        { name:"Phantom", url:"https://phantom.app/", iconDomain:"phantom.app", note:"Multi-chain" },
+        { name:"WalletConnect", url:"https://walletconnect.com/", iconDomain:"walletconnect.com", note:"Connector" },
+        { name:"Safe", url:"https://safe.global/", iconDomain:"safe.global", note:"Multisig" },
       ];
 
       host.innerHTML = "";
@@ -852,12 +855,37 @@ const roadmap = [
         a.target = "_blank";
         a.rel = "noreferrer noopener";
 
-        const img = document.createElement("img");
-        img.className = "venue-icon";
-        img.src = it.icon;
-        img.alt = it.name;
-        img.loading = "lazy";
-        img.referrerPolicy = "no-referrer";
+        // Accesibilidad: el nombre vive en el aria-label del tile.
+        a.setAttribute("aria-label", it.name || "Wallet");
+
+        const iconWrap = document.createElement("div");
+        iconWrap.className = "venue-iconwrap";
+
+        const addFallback = () => {
+          if(iconWrap.querySelector(".venue-icon-fallback")) return;
+          const fb = document.createElement("div");
+          fb.className = "venue-icon-fallback";
+          fb.textContent = makeIconFallback(it.name);
+          iconWrap.append(fb);
+        };
+
+        const iconSrc = it.icon || (it.iconDomain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(it.iconDomain)}&sz=64` : "");
+
+        if(iconSrc){
+          const img = document.createElement("img");
+          img.className = "venue-icon";
+          img.alt = ""; // <- evita texto superpuesto si falla el icono
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.addEventListener("error", () => {
+            try { img.remove(); } catch {}
+            addFallback();
+          }, { once: true });
+          img.src = iconSrc;
+          iconWrap.append(img);
+        }else{
+          addFallback();
+        }
 
         const meta = document.createElement("div");
         meta.className = "venue-meta";
@@ -871,7 +899,7 @@ const roadmap = [
         note.textContent = it.note || "";
 
         meta.append(n, note);
-        a.append(img, meta);
+        a.append(iconWrap, meta);
         host.append(a);
       });
     }

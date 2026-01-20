@@ -1303,6 +1303,8 @@ h3{margin:0 0 6px;font-size:18px}
   display:block;
   object-fit: contain;
   image-rendering: auto;
+  /* Mejora contraste sobre fondos oscuros sin cambiar colores del icono */
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
 }
 
 .venue-icon-fallback{
