@@ -1567,13 +1567,23 @@ html, body{
 
 .hero-trustbar .trustbar__fill{
   display:block;
-  height:100% !important;
-  min-height:8px !important;
-  width:0%;
-  border-radius:999px;
-  background:linear-gradient(90deg, rgba(233,144,44,1), rgba(0, 255, 170, 0.85));
-  box-shadow:0 0 0 4px rgba(233,144,44,0.10);
-  transition:width .35s ease;
+  height: 100% !important;
+  min-height: 8px !important;
+  border-radius: 999px;
+
+  /* Orange → Yellow → Green (trust progression) */
+  background: linear-gradient(
+    90deg,
+    #e9902c 0%,    /* orange */
+    #f2c94c 50%,   /* yellow */
+    #2ecc71 100%   /* green */
+  );
+
+  box-shadow:
+    0 0 0 4px rgba(233,144,44,0.10),
+    0 0 12px rgba(46,204,113,0.25); /* subtle green glow near high trust */
+
+  transition: width .35s ease;
 }
 
 .hero-trustbar .trustbar-hint{
