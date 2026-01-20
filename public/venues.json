@@ -12,21 +12,49 @@
       "url": "https://www.sushi.com/swap",
       "icon": "https://www.sushi.com/favicon.ico",
       "enabled": false,
-      "note": "Pending"
+      "note": "Coming soon"
     },
     {
       "name": "1inch",
       "url": "https://app.1inch.io/",
       "icon": "https://app.1inch.io/favicon.ico",
       "enabled": false,
-      "note": "Pending"
+      "note": "Coming soon"
     },
     {
       "name": "Matcha",
       "url": "https://matcha.xyz/",
       "icon": "https://matcha.xyz/favicon.ico",
       "enabled": false,
-      "note": "Pending"
+      "note": "Coming soon"
+    },
+    {
+      "name": "PancakeSwap",
+      "url": "https://pancakeswap.finance/swap",
+      "icon": "https://pancakeswap.finance/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
+    },
+    {
+      "name": "Curve",
+      "url": "https://curve.fi/",
+      "icon": "https://curve.fi/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
+    },
+    {
+      "name": "Balancer",
+      "url": "https://balancer.fi/",
+      "icon": "https://balancer.fi/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
+    },
+    {
+      "name": "0x",
+      "url": "https://0x.org/",
+      "icon": "https://0x.org/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
     }
   ],
   "cex": [
@@ -69,6 +97,20 @@
       "name": "Gate.io",
       "url": "https://www.gate.io/",
       "icon": "https://www.gate.io/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
+    },
+    {
+      "name": "KuCoin",
+      "url": "https://www.kucoin.com/",
+      "icon": "https://www.kucoin.com/favicon.ico",
+      "enabled": false,
+      "note": "Coming soon"
+    },
+    {
+      "name": "Upbit",
+      "url": "https://upbit.com/",
+      "icon": "https://upbit.com/favicon.ico",
       "enabled": false,
       "note": "Coming soon"
     }
