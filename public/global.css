@@ -213,6 +213,15 @@ section{padding:24px 0}
 
 @media (max-width: 980px){
   .hero-stats{grid-template-columns:repeat(2, minmax(0, 1fr));max-width:680px}
+  .tokenomics-notes-stack{
+  width: 300px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  /* Pull the stack toward the ring without moving the ring itself */
+  margin-right: -22px;
 }
 @media (max-width: 520px){
   .hero-stats{grid-template-columns:1fr;}
@@ -1752,10 +1761,9 @@ html, body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  /* Tiny optical centering: the notes block makes the ring feel right-shifted.
-     This nudges the whole stage left so the ring sits more centered between notes + rules. */
-  margin-left: -22px;
+  gap: 12px;
+  /* Keep the ring position, but bring the left bubble stack closer to the ring */
+  margin-left: 0;
 }
 
 /* Notes stack (left of ring): 4 bubbles, same width, veiled by default.
@@ -1767,6 +1775,8 @@ html, body{
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /* Pull bubbles toward the ring without shifting the ring itself */
+  margin-right: -24px;
   pointer-events: none;
 }
 
@@ -1818,6 +1828,10 @@ html, body{
   opacity: 0.12;
 }
 
+
+@media (max-width: 980px){
+  .tokenomics-notes-stack{ margin-right: 0; }
+}
 /* The ring uses a conic gradient to exaggerate 97% visually */
 .trust-ring{
   --p-community: 97;
