@@ -1976,3 +1976,22 @@ html, body{
 @media (max-width: 520px){
   .tokenomics-rules{ grid-template-columns: 1fr; }
 }
+
+
+/* Tokenomics micro-tune V35: bring left whispers 2px closer to ring */
+.tokenomics .tokenomics-notes-stack{
+  margin-right: -16px;
+}
+
+/* Title separator styling */
+.section-title--tokenomics{
+  display:flex;
+  align-items:baseline;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+.section-title--tokenomics .tokenomics-sep{
+  color: rgba(255, 156, 50, .95);
+  font-style: italic;
+  font-weight: 700;
+}

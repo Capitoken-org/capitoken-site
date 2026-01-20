@@ -492,7 +492,7 @@ function iconCandidates(it){
   <section class="section" id="tokenomics">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--tokenomics">Tokenomics <span class="tokenomics-kicker">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</span></h2>
+      <h2 class="section-title section-title--tokenomics">Tokenomics<span class="tokenomics-sep"> / </span><span class="tokenomics-kicker">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</span></h2>
 
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
@@ -517,8 +517,6 @@ function iconCandidates(it){
               <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
                 <div class="trust-ring__core">
                   <div class="trust-ring__pct" id="trustRingPct">97%</div>
-                  <div class="trust-ring__label" id="trustRingLabel">Community</div>
-                  <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
                 </div>
               </div>
             </div>
@@ -565,13 +563,11 @@ function iconCandidates(it){
       const ring = document.getElementById('tokenomicsRing');
       const row = document.getElementById('tokenomicsRingRow');
       const pct = document.getElementById('trustRingPct');
-      const label = document.getElementById('trustRingLabel');
-      const sub = document.getElementById('trustRingSub');
-      if(!ring || !pct || !label || !sub) return;
+            if(!ring || !pct) return;
       const segments = {
-        community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
-        ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
-        growth: { pct: '1%', label: 'Growth / Marketing', sub: 'Marketing = memes, not Lambos.' }
+        community: { pct: '97%' },
+        ops: { pct: '2%' },
+        growth: { pct: '1%' }
       };
 
       // Degrees: conic-gradient starts at 0deg (top) and goes clockwise.
@@ -584,8 +580,6 @@ function iconCandidates(it){
         const s = segments[key] || segments.community;
         ring.dataset.seg = key;
         pct.textContent = s.pct;
-        label.textContent = s.label;
-        sub.textContent = s.sub;
       }
 
       function angleFromEvent(ev){
