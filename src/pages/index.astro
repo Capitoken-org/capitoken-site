@@ -347,13 +347,14 @@ const roadmap = [
     // We force a first-choice icon from a CDN that tends to be more stable.
     function forcedIcon(it){
       const n = (it && it.name) ? String(it.name).toLowerCase() : "";
-      // Simple Icons via jsDelivr (stable CDN). These are monochrome but reliable.
+      // External icon overrides (micro-fix): force reliable logos for venues that often return generic favicons.
+      // We still keep the normal cascade (icon.horse -> clearbit -> Google S2) below.
       if(n === "binance"){
-        return "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/binance.svg";
+        // Color version (Binance yellow) from Simple Icons CDN.
+        return "https://cdn.simpleicons.org/binance/f0b90b";
       }
       if(n === "1inch" || n.includes("1inch")){
-        // Simple-icons uses the slug "1inch".
-        return "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/1inch.svg";
+        return "https://cdn.simpleicons.org/1inch/ffffff";
       }
       return "";
     }
