@@ -8,7 +8,10 @@ const DESC =
 // >>> EDITA AQUÍ cuando tengas data real <<<
 const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
 const DEX_PAIR_ADDRESS = "0xb96808b1270A89eA8A237d52df389619f347AeA2"; // opcional
-const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
+const X_HANDLE = "Capitokenorg"; // sin @ (ej: "Capitokenorg")
+const YT_CHANNEL_ID = "UCY5xCVzo-k6hGdR4xhUhTNQ"; // YouTube Channel ID
+const YT_HANDLE = "CapiToken"; // sin @ (ej: "CapiToken")
+const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para mostrar solo botón al canal
 // >>> ------------------------------ <<<
 
 const stats = [
@@ -714,25 +717,75 @@ function iconCandidates(it){
   <section class="section" id="community">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Links, socials, and vibes.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Official socials — X and YouTube.</span></h2>
 
-      <div class="grid" style="margin-top:14px;">
-        <div class="card col-12">
-          <h3>Official X feed</h3>
-          <p class="small">If this embed is blank, your browser/extensions may block it. The link still works.</p>
+      <div class="grid community-grid" style="margin-top:14px;">
+        <!-- X (Twitter) -->
+        <div class="card col-6 community-card">
+          <div class="card__title">Official X</div>
+          <p class="small">If the embed is blank, your browser/extensions may block it. The official link still works.</p>
 
-          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">
-            Open X profile
-          </a>
+          <div class="actions" style="margin-top:10px;">
+            <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer noopener">
+              Open @${X_HANDLE}
+            </a>
+          </div>
 
-          <div style="margin-top:14px;">
+          <div class="community-embed community-embed--x" style="margin-top:14px;">
             <a class="twitter-timeline"
                data-theme="dark"
                data-tweet-limit="3"
+               data-chrome="noheader nofooter noborders transparent"
                href={`https://twitter.com/${X_HANDLE}`}>
                Tweets by {X_HANDLE}
             </a>
           </div>
+
+          <p class="small note" style="margin-top:12px;">
+            Anti-scam: Only trust links published on this website.
+          </p>
+        </div>
+
+        <!-- YouTube (Fixed video) -->
+        <div class="card col-6 community-card">
+          <div class="card__title">Official YouTube</div>
+          <p class="small">Pinned video for announcements, explainers, and community updates.</p>
+
+          <div class="actions" style="margin-top:10px;">
+            <a class="btn btn--primary" href={`https://www.youtube.com/@${YT_HANDLE}`} target="_blank" rel="noreferrer noopener">
+              Open @${YT_HANDLE}
+            </a>
+            <a class="btn" href={`https://www.youtube.com/channel/${YT_CHANNEL_ID}`} target="_blank" rel="noreferrer noopener">
+              Channel ID
+            </a>
+          </div>
+
+          <div class="community-embed community-embed--yt" style="margin-top:14px;">
+            {YT_VIDEO_ID ? (
+              <div class="yt-embed">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${YT_VIDEO_ID}`}
+                  title="Capitoken — Official YouTube Video"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            ) : (
+              <div class="yt-placeholder">
+                <div class="small">
+                  <b>Video fijo pendiente:</b> edita <span class="mono">YT_VIDEO_ID</span> en <span class="mono">index.astro</span>.
+                </div>
+                <div class="small" style="margin-top:8px; opacity:.85;">
+                  Mientras tanto, usa el botón “Open @CapiToken” para ver el canal oficial.
+                </div>
+              </div>
+            )}
+          </div>
+
+          <p class="small note" style="margin-top:12px;">
+            Anti-scam: This is the only official YouTube referenced by Capitoken.
+          </p>
         </div>
       </div>
       </div>
