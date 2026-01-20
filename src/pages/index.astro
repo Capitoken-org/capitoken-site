@@ -497,34 +497,35 @@ function iconCandidates(it){
 
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
-        <div class="tokenomics-ring" id="tokenomicsNarrative" data-seg="community">
-          <!-- Stage keeps the ring at a fixed visual size and places notes OUTSIDE the ring (no blur, no overlap) -->
-          <div class="tokenomics-stage">
-            <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
-              <div class="trust-ring__core">
-                <div class="trust-ring__pct" id="trustRingPct">97%</div>
-                <div class="trust-ring__label" id="trustRingLabel">Community</div>
-                <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
+        <div class="tokenomics-ring" id="tokenomicsNarrative">
+          <!-- Ring + narrative notes in one stage:
+               - Ring stays same size.
+               - Notes live to the LEFT, stacked.
+               - On hover over a ring segment, the matching note slides right ("reveal" effect).
+          -->
+          <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
+            <div class="tokenomics-notes-stack" aria-hidden="true">
+              <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
+              <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
+              <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
+              <div class="whisper whisper--stack" data-whisper="ambient"><span class="whisper__text">🦫 Capibara doesn’t rush. Neither does supply.</span></div>
+            </div>
+
+            <div class="tokenomics-stage">
+              <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
+                <div class="trust-ring__core">
+                  <div class="trust-ring__pct" id="trustRingPct">97%</div>
+                  <div class="trust-ring__label" id="trustRingLabel">Community</div>
+                  <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
+                </div>
               </div>
             </div>
-
-            <!-- Notes anchored around the ring, outside (crisp). They highlight based on data-seg. -->
-            <div class="whisper whisper--note whisper--ops whisper--anchor whisper--anchor-top" aria-hidden="true">
-              🦫 Yes, devs eat too. But just a snack.
-            </div>
-            <div class="whisper whisper--note whisper--community whisper--anchor whisper--anchor-mid" aria-hidden="true">
-              🦫 No whales here. Just chill capis.
-            </div>
-            <div class="whisper whisper--note whisper--growth whisper--anchor whisper--anchor-bot" aria-hidden="true">
-              🦫 Marketing = memes, not Lambos.
-            </div>
           </div>
-
-          <div class="whisper whisper--ambient" aria-hidden="true">🦫 Capibara doesn’t rush. Neither does supply.</div>
         </div>
 
         <!-- TRUST BADGES / RULES -->
         <div class="tokenomics-rules">
+          <!-- Row 1: Fixed Supply (left) + No Hidden Taxes (right) -->
           <div class="card tokenomics-rule">
             <div class="tokenomics-rule__top">🔒 Fixed Supply</div>
             <div class="small">No minting. Ever.</div>
@@ -533,12 +534,14 @@ function iconCandidates(it){
             <div class="tokenomics-rule__top">🧯 No Hidden Taxes</div>
             <div class="small">What you see is what you trade.</div>
           </div>
+
+          <!-- Row 2: Anti-bot (left) + Token Ownership Renounce (right) -->
           <div class="card tokenomics-rule">
             <div class="tokenomics-rule__top">🧠 Anti-bot Phase</div>
             <div class="small">Temporary. Transparent. Timed.</div>
           </div>
           <div class="card tokenomics-rule">
-            <div class="tokenomics-rule__top">🔑 Ownership Renounce</div>
+            <div class="tokenomics-rule__top">🔑 Token Ownership Renounce</div>
             <div class="small">Planned. Announced. Verifiable.</div>
           </div>
 
@@ -558,15 +561,11 @@ function iconCandidates(it){
     // Tokenomics WOW: change ring center copy by hovering segments (no heavy JS)
     (function(){
       const ring = document.getElementById('tokenomicsRing');
-      const narrative = document.getElementById('tokenomicsNarrative');
+      const row = document.getElementById('tokenomicsRingRow');
       const pct = document.getElementById('trustRingPct');
       const label = document.getElementById('trustRingLabel');
       const sub = document.getElementById('trustRingSub');
       if(!ring || !pct || !label || !sub) return;
-      // Mirror current segment on the outer narrative wrapper so side notes can highlight too.
-      if(narrative) narrative.dataset.seg = ring.dataset.seg || 'community';
-      // Keep notes in sync (notes are beside the ring)
-
       const segments = {
         community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
         ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
@@ -582,9 +581,7 @@ function iconCandidates(it){
       function setSeg(key){
         const s = segments[key] || segments.community;
         ring.dataset.seg = key;
-        if(narrative) narrative.dataset.seg = key;
-        if(narrative) narrative.dataset.seg = key;
-        if(narrative) narrative.dataset.seg = key;
+        if(row) row.dataset.active = key;
         pct.textContent = s.pct;
         label.textContent = s.label;
         sub.textContent = s.sub;
@@ -614,7 +611,11 @@ function iconCandidates(it){
         const deg = angleFromEvent(ev);
         setSeg(segFromDeg(deg));
       });
-      ring.addEventListener('mouseleave', () => setSeg('community'));
+      ring.addEventListener('mouseleave', () => {
+        // Resting state: notes stay veiled (no active reveal).
+        if(row) row.dataset.active = 'none';
+        setSeg('community');
+      });
 
       // Mobile: tap cycles (no precision required)
       const order = ['community','ops','growth'];
@@ -626,6 +627,7 @@ function iconCandidates(it){
       }, { passive: false });
 
       // initial
+      if(row) row.dataset.active = 'none';
       setSeg('community');
     })();
   </script>
