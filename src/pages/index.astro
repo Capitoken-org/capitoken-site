@@ -503,42 +503,15 @@ function iconCandidates(it){
                - Notes live to the LEFT, stacked.
                - On hover over a ring segment, the matching note slides right ("reveal" effect).
           -->
-          <div class="tokenomics-interactive" id="tokenomicsRingRow" data-active="none">
-            <!-- Left deck: capi art + reveal notes (parked at the bottom of the panel) -->
-            <div class="tokenomics-leftdeck" aria-hidden="true">
-              <div class="tokenomics-capi">
-                <!-- Inline capi silhouette (self-contained; no new assets/paths) -->
-                <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Capibara">
-                  <defs>
-                    <linearGradient id="capiGlow" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stop-color="rgba(15,157,88,0.45)"/>
-                      <stop offset="1" stop-color="rgba(244,212,89,0.18)"/>
-                    </linearGradient>
-                  </defs>
-                  <path d="M54 122c0-34 30-64 74-64h18c40 0 72 26 72 62v18c0 36-30 64-74 64h-18c-44 0-72-28-72-64v-16z" fill="url(#capiGlow)" opacity="0.75"/>
-                  <path d="M64 136c0-30 28-54 64-54h18c34 0 62 20 62 50v14c0 30-26 52-62 52h-18c-38 0-64-22-64-52v-10z" fill="rgba(0,0,0,0.38)" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
-                  <circle cx="104" cy="138" r="8" fill="rgba(255,255,255,0.72)"/>
-                  <circle cx="152" cy="138" r="8" fill="rgba(255,255,255,0.72)"/>
-                  <circle cx="104" cy="138" r="3" fill="rgba(0,0,0,0.65)"/>
-                  <circle cx="152" cy="138" r="3" fill="rgba(0,0,0,0.65)"/>
-                  <path d="M124 160c8 10 16 10 24 0" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round" fill="none"/>
-                  <path d="M84 112c-10-10-10-22 0-32 12-12 26-12 36 0" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
-                  <path d="M172 112c10-10 10-22 0-32-12-12-26-12-36 0" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
-                </svg>
-              </div>
-
-              <div class="tokenomics-notes-stack">
-                <!-- Left / ring-driven notes -->
-                <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
-                <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
-                <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
-                <div class="whisper whisper--stack" data-whisper="ambient"><span class="whisper__text">🦫 Capibara doesn’t rush. Neither does supply.</span></div>
-
-                <!-- Right / rules-driven notes -->
-                <div class="whisper whisper--stack" data-whisper="fixed"><span class="whisper__text">🦫 Fixed supply. No surprise babies.</span></div>
-                <div class="whisper whisper--stack" data-whisper="taxes"><span class="whisper__text">🦫 No hidden taxes. No sneaky bites.</span></div>
-                <div class="whisper whisper--stack" data-whisper="renounce"><span class="whisper__text">🦫 Token keys go to the river. Verifiable on-chain.</span></div>
-              </div>
+          <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
+            <div class="tokenomics-notes-stack" aria-hidden="true">
+              <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
+              <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
+              <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
+              <div class="whisper whisper--stack" data-whisper="ambient"><span class="whisper__text">🦫 Capibara doesn’t rush. Neither does supply.</span></div>
+              <div class="whisper whisper--stack" data-whisper="fixed"><span class="whisper__text">🦫 Fixed supply. No minting magic.</span></div>
+              <div class="whisper whisper--stack" data-whisper="taxes"><span class="whisper__text">🦫 No hidden taxes. Clean swaps only.</span></div>
+              <div class="whisper whisper--stack" data-whisper="renounce"><span class="whisper__text">🦫 Token keys go to the river. Verifiable on-chain.</span></div>
             </div>
 
             <div class="tokenomics-stage">
@@ -560,7 +533,7 @@ function iconCandidates(it){
             <div class="tokenomics-rule__top">🔒 Fixed Supply</div>
             <div class="small">No minting. Ever.</div>
           </div>
-          <div class="card tokenomics-rule" id="tokenomicsHiddenTaxes">
+          <div class="card tokenomics-rule" id="tokenomicsNoTaxes">
             <div class="tokenomics-rule__top">🧯 No Hidden Taxes</div>
             <div class="small">What you see is what you trade.</div>
           </div>
@@ -655,30 +628,31 @@ function iconCandidates(it){
         const next = order[(order.indexOf(cur)+1) % order.length];
         setSeg(next);
       }, { passive: false });
-      // Rule-card reveals (keep right-side cosmetics unchanged)
+      // Reveal the ambient note when hovering the Anti-bot card (no layout change on the right)
       const antiBotCard = document.getElementById('tokenomicsAntiBot');
-      const fixedCard = document.getElementById('tokenomicsFixedSupply');
-      const taxesCard = document.getElementById('tokenomicsHiddenTaxes');
-      const renounceCard = document.getElementById('tokenomicsRenounce');
-      if(row){
-        if(antiBotCard){
-          antiBotCard.addEventListener('mouseenter', () => { row.dataset.active = 'ambient'; });
-          antiBotCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
-        }
-        if(fixedCard){
-          fixedCard.addEventListener('mouseenter', () => { row.dataset.active = 'fixed'; });
-          fixedCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
-        }
-        if(taxesCard){
-          taxesCard.addEventListener('mouseenter', () => { row.dataset.active = 'taxes'; });
-          taxesCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
-        }
-        if(renounceCard){
-          renounceCard.addEventListener('mouseenter', () => { row.dataset.active = 'renounce'; });
-          renounceCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
-        }
+      if(antiBotCard && row){
+        antiBotCard.addEventListener('mouseenter', () => { row.dataset.active = 'ambient'; });
+        antiBotCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
       }
 
+      // Reveal the right-side rule bubbles without changing the right-side layout.
+      const fixedCard = document.getElementById('tokenomicsFixedSupply');
+      if(fixedCard && row){
+        fixedCard.addEventListener('mouseenter', () => { row.dataset.active = 'fixed'; });
+        fixedCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+      }
+
+      const taxesCard = document.getElementById('tokenomicsNoTaxes');
+      if(taxesCard && row){
+        taxesCard.addEventListener('mouseenter', () => { row.dataset.active = 'taxes'; });
+        taxesCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+      }
+
+      const renounceCard = document.getElementById('tokenomicsRenounce');
+      if(renounceCard && row){
+        renounceCard.addEventListener('mouseenter', () => { row.dataset.active = 'renounce'; });
+        renounceCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+      }
 
       // initial
       if(row) row.dataset.active = 'none';

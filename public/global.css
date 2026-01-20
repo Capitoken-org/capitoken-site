@@ -1729,10 +1729,9 @@ html, body{
   align-items: start;
 }
 
-/* Left side contains the ring, plus the "reveal clouds" parked at the bottom-left */
 .tokenomics-ring{
   position: relative;
-  min-height: 460px; /* leave room for bottom clouds */
+  min-height: 420px;
   display: grid;
   place-items: center;
 }
@@ -1745,36 +1744,13 @@ html, body{
   aspect-ratio: 1 / 1;
 }
 
-/* Interactive stage: ring stays centered; clouds are absolutely parked at bottom-left */
-.tokenomics-interactive{
-  position: relative;
-  width: 100%;
+/* Ring + notes layout (notes sit beside the ring; fixed positions, no hover motion) */
+.tokenomics-ringrow{
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 18px;
 }
-
-.tokenomics-leftdeck{
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 320px;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.tokenomics-capi{
-  width: 260px;
-  max-width: 100%;
-  margin-left: 10px;
-  opacity: 0.22;
-  filter: blur(0.2px);
-}
-
-.tokenomics-capi svg{ width: 100%; height: auto; display: block; }
 
 /* Notes stack (left of ring): 4 bubbles, same width, veiled by default.
    Active bubble "slides right" when the matching ring segment is hovered.
@@ -1785,6 +1761,7 @@ html, body{
   display: flex;
   flex-direction: column;
   gap: 12px;
+  pointer-events: none;
 }
 
 .whisper--stack{
@@ -1795,7 +1772,7 @@ html, body{
 
 .whisper--stack .whisper__text{
   display: block;
-  transform: translateX(-520px); /* fully hidden by default */
+  transform: translateX(-420px);
   transition: transform .28s ease;
 }
 
@@ -1810,24 +1787,23 @@ html, body{
 }
 
 /* Reveal only the active bubble */
-/* Reveal only the active cloud */
-.tokenomics-interactive[data-active="community"] .whisper--stack[data-whisper="community"] .whisper__text,
-.tokenomics-interactive[data-active="ops"] .whisper--stack[data-whisper="ops"] .whisper__text,
-.tokenomics-interactive[data-active="growth"] .whisper--stack[data-whisper="growth"] .whisper__text,
-.tokenomics-interactive[data-active="ambient"] .whisper--stack[data-whisper="ambient"] .whisper__text,
-.tokenomics-interactive[data-active="fixed"] .whisper--stack[data-whisper="fixed"] .whisper__text,
-.tokenomics-interactive[data-active="taxes"] .whisper--stack[data-whisper="taxes"] .whisper__text,
-.tokenomics-interactive[data-active="renounce"] .whisper--stack[data-whisper="renounce"] .whisper__text{
+.tokenomics-ringrow[data-active="community"] .whisper--stack[data-whisper="community"] .whisper__text,
+.tokenomics-ringrow[data-active="ops"] .whisper--stack[data-whisper="ops"] .whisper__text,
+.tokenomics-ringrow[data-active="growth"] .whisper--stack[data-whisper="growth"] .whisper__text,
+.tokenomics-ringrow[data-active="ambient"] .whisper--stack[data-whisper="ambient"] .whisper__text,
+.tokenomics-ringrow[data-active="fixed"] .whisper--stack[data-whisper="fixed"] .whisper__text,
+.tokenomics-ringrow[data-active="taxes"] .whisper--stack[data-whisper="taxes"] .whisper__text,
+.tokenomics-ringrow[data-active="renounce"] .whisper--stack[data-whisper="renounce"] .whisper__text{
   transform: translateX(0);
 }
 
-.tokenomics-interactive[data-active="community"] .whisper--stack[data-whisper="community"]::before,
-.tokenomics-interactive[data-active="ops"] .whisper--stack[data-whisper="ops"]::before,
-.tokenomics-interactive[data-active="growth"] .whisper--stack[data-whisper="growth"]::before,
-.tokenomics-interactive[data-active="ambient"] .whisper--stack[data-whisper="ambient"]::before,
-.tokenomics-interactive[data-active="fixed"] .whisper--stack[data-whisper="fixed"]::before,
-.tokenomics-interactive[data-active="taxes"] .whisper--stack[data-whisper="taxes"]::before,
-.tokenomics-interactive[data-active="renounce"] .whisper--stack[data-whisper="renounce"]::before{
+.tokenomics-ringrow[data-active="community"] .whisper--stack[data-whisper="community"]::before,
+.tokenomics-ringrow[data-active="ops"] .whisper--stack[data-whisper="ops"]::before,
+.tokenomics-ringrow[data-active="growth"] .whisper--stack[data-whisper="growth"]::before,
+.tokenomics-ringrow[data-active="ambient"] .whisper--stack[data-whisper="ambient"]::before,
+.tokenomics-ringrow[data-active="fixed"] .whisper--stack[data-whisper="fixed"]::before,
+.tokenomics-ringrow[data-active="taxes"] .whisper--stack[data-whisper="taxes"]::before,
+.tokenomics-ringrow[data-active="renounce"] .whisper--stack[data-whisper="renounce"]::before{
   opacity: 0.12;
 }
 
@@ -1963,14 +1939,7 @@ html, body{
   .tokenomics-ring{ min-height: auto; }
   .tokenomics-stage{ width: 340px; max-width: 100%; }
   .trust-ring{ width: 340px; max-width: 100%; }
-  .tokenomics-interactive{ flex-direction: column; align-items: center; }
-  .tokenomics-leftdeck{
-    position: static;
-    width: 100%;
-    max-width: 520px;
-    margin-top: 14px;
-  }
-  .tokenomics-capi{ margin: 0 auto; }
+  .tokenomics-ringrow{ flex-direction: column; align-items: center; }
   .tokenomics-notes-stack{ width: 100%; max-width: 520px; }
   .whisper--stack{ width: 100%; max-width: 100%; }
   .whisper--stack .whisper__text{ transform: translateX(0); }
