@@ -1,1945 +1,1207 @@
-/* Capitoken — Global Styles (Brand palette: Deep Green + Gold) */
-
-:root{
-  --brand-green-900:#023125;
-  --brand-green-800:#0b3a2b;
-  --brand-gold:#e9902c;
-  --brand-amber:#b55d09;
-  --brand-muted:#9daaa5;
-
-  --bg:#050c0a;
-  --bg2:#07110e;
-
-  --text:#f2f5f4;
-  --muted:rgba(242,245,244,0.72);
-
-  --panel:rgba(255,255,255,0.04);
-  --panel2:rgba(255,255,255,0.06);
-  --stroke:rgba(255,255,255,0.08);
-  --stroke2:rgba(255,255,255,0.12);
-
-  --shadow:rgba(0,0,0,0.35);
-
-  /* site-wide accent */
-  --accent:var(--brand-gold);
-  --accent2:var(--brand-green-800);
-  --accent3:var(--brand-amber);
-
-  --radius-lg:18px;
-  --radius-md:14px;
-  --radius-sm:12px;
-
-  --container:1120px;
-}
-
-*{box-sizing:border-box}
-html,body{height:100%}
-
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  overflow-x:hidden;
-
-  background:
-    radial-gradient(900px 520px at 18% -10%, rgba(233,144,44,0.16), transparent 62%),
-    radial-gradient(860px 520px at 82% 112%, rgba(11,58,43,0.26), transparent 62%),
-    linear-gradient(180deg, var(--bg), var(--bg2) 55%, #050b09 100%);
-}
-
-img{display:block;max-width:100%;height:auto}
-a{color:var(--accent);text-decoration:none}
-a:hover{color:rgba(233,144,44,0.85)}
-a[aria-disabled="true"]{pointer-events:none;opacity:.55}
-
-.container{
-  width:min(var(--container), calc(100% - 36px));
-  margin:0 auto;
-}
-
-section{padding:24px 0}
-.section{padding:24px 0}
-
-/* separators */
-.hr{
-  border:none;
-  border-top:1px solid rgba(255,255,255,0.06);
-  margin:28px 0;
-}
-
-/* Nav */
-.nav{
-  position:sticky;
-  top:0;
-  z-index:50;
-  backdrop-filter:blur(10px);
-  background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.18));
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.nav__inner{
-  height:96px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
-
-.brand{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-}
-.brand:hover{background:rgba(255,255,255,0.04)}
-.brand__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.brand__name{font-weight:700;letter-spacing:.2px}
-
-.nav__links{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-.nav__links a{
-  color:rgba(242,245,244,0.86);
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid transparent;
-}
-.nav__links a:hover{
-  background:rgba(255,255,255,0.04);
-  border-color:rgba(255,255,255,0.06);
-  color:var(--text);
-}
-
-/* Hero */
-.hero{padding-top:22px;padding-bottom:10px}
-.hero__kicker{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-.pill__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.hero h1{
-  margin:14px 0 10px;
-  font-size:clamp(38px, 4.4vw, 56px);
-  line-height:1.05;
-  letter-spacing:-0.02em;
-}
-.hero__lead{
-  max-width:760px;
-  color:var(--muted);
-  line-height:1.55;
-  margin:0 0 18px;
-}
-
-/* Hero mini-boxes */
-.hero-stats{
-  display:grid;
-  grid-template-columns:repeat(5, minmax(0, 1fr));
-  gap:12px;
-  max-width:760px;
-  margin:10px 0 10px;
-}
-.mini-card{
-  background:rgba(0,0,0,0.33);
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:14px;
-  padding:12px 12px 10px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
-  backdrop-filter:blur(10px);
-}
-.mini-card .k{
-  font-size:11px;
-  letter-spacing:0.04em;
-  text-transform:uppercase;
-  color:rgba(242,245,244,0.62);
-  margin-bottom:6px;
-}
-.mini-card .v{
-  font-size:14px;
-  font-weight:650;
-  color:rgba(242,245,244,0.92);
-  line-height:1.2;
-}
-.mini-card .v.small{font-size:13px;font-weight:600;color:rgba(242,245,244,0.86)}
-
-.mini-card--trust .trustline{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:10px;
-}
-.mini-card--trust .score{
-  font-weight:800;
-  font-size:16px;
-}
-.mini-card--trust .outof{
-  font-weight:650;
-  font-size:12px;
-  color:rgba(242,245,244,0.55);
-}
-.trustbar{
-  height:8px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.08);
-  overflow:hidden;
-  margin-top:10px;
-}
-.trustbar__fill{
-  height:100%;
-  width:0%;
-  border-radius:999px;
-  background:linear-gradient(90deg, rgba(233,144,44,1), rgba(242,245,244,0.85));
-  box-shadow:0 0 0 4px rgba(233,144,44,0.10);
-  transition:width .35s ease;
-}
-
-@media (max-width: 980px){
-  .hero-stats{grid-template-columns:repeat(2, minmax(0, 1fr));max-width:680px}
-}
-@media (max-width: 520px){
-  .hero-stats{grid-template-columns:1fr;}
-}
-
-/* Actions */
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:8px;
-}
-
-/* Buttons */
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:11px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.04);
-  color:var(--text);
-  font-weight:650;
-  transition:transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.btn:hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(255,255,255,0.14);
-  transform:translateY(-1px);
-}
-.btn--primary{
-  background:linear-gradient(180deg, rgba(233,144,44,1), rgba(181,93,9,1));
-  border-color:rgba(0,0,0,0.18);
-  color:#0a130f;
-  box-shadow:0 10px 26px rgba(233,144,44,0.18);
-}
-.btn--primary:hover{box-shadow:0 14px 34px rgba(233,144,44,0.22)}
-.btn--ghost{
-  background:rgba(255,255,255,0.03);
-  border-color:rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.80);
-}
-
-
-/* PRO Pack – compact UI helpers */
-.btn--mini{
-  padding:8px 10px;
-  border-radius:12px;
-  font-size:13px;
-  gap:8px;
-}
-
-.addr-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.addr{
-  max-width: calc(100% - 170px);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.addr-actions{
-  display:flex;
-  gap:8px;
-  flex-shrink:0;
-}
-.addr-details{
-  margin-top:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(0,0,0,0.18);
-}
-.addr-details summary{
-  cursor:pointer;
-  font-size:13px;
-  color:rgba(242,245,244,0.78);
-}
-.addr-details summary:hover{color:rgba(242,245,244,0.92)}
-
-.note{color:rgba(242,245,244,0.70)}
-
-.trust-badges{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:12px 0 4px;
-}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(0,0,0,0.18);
-  color:rgba(242,245,244,0.86);
-  font-size:12px;
-  letter-spacing:0.2px;
-}
-
-/* Make the market / activity table feel less "placeholder" */
-.table{
-  background:rgba(0,0,0,0.12);
-  border-radius:14px;
-  overflow:hidden;
-}
-.table th{position:sticky; top:0; background:rgba(0,0,0,0.28);}
-
-/* Cards + grids */
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:var(--radius-lg);
-  box-shadow:0 20px 60px rgba(0,0,0,0.22);
-  padding:18px;
-}
-
-.grid{display:grid;gap:14px}
-.col-12{grid-column:span 12}
-.col-6{grid-column:span 6}
-.col-4{grid-column:span 4}
-
-@media (min-width:980px){
-  .grid{grid-template-columns:repeat(12,1fr)}
-}
-@media (max-width:979px){
-  .grid{grid-template-columns:1fr}
-  .col-12,.col-6,.col-4{grid-column:auto}
-}
-
-/* Typography helpers */
-.small{font-size:13px;color:rgba(242,245,244,0.72)}
-h2{margin:0 0 8px;font-size:28px;letter-spacing:-0.01em}
-h3{margin:0 0 6px;font-size:18px}
-
-/* Mono helpers used in index.astro */
-.mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  letter-spacing: .2px;
-}
-.pill{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-
-/* Key-value rows used in tokenomics */
-.kv{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  padding:10px 0;
-  border-top:1px solid rgba(255,255,255,0.06);
-}
-.kv:first-child{border-top:none}
-
-/* Table used in Recent Activity */
-.table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  min-width:640px;
-}
-.table th,.table td{
-  text-align:left;
-  padding:12px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.86);
-}
-.table th{
-  font-size:12px;
-  color:rgba(242,245,244,0.68);
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.table tbody tr:hover td{
-  background:rgba(255,255,255,0.03);
-}
-
-/* Footer */
-.footer{
-  margin-top:36px;
-  padding:18px 0 26px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.65);
-}
-/* ===== Launch Panel hard spacing fix ===== */
-#launchpanel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-#launchpanel > section,
-#launchpanel > .card {
-  margin: 0 !important;
-}
-/* === spacing-hotfix-v12 (Launch Panel + cards) === */
-
-/* Secciones dentro de Launch Panel: fuerza separación entre paneles apilados */
-#launchpanel > * + * {
-  margin-top: 16px !important;
-}
-
-/* Si los paneles están dentro de un wrapper, igual aplica separación */
-#launchpanel .panel + .panel,
-#launchpanel .card + .card {
-  margin-top: 16px !important;
-}
-
-/* Evita que el borde “toque” visualmente: padding extra dentro del contenedor */
-#launchpanel {
-  padding-bottom: 6px;
-}
-
-/* Chips/botones de rutas: que no queden pegados */
-#launchpanel .route-actions,
-#launchpanel .route-chips,
-#launchpanel .routes,
-#launchpanel .chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* =====================================================
-   Phase 9.3 PRO Pack – Launch Panel GRID (authoritative)
-   
-   Why this exists:
-   - Older CSS added `#launchpanel .card + .card { margin-top:16px !important; }`
-     which breaks alignment INSIDE a grid row.
-   - We keep the old rule for stacked panels elsewhere, but we MUST neutralize
-     it inside the 2-up Launch Panel rows.
-   ===================================================== */
-
-.launch-grid{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  margin-top:14px;
-}
-
-.launch-row{
-  display:grid;
-  gap:14px;
-  align-items:stretch;
-}
-
-@media (min-width:980px){
-  .launch-row{ grid-template-columns: 1fr 1fr; }
-}
-
-/* Kill legacy spacing-hotfix inside grid rows */
-#launchpanel .launch-row > .card,
-#launchpanel .launch-row .card + .card,
-#launchpanel .launch-grid .card + .card{
-  margin-top:0 !important;
-}
-
-/* Ensure consistent internal alignment for cards in the Launch Panel */
-@media (min-width:980px){
-  #launchpanel .launch-row > .card{
-    display:flex;
-    flex-direction:column;
-  }
-  #launchpanel .card__body{ flex: 1 1 auto; }
-  #launchpanel .card__footer{ margin-top: 12px; }
-}
-
-/* Market/Activity tables should not deform columns */
-#launchpanel .table-wrap{ overflow:auto; }
-
-/* --- Brand / Navbar --- */
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-}
-.brand__logo{
-  width:32px;
-  height:32px;
-  display:block;
-}
-.brand__name{
-  font-weight:800;
-  letter-spacing:0.06em;
-  font-size:14px;
-  line-height:1;
-}
-
-/* === Global full-page background (Option A) === */
-body{
-  position: relative;
-}
-
-body::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background-image: url("/capitoken-site/brand/bg-capy.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.40;
-  transform: translateZ(0);
-}
-
-body::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(900px 520px at 18% -10%, rgba(233,144,44,0.16), transparent 62%),
-    radial-gradient(860px 520px at 82% 112%, rgba(11,58,43,0.26), transparent 62%),
-    linear-gradient(180deg, rgba(5,12,10,0.30), rgba(7,17,14,0.42) 55%, rgba(5,11,9,0.52) 100%);
-}
-
-/* === Navbar brand image (Option A) === */
-.brand{
-  padding: 8px 10px;
-}
-.brand__dot{display:none}
-.brand__name{display:none}
-
-.brand__img{
-  height: 110px;
-  width: auto;
-  display: block;
-  border-radius: 10px; /* mantiene look "badge" */
-  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
-}
-
-@media (max-width: 900px){
-  .nav__inner{height: 86px;}
-  .brand__img{height: 88px;}
-}
-
-@media (max-width: 520px){
-  .nav__inner{height: 78px;}
-  .brand__img{height: 64px;}
-}
-
-/* =========================
-   Phase 8 – Look & Feel PRO + Trust UI
-   Additive layer (does NOT change base-path).
-   ========================= */
-
-:root{
-  --trust-verified:#0F9D58;
-  --trust-warn:#F4B400;
-  --trust-risk:#DB4437;
-  --trust-blue:#1A73E8;
-  --glass: rgba(255,255,255,0.06);
-}
-
-/* Trust badge + pills */
-.trust-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  flex-wrap:wrap;
-}
-
-.trust-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.04);
-  font-weight:800;
-  letter-spacing:.35px;
-  color:rgba(242,245,244,0.92);
-}
-
-.trust-dot{
-  width:10px;height:10px;border-radius:50%;
-  background:var(--trust-warn);
-  box-shadow:0 0 18px rgba(244,180,0,0.55);
-}
-
-.trust-badge.is-verified{
-  border-color:rgba(15,157,88,0.45);
-  background:rgba(15,157,88,0.10);
-  color:var(--trust-verified);
-}
-.trust-badge.is-verified .trust-dot{
-  background:var(--trust-verified);
-  box-shadow:0 0 18px rgba(15,157,88,0.75);
-  animation:trustGlow 2.8s ease-in-out infinite;
-}
-
-.trust-badge.is-warn{
-  border-color:rgba(244,180,0,0.45);
-  background:rgba(244,180,0,0.10);
-  color:rgba(244,180,0,0.95);
-}
-.trust-badge.is-warn .trust-dot{
-  background:var(--trust-warn);
-  box-shadow:0 0 18px rgba(244,180,0,0.75);
-}
-
-@keyframes trustGlow{
-  0%,100%{filter:drop-shadow(0 0 0 rgba(15,157,88,0.0))}
-  50%{filter:drop-shadow(0 0 10px rgba(15,157,88,0.55))}
-}
-
-.pill-dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-
-/* Trust score bar */
-.trust-score{
-  margin-top:16px;
-  max-width:760px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px;
-  padding:14px 14px 12px;
-}
-
-.trust-score__row{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.trust-score__value{font-weight:900;font-size:18px}
-.trust-score__hint{margin-top:10px}
-
-.trust-bar{
-  height:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  overflow:hidden;
-}
-.trust-bar__fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg, rgba(244,180,0,1), rgba(15,157,88,1));
-  transition:width .85s ease;
-}
-
-/* Safety checklist */
-.checklist{
-  display:grid;
-  gap:10px;
-  margin-top:10px;
-}
-.check{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-}
-.check i{
-  width:18px;height:18px;flex:0 0 18px;
-  border-radius:6px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(15,157,88,0.14);
-  border:1px solid rgba(15,157,88,0.28);
-  color:var(--trust-verified);
-  font-style:normal;
-  font-weight:900;
-  margin-top:1px;
-}
-
-/* Modal */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  z-index:200;
-}
-.modal.is-open{display:flex}
-.modal__backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.62);
-  backdrop-filter: blur(4px);
-}
-.modal__card{
-  position:relative;
-  width:min(620px, 100%);
-  border-radius:18px;
-  background:rgba(0,0,0,0.62);
-  border:1px solid rgba(255,255,255,0.14);
-  box-shadow:0 30px 90px rgba(0,0,0,0.55);
-  padding:18px;
-}
-.modal__head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-}
-.modal__title{font-size:18px;font-weight:900;margin:0}
-.modal__x{
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.05);
-  color:rgba(242,245,244,0.9);
-  border-radius:12px;
-  padding:8px 10px;
-  cursor:pointer;
-}
-.modal__x:hover{transform:translateY(-1px)}
-.modal__body{margin-top:12px}
-.modal__row{
-  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
-  padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);
-}
-.modal__row:first-child{border-top:none}
-.modal__footer{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.modal__note{opacity:.78;font-size:13px;margin-top:10px}
-
-/* Live dashboard cards */
-.grid3{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:14px;
-}
-@media (max-width:980px){ .grid3{grid-template-columns:1fr} }
-
-.panel{
-  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:var(--radius-lg);
-  box-shadow:0 20px 60px rgba(0,0,0,0.22);
-  padding:16px;
-}
-.panel__k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,245,244,0.68);font-weight:800}
-.panel__v{margin-top:8px;font-size:22px;font-weight:900}
-
-/* Embedded chart wrapper */
-.embed{
-  border-radius:18px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.03);
-}
-.embed iframe{width:100%;height:520px;border:0;display:block}
-@media (max-width:700px){ .embed iframe{height:560px} }
-
-/* =========================
-   Phase 8.2 – Hero Polish (PRO)
-   Additive overrides only
-   ========================= */
-
-.hero h1{
-  letter-spacing:-0.02em;
-  line-height:1.05;
-  max-width: 920px;
-}
-
-.hero__lead{
-  max-width: 820px;
-  font-size: 18px;
-  line-height: 1.55;
-  opacity: .92;
-}
-
-@media (max-width: 720px){
-  .hero h1{ font-size: 42px; }
-  .hero__lead{ font-size: 16px; }
-}
-
-/* Make trust row feel more premium */
-.trust-row{
-  padding: 10px 0 6px;
-}
-
-/* Pills: cleaner + consistent */
-.pill{
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.04);
-  transition: transform .12s ease, background .12s ease, border-color .12s ease;
-}
-.pill:hover{
-  transform: translateY(-1px);
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.18);
-}
-
-/* Buttons: more professional hover */
-.btn{
-  transition: transform .12s ease, filter .12s ease, background .12s ease, border-color .12s ease;
-}
-.btn:hover{
-  transform: translateY(-1px);
-  filter: brightness(1.06);
-}
-.btn:active{
-  transform: translateY(0px);
-}
-
-/* Trust score card: tighter + glass */
-.trust-score{
-  padding: 14px 16px 14px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 20px 70px rgba(0,0,0,0.28);
-}
-
-.trust-score__row{
-  margin-bottom: 12px;
-}
-
-.trust-score__value{
-  font-size: 20px;
-  letter-spacing: -0.01em;
-}
-
-.trust-bar{
-  height: 9px;
-  border-radius: 999px;
-}
-
-.trust-bar__fill{
-  border-radius: 999px;
-}
-
-/* Badge: stronger contrast */
-.trust-badge{
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.05);
-}
-.trust-badge.is-verified{
-  box-shadow: 0 0 0 4px rgba(15,157,88,0.10);
-}
-.trust-badge.is-warn{
-  box-shadow: 0 0 0 4px rgba(244,180,0,0.10);
-}
-/* Capitoken — Global Styles (Brand palette: Deep Green + Gold) */
-
-:root{
-  --brand-green-900:#023125;
-  --brand-green-800:#0b3a2b;
-  --brand-gold:#e9902c;
-  --brand-amber:#b55d09;
-  --brand-muted:#9daaa5;
-
-  --bg:#050c0a;
-  --bg2:#07110e;
-
-  --text:#f2f5f4;
-  --muted:rgba(242,245,244,0.72);
-
-  --panel:rgba(255,255,255,0.04);
-  --panel2:rgba(255,255,255,0.06);
-  --stroke:rgba(255,255,255,0.08);
-  --stroke2:rgba(255,255,255,0.12);
-
-  --shadow:rgba(0,0,0,0.35);
-
-  /* site-wide accent */
-  --accent:var(--brand-gold);
-  --accent2:var(--brand-green-800);
-  --accent3:var(--brand-amber);
-
-  --radius-lg:18px;
-  --radius-md:14px;
-  --radius-sm:12px;
-
-  --container:1120px;
-}
-
-*{box-sizing:border-box}
-html,body{height:100%}
-
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  overflow-x:hidden;
-
-  background:
-    radial-gradient(900px 520px at 18% -10%, rgba(233,144,44,0.16), transparent 62%),
-    radial-gradient(860px 520px at 82% 112%, rgba(11,58,43,0.26), transparent 62%),
-    linear-gradient(180deg, var(--bg), var(--bg2) 55%, #050b09 100%);
-}
-
-img{display:block;max-width:100%;height:auto}
-a{color:var(--accent);text-decoration:none}
-a:hover{color:rgba(233,144,44,0.85)}
-a[aria-disabled="true"]{pointer-events:none;opacity:.55}
-
-.container{
-  width:min(var(--container), calc(100% - 36px));
-  margin:0 auto;
-}
-
-section{padding:24px 0}
-.section{padding:24px 0}
-
-/* separators */
-.hr{
-  border:none;
-  border-top:1px solid rgba(255,255,255,0.06);
-  margin:28px 0;
-}
-
-/* Nav */
-.nav{
-  position:sticky;
-  top:0;
-  z-index:50;
-  backdrop-filter:blur(10px);
-  background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.18));
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.nav__inner{
-  height:96px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
-
-.brand{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-}
-.brand:hover{background:rgba(255,255,255,0.04)}
-.brand__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.brand__name{font-weight:700;letter-spacing:.2px}
-
-.nav__links{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-.nav__links a{
-  color:rgba(242,245,244,0.86);
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid transparent;
-}
-.nav__links a:hover{
-  background:rgba(255,255,255,0.04);
-  border-color:rgba(255,255,255,0.06);
-  color:var(--text);
-}
-
-/* Hero */
-.hero{padding-top:22px;padding-bottom:10px}
-.hero__kicker{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-.pill__dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
-}
-.hero h1{
-  margin:14px 0 10px;
-  font-size:clamp(38px, 4.4vw, 56px);
-  line-height:1.05;
-  letter-spacing:-0.02em;
-}
-.hero__lead{
-  max-width:760px;
-  color:var(--muted);
-  line-height:1.55;
-  margin:0 0 18px;
-}
-
-/* Actions */
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:8px;
-}
-
-/* Buttons */
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:11px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.04);
-  color:var(--text);
-  font-weight:650;
-  transition:transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.btn:hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(255,255,255,0.14);
-  transform:translateY(-1px);
-}
-.btn--primary{
-  background:linear-gradient(180deg, rgba(233,144,44,1), rgba(181,93,9,1));
-  border-color:rgba(0,0,0,0.18);
-  color:#0a130f;
-  box-shadow:0 10px 26px rgba(233,144,44,0.18);
-}
-.btn--primary:hover{box-shadow:0 14px 34px rgba(233,144,44,0.22)}
-.btn--ghost{
-  background:rgba(255,255,255,0.03);
-  border-color:rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.80);
-}
-
-/* Cards + grids */
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:var(--radius-lg);
-  box-shadow:0 20px 60px rgba(0,0,0,0.22);
-  padding:18px;
-}
-
-.grid{display:grid;gap:14px}
-.col-12{grid-column:span 12}
-.col-6{grid-column:span 6}
-.col-4{grid-column:span 4}
-
-@media (min-width:980px){
-  .grid{grid-template-columns:repeat(12,1fr)}
-}
-@media (max-width:979px){
-  .grid{grid-template-columns:1fr}
-  .col-12,.col-6,.col-4{grid-column:auto}
-}
-
-/* Typography helpers */
-.small{font-size:13px;color:rgba(242,245,244,0.72)}
-h2{margin:0 0 8px;font-size:28px;letter-spacing:-0.01em}
-h3{margin:0 0 6px;font-size:18px}
-
-/* Mono helpers used in index.astro */
-.mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  letter-spacing: .2px;
-}
-.pill{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:rgba(242,245,244,0.88);
-  font-size:13px;
-}
-
-/* Key-value rows used in tokenomics */
-.kv{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  padding:10px 0;
-  border-top:1px solid rgba(255,255,255,0.06);
-}
-.kv:first-child{border-top:none}
-
-/* Table used in Recent Activity */
-.table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  min-width:640px;
-}
-.table th,.table td{
-  text-align:left;
-  padding:12px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.86);
-}
-.table th{
-  font-size:12px;
-  color:rgba(242,245,244,0.68);
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.table tbody tr:hover td{
-  background:rgba(255,255,255,0.03);
-}
-
-/* Footer */
-.footer{
-  margin-top:36px;
-  padding:18px 0 26px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  color:rgba(242,245,244,0.65);
-}
-/* ===== Launch Panel hard spacing fix ===== */
-#launchpanel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-#launchpanel > section,
-#launchpanel > .card {
-  margin: 0 !important;
-}
-/* === spacing-hotfix-v12 (Launch Panel + cards) === */
-
-/* Secciones dentro de Launch Panel: fuerza separación entre paneles apilados */
-#launchpanel > * + * {
-  margin-top: 16px !important;
-}
-
-/* Si los paneles están dentro de un wrapper, igual aplica separación */
-#launchpanel .panel + .panel,
-#launchpanel .card + .card {
-  margin-top: 16px !important;
-}
-
-/* Evita que el borde “toque” visualmente: padding extra dentro del contenedor */
-#launchpanel {
-  padding-bottom: 6px;
-}
-
-/* Chips/botones de rutas: que no queden pegados */
-#launchpanel .route-actions,
-#launchpanel .route-chips,
-#launchpanel .routes,
-#launchpanel .chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-/* --- Brand / Navbar --- */
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-}
-.brand__logo{
-  width:32px;
-  height:32px;
-  display:block;
-}
-.brand__name{
-  font-weight:800;
-  letter-spacing:0.06em;
-  font-size:14px;
-  line-height:1;
-}
-
-   Phase 8.4 – Icon System (SVG)
-   Public assets in /public/icons
-   ========================= */
-.icon{width:18px;height:18px;display:inline-block;vertical-align:-3px}
-.icon--sm{width:16px;height:16px;vertical-align:-3px}
-.icon--lg{width:20px;height:20px;vertical-align:-4px}
-.iconwrap{display:inline-flex;align-items:center;gap:8px}
-.icon-verified{color:var(--trust-verified)}
-.icon-warn{color:var(--trust-warn)}
-.icon-risk{color:var(--trust-risk)}
-.icon-neutral{color:rgba(242,245,244,0.86)}
-
-/* =========================
-   Phase 9 – Trading Venues (DEX/CEX)
-   ========================= */
-.section__head{margin-bottom:14px}
-.venues{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
-@media(max-width:900px){.venues{grid-template-columns:1fr}}
-
-.venue-block{
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 22px;
-  padding: 16px;
-  box-shadow: 0 22px 80px rgba(0,0,0,0.28);
-}
-
-.venue-title{
-  font-weight:900;
-  letter-spacing:-0.01em;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.venue-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-@media(max-width:520px){.venue-grid{grid-template-columns:1fr}}
-
-.venue-tile{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding: 12px 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  text-decoration:none;
-  color: inherit;
-  transition: transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
-}
-.venue-tile:hover{
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.05);
-  box-shadow: 0 14px 50px rgba(0,0,0,0.22);
-}
-
-.venue-tile.is-disabled{
-  opacity: .62;
-  cursor: not-allowed;
-}
-.venue-tile.is-disabled:hover{
-  transform:none;
-  box-shadow:none;
-  border-color: rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-}
-
-/* Icon wrapper: aumenta visibilidad y evita glitches cuando el favicon falla */
-.venue-iconwrap{
-  width:38px;
-  height:38px;
-  display:grid;
-  place-items:center;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.22);
-}
-
-.venue-icon{
-  width:26px;
-  height:26px;
-  border-radius: 8px;
-  display:block;
-  object-fit: contain;
-  image-rendering: auto;
-  /* Mejora contraste sobre fondos oscuros sin cambiar colores del icono */
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
-}
-
-/* Simple-icons SVGs are monochrome; invert them for visibility on dark UI */
-.venue-icon.is-mono{
-  filter: invert(1) drop-shadow(0 2px 6px rgba(0,0,0,0.35));
-}
-
-.venue-icon-fallback{
-  width:26px;
-  height:26px;
-  border-radius: 8px;
-  display:grid;
-  place-items:center;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  font-size: 12px;
-  color: rgba(255,255,255,0.92);
-  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
-  border: 1px solid rgba(255,255,255,0.14);
-}
-
-.venue-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
-.venue-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.venue-note{opacity:.82}
-.venue-hint{margin-top:10px;opacity:.75}
-
-/* =========================
-   Phase 9 – Layout priority helpers
-   ========================= */
-#venues{ scroll-margin-top: 90px; }
-.section{ padding-top: 34px; padding-bottom: 34px; }
-.section + .section{ border-top: 1px solid rgba(255,255,255,0.06); }
-
-/* =========================
-   Phase 9.3 – Launch Panel layout (PRO aligned)
-   ========================= */
-
-/* Grid grouped into two rows in markup (.launch-row) */
-.launch-grid{display:grid;gap:14px;}
-.launch-row{display:grid;gap:14px;align-items:stretch;}
-
-/* Desktop: 2 columns inside each row */
-@media (min-width: 980px){
-  .launch-row{grid-template-columns:repeat(2, minmax(0, 1fr));}
-}
-
-/* Mobile: 1 column */
-@media (max-width: 979px){
-  .launch-row{grid-template-columns:1fr;}
-}
-
-/* Cards stretch to match tallest card in the row */
-.launch-row > .card{
-  align-self:stretch;
-  display:flex;
-  flex-direction:column;
-}
-
-/* New internal structure for perfect alignment */
-.card__body{flex:1 1 auto;}
-.card__footer{margin-top:10px;}
-
-/* Actions spacing (no invalid CSS) */
-.card__footer .actions{margin-top:10px;}
-.card__footer .actions:first-child{margin-top:0;}
-
-/* Table containment so it doesn't break the grid */
-.table-wrap{overflow:auto;}
-@media (min-width: 980px){ .table{min-width:520px;} }
-@media (max-width: 979px){ .table{min-width:560px;} }
-
-/* =====================================================
-   Phase 9.3 – CRITICAL alignment guard
-   Neutralize legacy spacing hotfixes that push the 2nd card down
-   (e.g., `#launchpanel .card + .card { margin-top:16px !important; }`).
-   ===================================================== */
-
-/* inside the Launch Panel grid, cards must NOT get vertical margins */
-#launchpanel .launch-row > .card{ margin-top:0 !important; }
-#launchpanel .launch-row .card + .card{ margin-top:0 !important; }
-
-
-
-/* ===== Phase 9.4 (additive) – match existing card/table styles ===== */
-#launchpanel .table td.buy,
-#launchpanel .table td.sell{
-  font-weight: 800;
-}
-
-/* Keep same spacing rules as top cards */
-#launchpanel .launch-grid{
-  gap: 14px;
-}
-#launchpanel .launch-row{
-  gap: 14px;
-}
-
-/* Ensure cards inside launch grid don't get any legacy margin-top stacking */
-#launchpanel .launch-row > .card{
-  margin-top: 0 !important;
-}
-
-/* =========================================================
-   Capitoken UI Patch v6 — Stats row alignment + zoom drift fix
-   - Keeps Trust as a compact tile (no hero bar)
-   - Prevents horizontal drift when zooming out
-   - Fixes favicon "double background" tiles
-   ========================================================= */
-
-/* Prevent horizontal drift/overflow when zooming */
-html, body{
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Make sure main containers remain centered */
-.container{
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* If any old trust progress bar survives in markup, hide it (we use the Trust tile now) */
-.trust-bar,
-.trust-bar__fill{
-  display: none !important;
-}
-
-/* Stat tiles row (Chain / Status / Focus / Symbol / Trust) */
-.stats-row{
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  width: 100%;
-}
-
-/* Desktop: keep on one line; smaller screens: wrap naturally */
-@media (min-width: 1100px){
-  .stats-row{ flex-wrap: nowrap; }
-}
-@media (max-width: 1099px){
-  .stats-row{ flex-wrap: wrap; }
-}
-
-/* Match vertical rhythm so Trust tile aligns with others */
-.stat-tile{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 14px 14px 12px;
-  border-radius: 14px;
-}
-.stat-tile .small{
-  line-height: 1.1;
-  margin-bottom: 2px;
-}
-.stat-tile b,
-.stat-tile strong{
-  line-height: 1.15;
-}
-
-/* Accessible visually-hidden helper (used by Trust tile hint) */
-.sr-only{
-  position:absolute !important;
-  width:1px !important;
-  height:1px !important;
-  padding:0 !important;
-  margin:-1px !important;
-  overflow:hidden !important;
-  clip:rect(0,0,0,0) !important;
-  white-space:nowrap !important;
-  border:0 !important;
-}
-
-/* Fix: remove extra background/border around favicons that already include their own tile */
-.venue-icon{
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  object-fit: contain;
-}
-
-
-/* === HERO: Inline mini boxes (left) + Trust Score panel (right) ===
-   Authoritative layout for GitHub Pages build.
-   Matches index.astro markup:
-   .hero-stats-row > (.hero-stats-mini) + (.hero-trustbar)
-   .hero-trustbar contains: .trustbar-head, .trustbar, .trustbar__fill, .trustbar-hint
-*/
-
-.hero-stats-row{
-  display:flex;
-  align-items:stretch;
-  gap:12px;
-  margin-top:14px;
-  flex-wrap:nowrap;
-}
-
-.hero-stats-mini{
-  display:flex;
-  gap:12px;
-  flex:0 0 auto;
-  flex-wrap:nowrap;
-}
-
-/* Left mini boxes — premium */
-.hero-stat{
-  min-width: 132px;
-  padding: 12px 12px 10px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.33);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  backdrop-filter: blur(10px);
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-}
-
-.hero-stat .k{
-  font-size:11px;
-  letter-spacing:0.04em;
-  text-transform:uppercase;
-  color:rgba(242,245,244,0.62);
-  margin-bottom:6px;
-  line-height:1.1;
-}
-
-.hero-stat .v{
-  font-size:14px;
-  font-weight:650;
-  color:rgba(242,245,244,0.92);
-  line-height:1.2;
-}
-
-/* Trust Score panel (right) — aligned to TOP with the mini boxes */
-.hero-trustbar{
-  flex: 1 1 520px;
-  min-width: 320px;
-  max-width: none;
-  padding: 12px 14px 12px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.22);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  backdrop-filter: blur(10px);
-
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-}
-
-.hero-trustbar .trustbar-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin: 0 0 10px 0;
-}
-
-.hero-trustbar .trustbar-label{
-  font-size:11px;
-  letter-spacing:0.04em;
-  text-transform:uppercase;
-  color:rgba(242,245,244,0.62);
-  line-height:1.1;
-}
-
-.hero-trustbar .trustbar-value{
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  font-weight:800;
-  font-size:16px;
-  color:rgba(242,245,244,0.92);
-  line-height:1.1;
-}
-
-.hero-trustbar .muted{
-  font-weight:650;
-  font-size:12px;
-  color:rgba(242,245,244,0.55);
-}
-
-/* Force progress bar visible (protect against earlier overrides) */
-.hero-trustbar .trustbar{
-  display:block;
-  height:8px !important;
-  min-height:8px !important;
-  border-radius:999px;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.08);
-  overflow:hidden;
-  margin-top:0;
-}
-
-.hero-trustbar .trustbar__fill{
-  display:block;
-  height: 100% !important;
-  min-height: 8px !important;
-  border-radius: 999px;
-
-  /* Orange → Yellow → Green (trust progression) */
-  background: linear-gradient(
-    90deg,
-    #e9902c 0%,    /* orange */
-    #f2c94c 50%,   /* yellow */
-    #2ecc71 100%   /* green */
-  );
-
-  box-shadow:
-    0 0 0 4px rgba(233,144,44,0.10),
-    0 0 12px rgba(46,204,113,0.25); /* subtle green glow near high trust */
-
-  transition: width .35s ease;
-}
-
-.hero-trustbar .trustbar-hint{
-  margin-top:10px;
-  font-size:13px;
-  color:rgba(242,245,244,0.72);
-  line-height:1.25;
-}
-
-@media (max-width: 980px){
-  .hero-stats-row{flex-wrap:wrap;}
-  .hero-stats-mini{flex-wrap:wrap;}
-  .hero-trustbar{flex-basis:100%; min-width:0;}
-}
-
-
-/* =====================================================
-   Phase 9 UX – Section Framing + Standardized Panel Titles
-   Additive only: does not change paths or architecture.
-   ===================================================== */
-
-.section-block{
-  position: relative;
-  background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.028));
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 22px;
-  padding: 18px 18px 20px;
-  box-shadow: 0 18px 55px rgba(0,0,0,0.28);
-  backdrop-filter: blur(10px);
-}
-
-.section-block::before{
-  content:"";
-  position:absolute;
-  left: 14px;
-  right: 14px;
-  top: 10px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(233,144,44,0.95), rgba(244, 212, 89, 0.92), rgba(15,157,88,0.90));
-  opacity: 0.75;
-}
-
-.section-title{
-  margin: 8px 0 6px;
-  font-size: clamp(26px, 2.2vw, 34px);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  text-align: left;
-}
-
-/* A small subtitle under section titles, if present */
-.section-block > .small,
-.section-block .section__head .small{
-  color: rgba(242,245,244,0.72);
-}
-
-/* Launch Panel / Venues top spacing refinement */
-#launchpanel .section-title,
-#venues .section-title{
-  margin-top: 10px;
-}
-
-/* Standard title inside panels (Contract, DEX Pair, etc.) */
-.card__title,
-.venue-title{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 12px;
-  color: rgba(242,245,244,0.90);
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.26);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-  margin: 0 0 10px;
-}
-
-/* Keep compatibility with previous headings used in some cards */
-#launchpanel .h3{ display:none; }
-#launchpanel .label{ display:none; }
-
-/* Make inner mini-notes consistent */
-.note{ color: rgba(242,245,244,0.72); }
-
-/* Remove any accidental black stroke outlines on inline SVG icons (safety net) */
-.icon, svg.icon{ filter: none; }
-
-@media (max-width: 720px){
-  .section-block{ padding: 16px 14px 18px; border-radius: 20px; }
-  .section-title{ text-align:left; }
-}
-
-/* =====================================================
-   Tokenomics – Trust Ring Narrative (Phase 9 UX)
-   Additive only.
-   ===================================================== */
-
-.tokenomics-wrap{
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 14px;
-  align-items: start;
-}
-
-.tokenomics-ring{
-  position: relative;
-  min-height: 420px;
-  display: grid;
-  place-items: center;
-}
-
-/* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
-.tokenomics-stage{
-  position: relative;
-  width: 360px;
-  max-width: 360px;
-  aspect-ratio: 1 / 1;
-}
-
-/* Ring + notes layout (notes sit beside the ring; fixed positions, no hover motion) */
-.tokenomics-ringrow{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-}
-
-/* Notes stack (left of ring): 4 bubbles, same width, veiled by default.
-   Active bubble "slides right" when the matching ring segment is hovered.
-*/
-.tokenomics-notes-stack{
-  width: 320px;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.whisper--stack{
-  width: 320px;
-  max-width: 320px;
-  overflow: hidden;
-}
-
-.whisper--stack .whisper__text{
-  display: block;
-  transform: translateX(-420px);
-  transition: transform .28s ease;
-}
-
-/* Veil overlay to make "hidden" state feel intentional */
-.whisper--stack::before{
-  content:"";
-  position:absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.42) 40%, rgba(0,0,0,0.0) 78%);
-  opacity: 0.72;
-}
-
-/* Reveal only the active bubble */
-.tokenomics-ringrow[data-active="community"] .whisper--stack[data-whisper="community"] .whisper__text,
-.tokenomics-ringrow[data-active="ops"] .whisper--stack[data-whisper="ops"] .whisper__text,
-.tokenomics-ringrow[data-active="growth"] .whisper--stack[data-whisper="growth"] .whisper__text,
-.tokenomics-ringrow[data-active="ambient"] .whisper--stack[data-whisper="ambient"] .whisper__text{
-  transform: translateX(0);
-}
-
-.tokenomics-ringrow[data-active="community"] .whisper--stack[data-whisper="community"]::before,
-.tokenomics-ringrow[data-active="ops"] .whisper--stack[data-whisper="ops"]::before,
-.tokenomics-ringrow[data-active="growth"] .whisper--stack[data-whisper="growth"]::before,
-.tokenomics-ringrow[data-active="ambient"] .whisper--stack[data-whisper="ambient"]::before{
-  opacity: 0.12;
-}
-
-/* The ring uses a conic gradient to exaggerate 97% visually */
-.trust-ring{
-  --p-community: 97;
-  --p-ops: 2;
-  --p-growth: 1;
-
-  position: relative;
-  width: 360px;
-  aspect-ratio: 1 / 1;
-  border-radius: 999px;
-  padding: 16px;
-  background:
-    conic-gradient(
-      rgba(15,157,88,0.95) 0deg,
-      rgba(15,157,88,0.95) calc(var(--p-community) * 3.6deg),
-      rgba(244, 212, 89, 0.92) calc(var(--p-community) * 3.6deg),
-      rgba(244, 212, 89, 0.92) calc((var(--p-community) + var(--p-ops)) * 3.6deg),
-      rgba(233,144,44,0.95) calc((var(--p-community) + var(--p-ops)) * 3.6deg),
-      rgba(233,144,44,0.95) 360deg
-    );
-  box-shadow:
-    0 30px 90px rgba(0,0,0,0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.18);
-  backdrop-filter: blur(10px);
-  animation: none; /* no motion on the ring itself */
-}
-
-.trust-ring::after{
-  content:"";
-  position:absolute;
-  inset: 18px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.34);
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-.trust-ring__core{
-  position: absolute;
-  inset: 18px;
-  border-radius: 999px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 22px;
-}
-
-.trust-ring__pct{
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  font-size: clamp(46px, 6vw, 64px);
-}
-
-.trust-ring__label{
-  margin-top: 2px;
-  font-weight: 800;
-  font-size: 16px;
-  color: rgba(242,245,244,0.92);
-}
-
-.trust-ring__sub{
-  margin-top: 10px;
-  color: rgba(242,245,244,0.70);
-  max-width: 22ch;
-}
-
-/* (intentionally removed ring motion) */
-
-.whisper{
-  position: relative;
-  z-index: 3;
-  max-width: 34ch;
-  padding: 10px 12px;
-  border-radius: 16px;
-  background: rgba(0,0,0,0.46);
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow:
-    0 18px 55px rgba(0,0,0,0.28),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  color: rgba(242,245,244,0.92);
-  font-size: 12px;
-  line-height: 1.25;
-  opacity: 0.92;
-}
-
-/* Stack bubbles: no tails */
-.whisper--stack::after{ display:none; }
-
-
-.tokenomics-rules{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.tokenomics-rule{
-  padding: 14px;
-}
-
-.tokenomics-rule__top{
-  font-weight: 900;
-  letter-spacing: -0.01em;
-  margin-bottom: 6px;
-}
-
-.tokenomics-split{
-  grid-column: 1 / -1;
-  padding: 14px;
-}
-
-.tokenomics-split__row{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 14px;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.08);
-  margin: 8px 0;
-}
-
-/* Reduce perceived "gap" between label and % */
-.tokenomics-split__row span{ flex: 1; }
-.tokenomics-split__row strong{ width: 56px; text-align: right; }
-
-@media (max-width: 980px){
-  .tokenomics-wrap{ grid-template-columns: 1fr; }
-  .tokenomics-ring{ min-height: auto; }
-  .tokenomics-stage{ width: 340px; max-width: 100%; }
-  .trust-ring{ width: 340px; max-width: 100%; }
-  .tokenomics-ringrow{ flex-direction: column; align-items: center; }
-  .tokenomics-notes-stack{ width: 100%; max-width: 520px; }
-  .whisper--stack{ width: 100%; max-width: 100%; }
-  .whisper--stack .whisper__text{ transform: translateX(0); }
-  .whisper--stack::before{ opacity: 0.12; }
-}
-
-@media (max-width: 520px){
-  .tokenomics-rules{ grid-template-columns: 1fr; }
-}
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const TITLE = "Capitoken (CAPI) — Official Website";
+const DESC =
+  "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
+
+// >>> EDITA AQUÍ cuando tengas data real <<<
+const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
+const DEX_PAIR_ADDRESS = "0xb96808b1270A89eA8A237d52df389619f347AeA2"; // opcional
+const X_HANDLE = "Capitoken"; // sin @ (ej: "Capitoken")
+// >>> ------------------------------ <<<
+
+const stats = [
+  { label: "Chain", value: "Ethereum Mainnet" },
+  { label: "Status", value: "Building" },
+  { label: "Focus", value: "Community-first" },
+  { label: "Symbol", value: "CAPI" },
+];
+
+const tokenomics = [
+  { title: "97% Community", desc: "Broad distribution & liquidity-first mindset." },
+  { title: "2% Operations", desc: "Sustains development, infra, and execution." },
+  { title: "1% Marketing", desc: "Growth loops, listings, and content." },
+];
+
+const roadmap = [
+  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
+  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
+  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
+];
+---
+
+<BaseLayout title={TITLE} description={DESC}>
+  <!-- HERO -->
+  <section class="hero" id="launch">
+    <div class="container reveal reveal--2">
+      <div class="trust-row">
+        <div class="trust-badge" id="trustBadgeHero">
+          <span class="trust-dot" aria-hidden="true"></span>
+          <span id="trustStatusHero">Checking trust…</span>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <a class="pill" href={import.meta.env.BASE_URL + "verify/"} style="text-decoration:none;">
+            <span class="pill-dot" aria-hidden="true"></span>
+            Verify
+          </a>
+          <span class="pill" id="networkPill">
+            <span class="pill-dot" aria-hidden="true"></span>
+            <span>Ethereum Mainnet</span>
+          </span>
+        </div>
+      </div>
+
+      <h1>
+        Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
+      </h1>
+
+      <p class="hero__lead">
+        Deep-green premium design, clear narrative, and verified links — built for adoption.
+        Live market data will appear automatically once the verified contract/pair is published.
+      </p>
+
+      <!-- Mini-boxes (left) + Trust bar (right) in ONE ROW -->
+      <div class="hero-stats-row" aria-label="Quick status">
+        <div class="hero-stats-mini">
+          <div class="hero-stat">
+            <div class="k">Chain</div>
+            <div class="v">Ethereum Mainnet</div>
+          </div>
+          <div class="hero-stat">
+            <div class="k">Status</div>
+            <div class="v">Building</div>
+          </div>
+          <div class="hero-stat">
+            <div class="k">Focus</div>
+            <div class="v">Community-first</div>
+          </div>
+          <div class="hero-stat">
+            <div class="k">Symbol</div>
+            <div class="v">CAPI</div>
+          </div>
+        </div>
+
+        <!-- Trust bar (RIGHT SIDE like your mock) -->
+        <div class="hero-trustbar" data-trust="bar">
+          <div class="trustbar-head">
+            <div class="trustbar-label" id="trustLabelHero">Trust Score</div>
+            <div class="trustbar-value">
+              <span id="trustScoreHero">80</span>
+              <span class="muted">/ 100</span>
+            </div>
+          </div>
+
+          <div
+            class="trustbar"
+            id="trustBarHero"
+            role="progressbar"
+            aria-label="Trust Score"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="80"
+          >
+            <div class="trustbar__fill" id="trustBarFill" style="width: 80%"></div>
+          </div>
+
+          <div class="trustbar-hint" id="trustHintHero" hidden>
+            You are viewing a mirror. The official site is <span id="trustMirrorUrl">https://www.capitoken.org</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- LAUNCH PANEL -->
+  <section class="section" id="launchpanel">
+    <div class="container reveal reveal--3">
+      <div class="section-block">
+      <h2 class="section-title">Launch Panel</h2>
+      <p class="small">Single source of truth for contract, DEX pair, and status.</p>
+
+      <div class="trust-badges" aria-label="Trust badges">
+        <span class="badge" id="badgeContract">Contract: Pending</span>
+        <span class="badge" id="badgePair">Pair: Pending</span>
+        <span class="badge" id="badgeMarket">Market: Pending</span>
+      </div>
+
+      <div class="launch-grid">
+        <div class="launch-row">
+          <!-- Contract -->
+          <div class="card">
+            <div class="card__title">Contract</div>
+
+            <div class="card__body">
+              <div class="addr-row">
+                <span class="mono addr" id="contractShort">TBA — verify only here</span>
+                <div class="addr-actions">
+                  <button class="btn btn--mini btn--primary" id="copyContractBtn" type="button">Copy</button>
+                  <a class="btn btn--mini" id="verifyContractBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+                </div>
+              </div>
+
+              <details class="addr-details" id="contractDetails" style="display:none;">
+                <summary>Show full address</summary>
+                <div class="mono" id="contractFull"></div>
+              </details>
+
+              <div id="accountPill" class="pill" style="margin-top:12px; display:none;">
+                <span class="pill-dot"></span>
+                <span class="mono" id="acct">—</span>
+              </div>
+
+              <p class="small note" style="margin-top:12px;">
+                Read-only verification. No approvals. Never sign "verify" prompts. If it’s not listed on this site, assume it’s not official.
+              </p>
+            </div>
+
+            <div class="card__footer">
+              <div class="small">Wallet tools</div>
+              <div class="actions" style="margin-top:10px;">
+                <button class="btn" id="connectWalletBtn" type="button">Connect Wallet</button>
+                <button class="btn" id="watchTokenBtn" type="button">Add to MetaMask</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEX Pair -->
+          <div class="card">
+            <div class="card__title">DEX Pair</div>
+
+            <div class="card__body">
+              <div class="addr-row">
+                <span class="mono addr" id="pairShort">TBA</span>
+                <div class="addr-actions">
+                  <button class="btn btn--mini btn--primary" id="copyPairBtn" type="button">Copy</button>
+                  <a class="btn btn--mini" id="verifyPairBtn" href="#" target="_blank" rel="noreferrer noopener">Etherscan</a>
+                </div>
+              </div>
+
+              <details class="addr-details" id="pairDetails" style="display:none;">
+                <summary>Show full pair</summary>
+                <div class="mono" id="pairFull"></div>
+              </details>
+
+              <p class="small note" style="margin-top:12px;">
+                Only use official swap links from this panel. Scammers often publish fake pairs.
+              </p>
+            </div>
+
+            <div class="card__footer">
+              <div class="actions">
+                <a class="btn btn--primary" id="buyOnUniswap" href="#" target="_blank" rel="noreferrer noopener nofollow">Buy $CAPI</a>
+                <a class="btn" id="openDexScreener" href="#" target="_blank" rel="noreferrer noopener">Live Market</a>
+              </div>
+
+              <div class="small" style="margin-top:10px;">Quick Uniswap routes</div>
+              <div class="actions" style="margin-top:10px;">
+                <a class="btn route-btn" id="dexWethToCapi" href="#" rel="nofollow noopener">WETH → CAPI</a>
+                <a class="btn route-btn" id="dexCapiToWeth" href="#" rel="nofollow noopener">CAPI → WETH</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="launch-row">
+          <!-- CAPI Pulse (Live) -->
+          <div class="card">
+            <div class="card__title">CAPI Pulse (Live)</div>
+            <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
+
+            <div class="pill" style="margin-top:10px;">
+              <span class="pill-dot"></span>
+              <span id="pulseNetwork">Ethereum Mainnet</span>
+            </div>
+
+            <div class="stats" style="margin-top:14px;">
+              <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
+              <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
+              <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
+              <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
+              <div class="stat"><div class="k">24h Buys / Sells</div><div class="v" id="pulseBS">—</div></div>
+              <div class="stat"><div class="k">Pair age</div><div class="v" id="pulseAge">—</div></div>
+            </div>
+
+            <p class="small" style="margin-top:12px;">
+              If it’s not listed here, it’s not official. Always cross-check the URL.
+            </p>
+          </div>
+
+          <!-- Wallet Hangar -->
+          <div class="card">
+            <div class="card__title">Wallet Hangar</div>
+            <div class="small">Pick your wallet. (Connecting is optional; Launch Panel stays read-only by default.)</div>
+
+            <div class="venue-grid" id="walletGrid" aria-live="polite" style="margin-top:12px;"></div>
+
+            <div class="small" style="margin-top:10px; opacity:.85;">
+              Tip: For maximum safety, verify contract on <b>/verify</b> before importing tokens into any wallet.
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 9 – Trading Venues (DEX / CEX) -->
+  <section class="section" id="venues">
+    <div class="container reveal">
+      <div class="section-block">
+      <div class="section__head">
+        <h2 class="section-title">Trading Venues</h2>
+        <p class="small">
+          Only use official links. If a venue is not listed here, assume it is not official.
+        </p>
+      </div>
+
+      <div class="venues">
+        <div class="venue-block">
+          <div class="venue-title">DEX Enabled</div>
+          <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
+          <div class="small venue-hint">Live once the verified pair is published.</div>
+        </div>
+
+        <div class="venue-block">
+          <div class="venue-title">CEX Listings</div>
+          <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
+          <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    // Phase 9: Trading venues data (editable via /public/venues.json)
+    const makeEl = (tag, attrs = {}, children = []) => {
+      const el = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") el.className = v;
+        else if (k === "html") el.innerHTML = v;
+        else if (v !== undefined) el.setAttribute(k, String(v));
+      }
+      for (const c of children) el.append(c);
+      return el;
+    };
+
+    const safeUrl = (u) => {
+      try { return new URL(u).toString(); } catch { return ""; }
+    };
+
+    // Fallback local (si /public/venues.json no está disponible)
+    // Nota: La lista exacta por “top volumen” cambia día a día.
+    // Aquí dejamos una selección estable de venues grandes y reconocibles.
+    const fallback = {
+      dex: [
+        { name: "Uniswap", url: "https://app.uniswap.org/", iconDomain: "uniswap.org", enabled: true, note: "Enabled" },
+        { name: "PancakeSwap", url: "https://pancakeswap.finance/swap", iconDomain: "pancakeswap.finance", enabled: false, note: "Pending" },
+        { name: "Curve", url: "https://curve.fi/", iconDomain: "curve.fi", enabled: false, note: "Pending" },
+        { name: "Raydium", url: "https://raydium.io/swap/", iconDomain: "raydium.io", enabled: false, note: "Pending" },
+        { name: "Orca", url: "https://www.orca.so/", iconDomain: "orca.so", enabled: false, note: "Pending" },
+        { name: "Aerodrome", url: "https://aerodrome.finance/swap", iconDomain: "aerodrome.finance", enabled: false, note: "Pending" },
+        { name: "SushiSwap", url: "https://www.sushi.com/swap", iconDomain: "sushi.com", enabled: false, note: "Pending" },
+        { name: "1inch", url: "https://app.1inch.io/", iconDomain: "1inch.io", enabled: false, note: "Pending" }
+      ],
+      cex: [
+        // Binance: icono explícito (favicon oficial). Si falla, cae al fallback (iniciales).
+        { name: "Binance", url: "https://www.binance.com/", icon: "https://www.binance.com/favicon.ico", iconDomain: "binance.com", enabled: false, note: "Coming soon" },
+        { name: "Coinbase", url: "https://www.coinbase.com/", iconDomain: "coinbase.com", enabled: false, note: "Coming soon" },
+        { name: "Upbit", url: "https://upbit.com/", iconDomain: "upbit.com", enabled: false, note: "Coming soon" },
+        { name: "OKX", url: "https://www.okx.com/", iconDomain: "okx.com", enabled: false, note: "Coming soon" },
+        { name: "Bybit", url: "https://www.bybit.com/", iconDomain: "bybit.com", enabled: false, note: "Coming soon" },
+        { name: "Bitget", url: "https://www.bitget.com/", iconDomain: "bitget.com", enabled: false, note: "Coming soon" },
+        { name: "Gate", url: "https://www.gate.io/", iconDomain: "gate.io", enabled: false, note: "Coming soon" },
+        { name: "KuCoin", url: "https://www.kucoin.com/", iconDomain: "kucoin.com", enabled: false, note: "Coming soon" }
+      ]
+    };
+
+    async function loadVenues(){
+      const url = new URL("venues.json", window.location.href).toString();
+      try{
+        const r = await fetch(url, { cache: "no-store" });
+        if(!r.ok) throw new Error("venues fetch failed");
+        const data = await r.json();
+        if(!data || (!Array.isArray(data.dex) && !Array.isArray(data.cex))) throw new Error("venues shape invalid");
+        return { dex: Array.isArray(data.dex)? data.dex : [], cex: Array.isArray(data.cex)? data.cex : [] };
+      }catch{
+        return fallback;
+      }
+    }
+
+    function makeIconFallback(name){
+      const s = (name || "?").trim();
+      const parts = s.split(/\s+/).filter(Boolean);
+      const a = (parts[0] || "?").slice(0, 1);
+      const b = (parts[1] || "").slice(0, 1);
+      return (a + b).toUpperCase();
+    }
+
+    // External icon strategy (Option B): multi-source cascade.
+    // Goal: never break layout; if all sources fail -> initials fallback.
+    // Sources (in order): explicit icon URL -> icon.horse -> clearbit -> Google S2.
+    // Some venues (Binance / 1inch) may return generic icons from favicon services.
+    // We force a first-choice icon from a CDN that tends to be more stable.
+    function forcedIcons(it){
+      const n = (it && it.name) ? String(it.name).toLowerCase() : "";
+      const out = [];
+
+      // External icon overrides (micro-fix): force reliable logos for venues that often return generic favicons.
+      // We still keep the normal cascade (icon.horse -> clearbit -> Google S2) below.
+
+      // Binance: brand yellow
+      if(n === "binance"){
+        out.push("https://cdn.simpleicons.org/binance/f0b90b");
+      }
+
+      // 1inch: Simple Icons slug is usually "1inch" (we also try legacy/alt slug)
+      if(n === "1inch" || n.includes("1inch")){
+        out.push("https://cdn.simpleicons.org/1inch/ffffff");
+        out.push("https://cdn.simpleicons.org/oneinch/ffffff");
+      }
+
+      // Balancer
+      if(n === "balancer"){
+        out.push("https://cdn.simpleicons.org/balancer/ffffff");
+      }
+
+      // 0x: try multiple slugs + direct brand domains
+      if(n === "0x" || n === "0x protocol" || n.includes("0x")){
+        out.push("https://cdn.simpleicons.org/0x/ffffff");
+        out.push("https://cdn.simpleicons.org/0xprotocol/ffffff");
+        out.push("https://logo.clearbit.com/0x.org?size=64");
+        out.push("https://icon.horse/icon/0x.org?size=64");
+      }
+
+      // KuCoin: prefer brand green (then white fallback)
+      if(n === "kucoin" || n.includes("kucoin")){
+        out.push("https://cdn.simpleicons.org/kucoin/31cb9e");
+        out.push("https://cdn.simpleicons.org/kucoin/ffffff");
+      }
+
+      // Upbit: prefer brand blue (then white fallback)
+      if(n === "upbit" || n.includes("upbit")){
+        out.push("https://cdn.simpleicons.org/upbit/093687");
+        out.push("https://cdn.simpleicons.org/upbit/ffffff");
+      }
+
+      return out.filter(Boolean);
+    }
+function iconCandidates(it){
+      const out = [];
+      const forced = forcedIcons(it);
+      if(forced && forced.length) forced.forEach((u)=>out.push(u));
+      if(it && it.icon) out.push(String(it.icon));
+      const d = (it && it.iconDomain) ? String(it.iconDomain).trim() : "";
+      if(d){
+        out.push(`https://icon.horse/icon/${encodeURIComponent(d)}?size=64`);
+        out.push(`https://logo.clearbit.com/${encodeURIComponent(d)}?size=64`);
+        out.push(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=64`);
+      }
+      // De-dup while preserving order
+      return out.filter((u, i) => u && out.indexOf(u) === i);
+    }
+
+    function renderGrid(targetId, items){
+      const host = document.getElementById(targetId);
+      if(!host) return;
+
+      host.innerHTML = "";
+      items.forEach((it) => {
+        const href = safeUrl(it.url);
+        const enabled = Boolean(it.enabled) && href;
+        const a = makeEl(enabled ? "a" : "div", {
+          class: "venue-tile" + (enabled ? "" : " is-disabled"),
+          href: enabled ? href : undefined,
+          target: enabled ? "_blank" : undefined,
+          rel: enabled ? "noreferrer noopener" : undefined
+        });
+
+        // Icon: evitamos que el texto del alt se renderice cuando el icono falla.
+        // Accesibilidad: ponemos el nombre en aria-label del tile.
+        a.setAttribute("aria-label", it.name || "Venue");
+
+        const iconWrap = makeEl("div", { class: "venue-iconwrap" });
+
+        const img = makeEl("img", {
+          class: "venue-icon",
+          alt: "", // <- clave para evitar texto superpuesto si falla
+          loading: "lazy",
+          referrerpolicy: "no-referrer"
+        });
+
+        const addFallback = () => {
+          if(iconWrap.querySelector(".venue-icon-fallback")) return;
+          const fb = makeEl("div", { class: "venue-icon-fallback", html: makeIconFallback(it.name) });
+          iconWrap.append(fb);
+        };
+
+        const candidates = iconCandidates(it);
+
+        const setNext = () => {
+          const next = candidates.shift();
+          if(!next){
+            try { img.remove(); } catch {}
+            addFallback();
+            return;
+          }
+          // Simple-icons SVGs can be monochrome. If no explicit color is provided, we boost contrast on dark glass UI.
+          const isSimple = next.includes("cdn.simpleicons.org/");
+          const hasColor = /cdn\.simpleicons\.org\/[^\/]+\/[0-9a-fA-F]{3,6}$/.test(next);
+          img.classList.toggle("is-mono", isSimple && !hasColor);
+          img.setAttribute("src", next);
+        };
+
+        if(!candidates.length){
+          addFallback();
+        }else{
+          img.addEventListener("error", () => {
+            // Try next external source. If all fail, fallback initials.
+            setNext();
+          });
+          // Start with best candidate.
+          setNext();
+          iconWrap.append(img);
+        }
+
+        const name = makeEl("div", { class: "venue-name", html: (it.name || "Venue") });
+        const note = makeEl("div", { class: "venue-note small", html: (it.note || (enabled ? "Enabled" : "Pending")) });
+
+        a.append(iconWrap, makeEl("div", { class: "venue-meta" }, [name, note]));
+        host.append(a);
+      });
+
+      if(!items.length){
+        host.append(makeEl("div", { class: "small", html: "No venues published yet." }));
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const data = await loadVenues();
+      renderGrid("dexGrid", data.dex);
+      renderGrid("cexGrid", data.cex);
+    });
+  </script>
+
+  <hr class="hr" />
+
+  <!-- TOKENOMICS -->
+  <section class="section" id="tokenomics">
+    <div class="container reveal">
+      <div class="section-block">
+      <h2 class="section-title">Tokenomics</h2>
+      <p class="small">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</p>
+
+      <div class="tokenomics-wrap" style="margin-top:16px;">
+        <!-- TRUST RING (narrative) -->
+        <div class="tokenomics-ring" id="tokenomicsNarrative">
+          <!-- Ring + narrative notes in one stage:
+               - Ring stays same size.
+               - Notes live to the LEFT, stacked.
+               - On hover over a ring segment, the matching note slides right ("reveal" effect).
+          -->
+          <div class="tokenomics-interactive" id="tokenomicsRingRow" data-active="none">
+            <!-- Left deck: capi art + reveal notes (parked at the bottom of the panel) -->
+            <div class="tokenomics-leftdeck" aria-hidden="true">
+              <div class="tokenomics-capi">
+                <!-- Inline capi silhouette (self-contained; no new assets/paths) -->
+                <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Capibara">
+                  <defs>
+                    <linearGradient id="capiGlow" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="rgba(15,157,88,0.45)"/>
+                      <stop offset="1" stop-color="rgba(244,212,89,0.18)"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M54 122c0-34 30-64 74-64h18c40 0 72 26 72 62v18c0 36-30 64-74 64h-18c-44 0-72-28-72-64v-16z" fill="url(#capiGlow)" opacity="0.75"/>
+                  <path d="M64 136c0-30 28-54 64-54h18c34 0 62 20 62 50v14c0 30-26 52-62 52h-18c-38 0-64-22-64-52v-10z" fill="rgba(0,0,0,0.38)" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+                  <circle cx="104" cy="138" r="8" fill="rgba(255,255,255,0.72)"/>
+                  <circle cx="152" cy="138" r="8" fill="rgba(255,255,255,0.72)"/>
+                  <circle cx="104" cy="138" r="3" fill="rgba(0,0,0,0.65)"/>
+                  <circle cx="152" cy="138" r="3" fill="rgba(0,0,0,0.65)"/>
+                  <path d="M124 160c8 10 16 10 24 0" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round" fill="none"/>
+                  <path d="M84 112c-10-10-10-22 0-32 12-12 26-12 36 0" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+                  <path d="M172 112c10-10 10-22 0-32-12-12-26-12-36 0" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+                </svg>
+              </div>
+
+              <div class="tokenomics-notes-stack">
+                <!-- Left / ring-driven notes -->
+                <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
+                <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
+                <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
+                <div class="whisper whisper--stack" data-whisper="ambient"><span class="whisper__text">🦫 Capibara doesn’t rush. Neither does supply.</span></div>
+
+                <!-- Right / rules-driven notes -->
+                <div class="whisper whisper--stack" data-whisper="fixed"><span class="whisper__text">🦫 Fixed supply. No surprise babies.</span></div>
+                <div class="whisper whisper--stack" data-whisper="taxes"><span class="whisper__text">🦫 No hidden taxes. No sneaky bites.</span></div>
+                <div class="whisper whisper--stack" data-whisper="renounce"><span class="whisper__text">🦫 Token keys go to the river. Verifiable on-chain.</span></div>
+              </div>
+            </div>
+
+            <div class="tokenomics-stage">
+              <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
+                <div class="trust-ring__core">
+                  <div class="trust-ring__pct" id="trustRingPct">97%</div>
+                  <div class="trust-ring__label" id="trustRingLabel">Community</div>
+                  <div class="trust-ring__sub small" id="trustRingSub">wow, this really is community-first</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRUST BADGES / RULES -->
+        <div class="tokenomics-rules">
+          <!-- Row 1: Fixed Supply (left) + No Hidden Taxes (right) -->
+          <div class="card tokenomics-rule" id="tokenomicsFixedSupply">
+            <div class="tokenomics-rule__top">🔒 Fixed Supply</div>
+            <div class="small">No minting. Ever.</div>
+          </div>
+          <div class="card tokenomics-rule" id="tokenomicsHiddenTaxes">
+            <div class="tokenomics-rule__top">🧯 No Hidden Taxes</div>
+            <div class="small">What you see is what you trade.</div>
+          </div>
+
+          <!-- Row 2: Anti-bot (left) + Token Ownership Renounce (right) -->
+          <div class="card tokenomics-rule" id="tokenomicsAntiBot">
+            <div class="tokenomics-rule__top">🧠 Anti-bot Phase</div>
+            <div class="small">Temporary. Transparent. Timed.</div>
+          </div>
+          <div class="card tokenomics-rule" id="tokenomicsRenounce">
+            <div class="tokenomics-rule__top">🔑 Token Ownership Renounce</div>
+            <div class="small">Planned. Announced. Verifiable.</div>
+          </div>
+
+          <div class="card tokenomics-split">
+            <div class="tokenomics-split__row"><span>🟢 Community</span><strong>97%</strong></div>
+            <div class="tokenomics-split__row"><span>🟡 Ops / Dev</span><strong>2%</strong></div>
+            <div class="tokenomics-split__row"><span>🟠 Growth / Marketing</span><strong>1%</strong></div>
+            <div class="small" style="margin-top:10px;">Tip: Treat this page as the truth source. If it’s not listed here, assume it’s not official.</div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+  <script>
+    // Tokenomics WOW: change ring center copy by hovering segments (no heavy JS)
+    (function(){
+      const ring = document.getElementById('tokenomicsRing');
+      const row = document.getElementById('tokenomicsRingRow');
+      const pct = document.getElementById('trustRingPct');
+      const label = document.getElementById('trustRingLabel');
+      const sub = document.getElementById('trustRingSub');
+      if(!ring || !pct || !label || !sub) return;
+      const segments = {
+        community: { pct: '97%', label: 'Community', sub: 'wow, this really is community-first' },
+        ops: { pct: '2%', label: 'Ops / Dev', sub: 'Yes, devs eat too. But just a snack.' },
+        growth: { pct: '1%', label: 'Growth / Marketing', sub: 'Marketing = memes, not Lambos.' }
+      };
+
+      // Degrees: conic-gradient starts at 0deg (top) and goes clockwise.
+      const pCommunity = 97;
+      const pOps = 2;
+      const endCommunity = pCommunity * 3.6;          // 349.2
+      const endOps = (pCommunity + pOps) * 3.6;       // 356.4
+
+      function setSeg(key){
+        const s = segments[key] || segments.community;
+        ring.dataset.seg = key;
+        if(row) row.dataset.active = key;
+        pct.textContent = s.pct;
+        label.textContent = s.label;
+        sub.textContent = s.sub;
+      }
+
+      function angleFromEvent(ev){
+        const rect = ring.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const x = (ev.clientX ?? (ev.touches && ev.touches[0] && ev.touches[0].clientX)) - cx;
+        const y = (ev.clientY ?? (ev.touches && ev.touches[0] && ev.touches[0].clientY)) - cy;
+        if(!isFinite(x) || !isFinite(y)) return null;
+        let deg = Math.atan2(y, x) * 180 / Math.PI; // -180..180, 0 at +x
+        deg = (deg + 90 + 360) % 360; // 0 at top, clockwise
+        return deg;
+      }
+
+      function segFromDeg(deg){
+        if(deg == null) return 'community';
+        if(deg < endCommunity) return 'community';
+        if(deg < endOps) return 'ops';
+        return 'growth';
+      }
+
+      // Desktop: hover/move
+      ring.addEventListener('mousemove', (ev) => {
+        const deg = angleFromEvent(ev);
+        setSeg(segFromDeg(deg));
+      });
+      ring.addEventListener('mouseleave', () => {
+        // Resting state: notes stay veiled (no active reveal).
+        if(row) row.dataset.active = 'none';
+        setSeg('community');
+      });
+
+      // Mobile: tap cycles (no precision required)
+      const order = ['community','ops','growth'];
+      ring.addEventListener('touchstart', (ev) => {
+        ev.preventDefault();
+        const cur = ring.dataset.seg || 'community';
+        const next = order[(order.indexOf(cur)+1) % order.length];
+        setSeg(next);
+      }, { passive: false });
+      // Rule-card reveals (keep right-side cosmetics unchanged)
+      const antiBotCard = document.getElementById('tokenomicsAntiBot');
+      const fixedCard = document.getElementById('tokenomicsFixedSupply');
+      const taxesCard = document.getElementById('tokenomicsHiddenTaxes');
+      const renounceCard = document.getElementById('tokenomicsRenounce');
+      if(row){
+        if(antiBotCard){
+          antiBotCard.addEventListener('mouseenter', () => { row.dataset.active = 'ambient'; });
+          antiBotCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+        }
+        if(fixedCard){
+          fixedCard.addEventListener('mouseenter', () => { row.dataset.active = 'fixed'; });
+          fixedCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+        }
+        if(taxesCard){
+          taxesCard.addEventListener('mouseenter', () => { row.dataset.active = 'taxes'; });
+          taxesCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+        }
+        if(renounceCard){
+          renounceCard.addEventListener('mouseenter', () => { row.dataset.active = 'renounce'; });
+          renounceCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+        }
+      }
+
+
+      // initial
+      if(row) row.dataset.active = 'none';
+      setSeg('community');
+    })();
+  </script>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="container reveal">
+      <div class="section-block">
+      <h2>Roadmap</h2>
+      <p>Focused phases with clear deliverables.</p>
+
+      <div class="grid" style="margin-top:14px;">
+        {roadmap.map((r) => (
+          <div class="card col-6">
+            <div class="small">{r.phase}</div>
+            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
+              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- DAILY CAPI / NARRATIVE -->
+  <section class="section" id="daily">
+    <div class="container reveal">
+      <div class="section-block">
+      <h2>Daily Capi</h2>
+      <p>
+        Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
+      </p>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Today’s prompt</h3>
+          <p class="small">What should the community prioritize next: memes, utility, listings, or partnerships?</p>
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
+        </div>
+        <div class="card col-6">
+          <h3>Build in public</h3>
+          <p class="small">We publish verified updates here first, then mirror them to socials. Bookmark this page.</p>
+          <a class="btn" href="#launchpanel">Back to Launch Panel</a>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- COMMUNITY -->
+  <section class="section" id="community">
+    <div class="container reveal">
+      <div class="section-block">
+      <h2>Community</h2>
+      <p>
+        Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
+      </p>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-12">
+          <h3>Official X feed</h3>
+          <p class="small">If this embed is blank, your browser/extensions may block it. The link still works.</p>
+
+          <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">
+            Open X profile
+          </a>
+
+          <div style="margin-top:14px;">
+            <a class="twitter-timeline"
+               data-theme="dark"
+               data-tweet-limit="3"
+               href={`https://twitter.com/${X_HANDLE}`}>
+               Tweets by {X_HANDLE}
+            </a>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container reveal">
+      <div class="section-block">
+      <h2>FAQ</h2>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="card col-6">
+          <h3>Where is the official contract?</h3>
+          <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>Is this financial advice?</h3>
+          <p class="small">No. Crypto is high risk. Always do your own research.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>Why verify only here?</h3>
+          <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
+        </div>
+
+        <div class="card col-6">
+          <h3>When live market data?</h3>
+          <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
+
+  <!-- X widget loader -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  <!-- Live + Wallet script -->
+  <script is:inline type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
+    const ENGINE_V = new URL(window.location.href).searchParams.get("v") || "PHASE9PULSE_R1";
+
+    const $id = (id) => document.getElementById(id);
+
+    let explorerBase = "https://etherscan.io";
+    let networkName = "Ethereum Mainnet";
+    let tokenAddr = TOKEN_ADDRESS || "";
+    let pairAddr = DEX_PAIR_ADDRESS || "";
+    let tokenMeta = { symbol: "CAPI", decimals: 18, image: "" };
+
+    const toast = (msg) => {
+      const el = $id("toast");
+      if(!el) return;
+      el.textContent = msg;
+      el.style.opacity = "1";
+      el.style.transform = "translateY(0)";
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(()=>{
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+      }, 1800);
+    };
+
+    async function copyText(val){
+      if(!val) return;
+      try{
+        await navigator.clipboard.writeText(val);
+        toast("Copied");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly","");
+        ta.style.position="absolute";
+        ta.style.left="-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied");
+      }
+    }
+
+    function short(a){
+      if(!a) return "";
+      return a.slice(0,6)+"…"+a.slice(-4);
+    }
+
+    function fmtUSD(n, d=2){
+      if(n === null || n === undefined || Number.isNaN(Number(n))) return "TBA";
+      return Number(n).toLocaleString(undefined, { style:"currency", currency:"USD", maximumFractionDigits:d });
+    }
+
+    function setTxt(id, v){
+      const el = $id(id);
+      if(el) el.textContent = v;
+    }
+    function setWidth(id, pct){
+      const el = $id(id);
+      if(el) el.style.width = `${Math.max(0, Math.min(100, Number(pct)||0))}%`;
+    }
+
+    async function loadRegistry(){
+      try{
+        const url = new URL("official-registry.json", window.location.href).toString() + `?v=${ENGINE_V}`;
+        const r = await fetch(url, { cache:"no-store" });
+        if(!r.ok) throw new Error("registry fetch failed");
+        return await r.json();
+      }catch{
+        return null;
+      }
+    }
+
+    function scoreFrom(reg, isOfficialHost){
+      let s = 60;
+      if(isOfficialHost) s += 20;
+      if(reg?.contract?.verified) s += 10;
+      if(reg?.pair?.address) s += 5;
+      if(reg?.links && Object.keys(reg.links).length) s += 5;
+      return Math.max(0, Math.min(100, s));
+    }
+
+    async function initTrustHero(){
+      const data = await loadRegistry();
+
+      explorerBase = String(data?.network?.explorer || explorerBase);
+      networkName = String(data?.network?.name || networkName);
+      tokenAddr = String(data?.contract?.address || tokenAddr || "");
+      pairAddr = String((data?.pair?.address) || pairAddr || "");
+      tokenMeta = {
+        symbol: String(data?.contract?.token?.symbol || tokenMeta.symbol || "CAPI"),
+        decimals: Number(data?.contract?.token?.decimals ?? tokenMeta.decimals ?? 18),
+        image: String(data?.links?.tokenImage || tokenMeta.image || "")
+      };
+
+      const host = window.location.hostname;
+      const allowed = new Set((data?.allowedDomains || []).map((x) => String(x).toLowerCase()));
+      const isOfficialHost = allowed.size ? allowed.has(String(host).toLowerCase()) : true;
+
+      const score = scoreFrom(data, isOfficialHost);
+      setTxt("trustScoreHero", String(score));
+      setWidth("trustBarFill", score);
+
+      const pb = $id("trustBarHero");
+      if (pb) pb.setAttribute("aria-valuenow", String(score));
+
+      const status = isOfficialHost ? "VERIFIED OFFICIAL DOMAIN" : "MIRROR DOMAIN — VERIFY NOW";
+      setTxt("trustStatusHero", status);
+
+      const hintEl = $id("trustHintHero");
+      const mirrorEl = $id("trustMirrorUrl");
+
+      if(!isOfficialHost){
+        const hint = data?.security?.mirrorNotice || "You are viewing a mirror. Verify on the official domain.";
+        if(hintEl){
+          hintEl.hidden = false;
+          hintEl.textContent = hint;
+        }
+        if(mirrorEl && data?.security?.officialUrl) mirrorEl.textContent = String(data.security.officialUrl);
+      }else{
+        if(hintEl) hintEl.hidden = true;
+      }
+
+      const badge = $id("trustBadgeHero");
+      if (badge) {
+        badge.classList.remove("is-verified", "is-warn");
+        badge.classList.add(isOfficialHost ? "is-verified" : "is-warn");
+      }
+
+      const netPill = $id("networkPill");
+      if (netPill) {
+        const spans = netPill.querySelectorAll("span");
+        if (spans.length) spans[spans.length - 1].textContent = networkName;
+      }
+      setTxt("pulseNetwork", networkName);
+    }
+
+    function setBadge(id, label){
+      const el = $id(id);
+      if(el) el.textContent = label;
+    }
+
+    function setLaunchTexts(){
+      if(tokenAddr){
+        setBadge("badgeContract", "Contract: Live");
+        setTxt("contractShort", short(tokenAddr));
+        setTxt("contractFull", tokenAddr);
+        $id("contractDetails")?.style?.setProperty("display","block");
+        const v = $id("verifyContractBtn");
+        if(v) v.href = `${explorerBase}/token/${tokenAddr}`;
+      }else{
+        setBadge("badgeContract", "Contract: Pending");
+      }
+
+      if(pairAddr){
+        setBadge("badgePair", "Pair: Live");
+        setTxt("pairShort", short(pairAddr));
+        setTxt("pairFull", pairAddr);
+        $id("pairDetails")?.style?.setProperty("display","block");
+        const v = $id("verifyPairBtn");
+        if(v) v.href = `${explorerBase}/address/${pairAddr}`;
+      }else{
+        setBadge("badgePair", "Pair: Pending");
+      }
+    }
+
+    function setDexLinks(){
+      const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+      if(tokenAddr){
+        const buy = `https://app.uniswap.org/#/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
+        const sell = `https://app.uniswap.org/#/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
+        const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : `https://dexscreener.com/ethereum/${tokenAddr}`;
+
+        const aBuy = $id("buyOnUniswap"); if(aBuy) aBuy.href = buy;
+        const aDex = $id("openDexScreener"); if(aDex) aDex.href = dex;
+
+        const r1 = $id("dexWethToCapi"); if(r1) r1.href = buy;
+        const r2 = $id("dexCapiToWeth"); if(r2) r2.href = sell;
+      }
+    }
+
+    async function connectInjected(){
+      try{
+        if(!window.ethereum) { toast("No injected wallet detected"); return; }
+        const accounts = await window.ethereum.request({ method:"eth_requestAccounts" });
+        const a = accounts?.[0];
+        if(!a) return;
+        const pill = $id("accountPill");
+        if(pill) pill.style.display = "inline-flex";
+        setTxt("acct", short(a));
+      }catch(e){
+        console.warn("connectInjected failed", e);
+      }
+    }
+
+    async function watchToken(){
+      try{
+        if(!window.ethereum || !tokenAddr) return;
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddr,
+              symbol: tokenMeta?.symbol || "CAPI",
+              decimals: Number(tokenMeta?.decimals ?? 18),
+              image: tokenMeta?.image || undefined
+            }
+          }
+        });
+        toast("Token added (if supported)");
+      }catch(e){
+        console.warn("watchToken failed", e);
+        toast("Wallet declined / not supported");
+      }
+    }
+
+    function setMarketBadge(txt){
+      setBadge("badgeMarket", txt);
+    }
+
+    function humanAge(ts){
+      if(!ts) return "—";
+      const t = Number(ts);
+      if(!Number.isFinite(t)) return "—";
+      const diff = Date.now() - t;
+      const mins = Math.max(0, Math.floor(diff/60000));
+      if(mins < 60) return `${mins}m`;
+      const hrs = Math.floor(mins/60);
+      if(hrs < 48) return `${hrs}h`;
+      const days = Math.floor(hrs/24);
+      return `${days}d`;
+    }
+
+    async function loadDexScreener(){
+      if(!tokenAddr && !pairAddr) return;
+
+      try{
+        const url = pairAddr
+          ? `https://api.dexscreener.com/latest/dex/pairs/ethereum/${pairAddr}`
+          : `https://api.dexscreener.com/latest/dex/tokens/${tokenAddr}`;
+
+        const r = await fetch(url, { cache:"no-store" });
+        if(!r.ok) throw new Error("dexscreener fetch failed");
+
+        const j = await r.json();
+        const p = (j?.pairs && j.pairs[0]) ? j.pairs[0] : null;
+        if(!p){ setMarketBadge("Market: Indexing"); return; }
+
+        setMarketBadge("Market: Live");
+
+        $id("mPrice").textContent = fmtUSD(p.priceUsd, 8);
+        $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+        $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
+
+        const mc = p?.marketCap ?? p?.fdv ?? null;
+        $id("mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
+
+        const buys = p?.txns?.h24?.buys ?? null;
+        const sells = p?.txns?.h24?.sells ?? null;
+        setTxt("pulseBS", (Number.isFinite(buys) && Number.isFinite(sells)) ? `${buys} / ${sells}` : "—");
+
+        const created = p?.pairCreatedAt ?? null;
+        setTxt("pulseAge", created ? humanAge(created) : "—");
+      }catch(e){
+        setMarketBadge("Market: Blocked");
+        console.warn("DexScreener fetch failed", e);
+      }
+    }
+
+    function renderWalletHangar(){
+      const host = $id("walletGrid");
+      if(!host) return;
+
+      const wallets = [
+        // Nota: usamos el servicio de favicons de Google por dominio para evitar "alt text" superpuesto cuando un favicon falla.
+        // Si igual falla, mostramos un fallback con iniciales.
+        { name:"MetaMask", url:"https://metamask.io/", iconDomain:"metamask.io", note:"Browser / Mobile" },
+        { name:"Trust Wallet", url:"https://trustwallet.com/", iconDomain:"trustwallet.com", note:"Mobile" },
+        { name:"Coinbase Wallet", url:"https://www.coinbase.com/wallet", iconDomain:"coinbase.com", note:"Mobile / Browser" },
+        { name:"Rainbow", url:"https://rainbow.me/", iconDomain:"rainbow.me", note:"Mobile" },
+        { name:"Rabby", url:"https://rabby.io/", iconDomain:"rabby.io", note:"Browser" },
+        { name:"Phantom", url:"https://phantom.app/", iconDomain:"phantom.app", note:"Multi-chain" },
+        { name:"WalletConnect", url:"https://walletconnect.com/", iconDomain:"walletconnect.com", note:"Connector" },
+        { name:"Safe", url:"https://safe.global/", iconDomain:"safe.global", note:"Multisig" },
+      ];
+
+      host.innerHTML = "";
+      wallets.forEach((it) => {
+        const href = (()=>{ try { return new URL(it.url).toString(); } catch { return ""; } })();
+        const a = document.createElement("a");
+        a.className = "venue-tile";
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noreferrer noopener";
+
+        // Accesibilidad: el nombre vive en el aria-label del tile.
+        a.setAttribute("aria-label", it.name || "Wallet");
+
+        const iconWrap = document.createElement("div");
+        iconWrap.className = "venue-iconwrap";
+
+        const addFallback = () => {
+          if(iconWrap.querySelector(".venue-icon-fallback")) return;
+          const fb = document.createElement("div");
+          fb.className = "venue-icon-fallback";
+          fb.textContent = makeIconFallback(it.name);
+          iconWrap.append(fb);
+        };
+
+        const iconSrc = it.icon || (it.iconDomain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(it.iconDomain)}&sz=64` : "");
+
+        if(iconSrc){
+          const img = document.createElement("img");
+          img.className = "venue-icon";
+          img.alt = ""; // <- evita texto superpuesto si falla el icono
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.addEventListener("error", () => {
+            try { img.remove(); } catch {}
+            addFallback();
+          }, { once: true });
+          img.src = iconSrc;
+          iconWrap.append(img);
+        }else{
+          addFallback();
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "venue-meta";
+
+        const n = document.createElement("div");
+        n.className = "venue-name";
+        n.textContent = it.name;
+
+        const note = document.createElement("div");
+        note.className = "venue-note small";
+        note.textContent = it.note || "";
+
+        meta.append(n, note);
+        a.append(iconWrap, meta);
+        host.append(a);
+      });
+    }
+
+    function syncNetworkLabels(){
+      setTxt("pulseNetwork", networkName);
+      document.querySelectorAll('#launchpanel .pill').forEach((pill) => {
+        const spans = pill.querySelectorAll('span');
+        if (spans.length) {
+          const last = spans[spans.length-1];
+          if (last && /ethereum/i.test(last.textContent || '')) last.textContent = networkName;
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      await initTrustHero();
+      setLaunchTexts();
+      setDexLinks();
+      syncNetworkLabels();
+      renderWalletHangar();
+
+      $id("copyContractBtn")?.addEventListener("click", ()=> copyText(tokenAddr));
+      $id("copyPairBtn")?.addEventListener("click", ()=> copyText(pairAddr));
+
+      $id("connectWalletBtn")?.addEventListener("click", connectInjected);
+      $id("watchTokenBtn")?.addEventListener("click", watchToken);
+
+      await loadDexScreener();
+      setInterval(loadDexScreener, 45000);
+    });
+  </script>
+
+  <script is:inline>
+    (function(){
+      try{
+        var url = new URL("build.json", window.location.href).toString();
+        fetch(url, { cache: "no-store" }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+          if(!d || !d.buildId) return;
+          var key = "capitoken_build_id";
+          var prev = localStorage.getItem(key);
+          if(prev && prev !== d.buildId){
+            localStorage.setItem(key, d.buildId);
+            location.reload();
+            return;
+          }
+          if(!prev) localStorage.setItem(key, d.buildId);
+        }).catch(function(){});
+      }catch(e){}
+    })();
+  </script>
+</BaseLayout>
