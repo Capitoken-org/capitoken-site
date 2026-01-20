@@ -1772,7 +1772,7 @@ html, body{
 
 .whisper--stack .whisper__text{
   display: block;
-  transform: translateX(-140px);
+  transform: translateX(-420px);
   transition: transform .28s ease;
 }
 

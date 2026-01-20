@@ -536,7 +536,7 @@ function iconCandidates(it){
           </div>
 
           <!-- Row 2: Anti-bot (left) + Token Ownership Renounce (right) -->
-          <div class="card tokenomics-rule">
+          <div class="card tokenomics-rule" id="tokenomicsAntiBot">
             <div class="tokenomics-rule__top">🧠 Anti-bot Phase</div>
             <div class="small">Temporary. Transparent. Timed.</div>
           </div>
@@ -625,6 +625,13 @@ function iconCandidates(it){
         const next = order[(order.indexOf(cur)+1) % order.length];
         setSeg(next);
       }, { passive: false });
+      // Reveal the ambient note when hovering the Anti-bot card (no layout change on the right)
+      const antiBotCard = document.getElementById('tokenomicsAntiBot');
+      if(antiBotCard && row){
+        antiBotCard.addEventListener('mouseenter', () => { row.dataset.active = 'ambient'; });
+        antiBotCard.addEventListener('mouseleave', () => { row.dataset.active = 'none'; });
+      }
+
 
       // initial
       if(row) row.dataset.active = 'none';
