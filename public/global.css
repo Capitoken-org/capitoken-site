@@ -2071,3 +2071,62 @@ html, body{
 @media (max-width: 979px){
   .community-embed--x{ min-height: 420px; }
 }
+
+/* =====================================================
+   Phase 10 – Navbar polish + Anchor offset fix
+   Goals:
+   1) Bigger, more dominant navbar (logo + menu) without breaking layout.
+   2) Nav links glow/orange on hover.
+   3) Clicking Launch/Panel/Tokenomics/etc. should not hide section titles
+      behind the sticky navbar.
+   ===================================================== */
+
+/* Single source of truth for sticky navbar height */
+:root{ --nav-h: 110px; }
+
+/* Make anchors respect sticky navbar */
+html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
+section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
+
+/* Navbar overall presence */
+.nav__inner{ height: var(--nav-h); }
+
+/* Brand/logo sizing (keep proportion) */
+.brand{
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+.brand:hover{ background: rgba(233,144,44,0.06); }
+
+.brand__img{
+  height: 78px;
+  width: auto;
+  max-height: calc(var(--nav-h) - 22px);
+  border-radius: 12px;
+}
+
+/* Menu sizing + orange hover */
+.nav__links a{
+  font-size: 15px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.nav__links a:hover{
+  color: var(--accent);
+  background: rgba(233,144,44,0.08);
+  border-color: rgba(233,144,44,0.18);
+  box-shadow: 0 10px 26px rgba(233,144,44,0.10);
+}
+
+@media (max-width: 900px){
+  :root{ --nav-h: 96px; }
+  .brand__img{ height: 68px; }
+  .nav__links a{ font-size: 14px; padding: 10px 12px; }
+}
+
+@media (max-width: 520px){
+  :root{ --nav-h: 86px; }
+  .brand__img{ height: 60px; }
+  .nav__links{ gap: 6px; }
+}
