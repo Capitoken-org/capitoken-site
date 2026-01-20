@@ -1307,6 +1307,11 @@ h3{margin:0 0 6px;font-size:18px}
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
 }
 
+/* Simple-icons SVGs are monochrome; invert them for visibility on dark UI */
+.venue-icon.is-mono{
+  filter: invert(1) drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+}
+
 .venue-icon-fallback{
   width:26px;
   height:26px;

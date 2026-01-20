@@ -343,8 +343,24 @@ const roadmap = [
     // External icon strategy (Option B): multi-source cascade.
     // Goal: never break layout; if all sources fail -> initials fallback.
     // Sources (in order): explicit icon URL -> icon.horse -> clearbit -> Google S2.
+    // Some venues (Binance / 1inch) may return generic icons from favicon services.
+    // We force a first-choice icon from a CDN that tends to be more stable.
+    function forcedIcon(it){
+      const n = (it && it.name) ? String(it.name).toLowerCase() : "";
+      // Simple Icons via jsDelivr (stable CDN). These are monochrome but reliable.
+      if(n === "binance"){
+        return "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/binance.svg";
+      }
+      if(n === "1inch" || n.includes("1inch")){
+        // Simple-icons uses the slug "1inch".
+        return "https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/1inch.svg";
+      }
+      return "";
+    }
     function iconCandidates(it){
       const out = [];
+      const forced = forcedIcon(it);
+      if(forced) out.push(forced);
       if(it && it.icon) out.push(String(it.icon));
       const d = (it && it.iconDomain) ? String(it.iconDomain).trim() : "";
       if(d){
@@ -398,6 +414,12 @@ const roadmap = [
             try { img.remove(); } catch {}
             addFallback();
             return;
+          }
+          // Simple-icons SVGs are monochrome; make them visible on dark glass UI.
+          if(next.includes("cdn.jsdelivr.net/npm/simple-icons")){
+            img.classList.add("is-mono");
+          }else{
+            img.classList.remove("is-mono");
           }
           img.setAttribute("src", next);
         };
