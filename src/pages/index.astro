@@ -44,10 +44,7 @@ const roadmap = [
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
           <a class="pill" href={import.meta.env.BASE_URL + "verify/"} style="text-decoration:none;">
             <span class="pill-dot" aria-hidden="true"></span>
-            <span class="iconwrap">
-              <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
-              <span>Verify</span>
-            </span>
+            Verify
           </a>
           <span class="pill" id="networkPill">
             <span class="pill-dot" aria-hidden="true"></span>
@@ -121,12 +118,8 @@ const roadmap = [
   <!-- LAUNCH PANEL -->
   <section class="section" id="launchpanel">
     <div class="container reveal reveal--3">
-      <h2>
-        <span class="iconwrap">
-          <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
-          <span>Launch Panel</span>
-        </span>
-      </h2>
+      <div class="section-block">
+      <h2 class="section-title">Launch Panel</h2>
       <p class="small">Single source of truth for contract, DEX pair, and status.</p>
 
       <div class="trust-badges" aria-label="Trust badges">
@@ -139,7 +132,7 @@ const roadmap = [
         <div class="launch-row">
           <!-- Contract -->
           <div class="card">
-            <div class="label">Contract</div>
+            <div class="card__title">Contract</div>
 
             <div class="card__body">
               <div class="addr-row">
@@ -176,7 +169,7 @@ const roadmap = [
 
           <!-- DEX Pair -->
           <div class="card">
-            <div class="label">DEX Pair</div>
+            <div class="card__title">DEX Pair</div>
 
             <div class="card__body">
               <div class="addr-row">
@@ -215,7 +208,7 @@ const roadmap = [
         <div class="launch-row">
           <!-- CAPI Pulse (Live) -->
           <div class="card">
-            <div class="h3">CAPI Pulse (Live)</div>
+            <div class="card__title">CAPI Pulse (Live)</div>
             <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
 
             <div class="pill" style="margin-top:10px;">
@@ -239,7 +232,7 @@ const roadmap = [
 
           <!-- Wallet Hangar -->
           <div class="card">
-            <div class="h3">Wallet Hangar</div>
+            <div class="card__title">Wallet Hangar</div>
             <div class="small">Pick your wallet. (Connecting is optional; Launch Panel stays read-only by default.)</div>
 
             <div class="venue-grid" id="walletGrid" aria-live="polite" style="margin-top:12px;"></div>
@@ -250,14 +243,16 @@ const roadmap = [
           </div>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
   <!-- PHASE 9 – Trading Venues (DEX / CEX) -->
   <section class="section" id="venues">
     <div class="container reveal">
+      <div class="section-block">
       <div class="section__head">
-        <h2>Trading Venues</h2>
+        <h2 class="section-title">Trading Venues</h2>
         <p class="small">
           Only use official links. If a venue is not listed here, assume it is not official.
         </p>
@@ -265,26 +260,17 @@ const roadmap = [
 
       <div class="venues">
         <div class="venue-block">
-          <div class="venue-title">
-            <span class="iconwrap">
-              <img class="icon icon--sm icon-verified" src={import.meta.env.BASE_URL + "icons/shield.svg"} alt="" />
-              <span>DEX Enabled</span>
-            </span>
-          </div>
+          <div class="venue-title">DEX Enabled</div>
           <div class="venue-grid" id="dexGrid" aria-live="polite"></div>
           <div class="small venue-hint">Live once the verified pair is published.</div>
         </div>
 
         <div class="venue-block">
-          <div class="venue-title">
-            <span class="iconwrap">
-              <img class="icon icon--sm icon-neutral" src={import.meta.env.BASE_URL + "icons/lock.svg"} alt="" />
-              <span>CEX Listings</span>
-            </span>
-          </div>
+          <div class="venue-title">CEX Listings</div>
           <div class="venue-grid" id="cexGrid" aria-live="polite"></div>
           <div class="small venue-hint">CEX links will appear here once official listings go live.</div>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -383,6 +369,7 @@ const roadmap = [
   <!-- TOKENOMICS -->
   <section class="section" id="tokenomics">
     <div class="container reveal">
+      <div class="section-block">
       <h2>Tokenomics</h2>
       <p>Simple allocation — 97 / 2 / 1.</p>
 
@@ -400,6 +387,7 @@ const roadmap = [
           <div class="kv"><strong>Marketing</strong><span>1%</span></div>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
@@ -408,6 +396,7 @@ const roadmap = [
   <!-- ROADMAP -->
   <section class="section" id="roadmap">
     <div class="container reveal">
+      <div class="section-block">
       <h2>Roadmap</h2>
       <p>Focused phases with clear deliverables.</p>
 
@@ -422,6 +411,7 @@ const roadmap = [
           </div>
         ))}
       </div>
+      </div>
     </div>
   </section>
 
@@ -430,6 +420,7 @@ const roadmap = [
   <!-- DAILY CAPI / NARRATIVE -->
   <section class="section" id="daily">
     <div class="container reveal">
+      <div class="section-block">
       <h2>Daily Capi</h2>
       <p>
         Short daily thoughts we can recycle to X/Twitter, plus community prompts. (We can later convert this into a real blog.)
@@ -447,6 +438,7 @@ const roadmap = [
           <a class="btn" href="#launchpanel">Back to Launch Panel</a>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
@@ -455,6 +447,7 @@ const roadmap = [
   <!-- COMMUNITY -->
   <section class="section" id="community">
     <div class="container reveal">
+      <div class="section-block">
       <h2>Community</h2>
       <p>
         Live social embeds + feedback loop. Next step: add Discord/Telegram widgets once your official URLs are final.
@@ -479,6 +472,7 @@ const roadmap = [
           </div>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
@@ -487,6 +481,7 @@ const roadmap = [
   <!-- FAQ -->
   <section class="section" id="faq">
     <div class="container reveal">
+      <div class="section-block">
       <h2>FAQ</h2>
 
       <div class="grid" style="margin-top:14px;">
@@ -509,6 +504,7 @@ const roadmap = [
           <h3>When live market data?</h3>
           <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
         </div>
+      </div>
       </div>
     </div>
   </section>

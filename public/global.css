@@ -1599,64 +1599,85 @@ html, body{
   .hero-trustbar{flex-basis:100%; min-width:0;}
 }
 
-/* =========================================================
-   OPTION D – UX polish patch (ADD ONLY)
-   - No architecture/path changes
-   - No JS changes
-   ========================================================= */
 
-/* Avoid rare horizontal drift when zooming */
-.hero-stats-row,
-.hero-stats-mini{
-  max-width: 100%;
+/* =====================================================
+   Phase 9 UX – Section Framing + Standardized Panel Titles
+   Additive only: does not change paths or architecture.
+   ===================================================== */
+
+.section-block{
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.028));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 22px;
+  padding: 18px 18px 20px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.28);
+  backdrop-filter: blur(10px);
 }
 
-/* Premium micro-interactions (no layout shifts) */
-.hero-stat,
-.hero-trustbar,
-.card,
-.venue-tile,
-.btn,
-.pill{
-  transition:
-    transform .12s ease,
-    background .12s ease,
-    border-color .12s ease,
-    box-shadow .12s ease,
-    filter .12s ease;
+.section-block::before{
+  content:"";
+  position:absolute;
+  left: 14px;
+  right: 14px;
+  top: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(233,144,44,0.95), rgba(244, 212, 89, 0.92), rgba(15,157,88,0.90));
+  opacity: 0.75;
 }
 
-.hero-stat:hover,
-.hero-trustbar:hover{
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.16);
-  background: rgba(0,0,0,0.36);
-  box-shadow: 0 14px 46px rgba(0,0,0,0.26);
+.section-title{
+  margin: 8px 0 6px;
+  font-size: clamp(26px, 2.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-align: left;
 }
 
-/* Accessible focus states */
-.btn:focus-visible,
-.pill:focus-visible,
-a.btn:focus-visible,
-.route-btn:focus-visible{
-  outline: 2px solid rgba(242,201,76,0.65);
-  outline-offset: 2px;
+/* A small subtitle under section titles, if present */
+.section-block > .small,
+.section-block .section__head .small{
+  color: rgba(242,245,244,0.72);
 }
 
-/* Ensure Trust bar always shows even if some old rule hides it */
-.hero-trustbar .trustbar{
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-.hero-trustbar .trustbar__fill{
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+/* Launch Panel / Venues top spacing refinement */
+#launchpanel .section-title,
+#venues .section-title{
+  margin-top: 10px;
 }
 
-/* Make the Trust bar read better in small widths (keeps harmony) */
-@media (max-width: 520px){
-  .hero-trustbar{ padding: 12px 12px 11px; }
-  .hero-trustbar .trustbar-value{ font-size: 15px; }
+/* Standard title inside panels (Contract, DEX Pair, etc.) */
+.card__title,
+.venue-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: rgba(242,245,244,0.90);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.26);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  margin: 0 0 10px;
+}
+
+/* Keep compatibility with previous headings used in some cards */
+#launchpanel .h3{ display:none; }
+#launchpanel .label{ display:none; }
+
+/* Make inner mini-notes consistent */
+.note{ color: rgba(242,245,244,0.72); }
+
+/* Remove any accidental black stroke outlines on inline SVG icons (safety net) */
+.icon, svg.icon{ filter: none; }
+
+@media (max-width: 720px){
+  .section-block{ padding: 16px 14px 18px; border-radius: 20px; }
+  .section-title{ text-align:left; }
 }
