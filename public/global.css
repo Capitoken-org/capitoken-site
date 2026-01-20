@@ -1512,7 +1512,9 @@ html, body{
 
 /* Left mini boxes — premium */
 .hero-stat{
-  min-width: 132px;
+  width: 160px;
+  min-width: 160px;
+  min-height: 96px;
   padding: 12px 12px 10px;
   border-radius: 14px;
   background: rgba(0,0,0,0.33);
@@ -1521,7 +1523,9 @@ html, body{
   backdrop-filter: blur(10px);
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 
 .hero-stat .k{
@@ -1529,7 +1533,7 @@ html, body{
   letter-spacing:0.04em;
   text-transform:uppercase;
   color:rgba(242,245,244,0.62);
-  margin-bottom:6px;
+  margin-bottom:4px;
   line-height:1.1;
 }
 
@@ -2082,7 +2086,7 @@ html, body{
    ===================================================== */
 
 /* Single source of truth for sticky navbar height */
-:root{ --nav-h: 132px; }
+:root{ --nav-h: 152px; }
 
 /* Make anchors respect sticky navbar */
 html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
@@ -2093,13 +2097,17 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 
 /* Brand/logo sizing (keep proportion) */
 .brand{
-  padding: 10px 12px;
-  border-radius: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  min-width: 290px;
+  background: rgba(0,0,0,0.26);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.32);
 }
 .brand:hover{ background: rgba(233,144,44,0.06); }
 
 .brand__img{
-  height: 92px;
+  height: 120px;
   width: auto;
   max-height: calc(var(--nav-h) - 22px);
   border-radius: 12px;
@@ -2123,13 +2131,15 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 @media (max-width: 900px){
-  :root{ --nav-h: 108px; }
-  .brand__img{ height: 76px; }
+  :root{ --nav-h: 124px; }
+  .brand{ min-width: 240px; padding: 12px 14px; border-radius: 16px; }
+  .brand__img{ height: 94px; }
   .nav__links a{ font-size: 14px; padding: 10px 12px; }
 }
 
 @media (max-width: 520px){
-  :root{ --nav-h: 96px; }
-  .brand__img{ height: 66px; }
+  :root{ --nav-h: 108px; }
+  .brand{ min-width: 200px; padding: 10px 12px; border-radius: 14px; }
+  .brand__img{ height: 78px; }
   .nav__links{ gap: 6px; }
 }
