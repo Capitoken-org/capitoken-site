@@ -16,8 +16,8 @@ const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para m
 
 const stats = [
   { label: "Chain", value: "Ethereum Mainnet" },
-  { label: "Status", value: "Live" },
-  { label: "Focus", value: "Community-owned" },
+  { label: "Status", value: "Building" },
+  { label: "Focus", value: "Community-first" },
   { label: "Symbol", value: "CAPI" },
 ];
 
@@ -28,30 +28,9 @@ const tokenomics = [
 ];
 
 const roadmap = [
-  {
-    phase: "Phase 1",
-    title: "Foundation",
-    objective: "Build trust, clarity, and a single source of truth.",
-    items: ["Brand & Identity", "Website & Documentation", "On-Chain Transparency"],
-  },
-  {
-    phase: "Phase 2",
-    title: "Launch Prep",
-    objective: "Engineer a clean, fair, and controlled market entry.",
-    items: ["Launch Engineering", "Temporary Anti-Bot & Anti-Whale", "Verification Ready"],
-  },
-  {
-    phase: "Phase 3",
-    title: "Expansion",
-    objective: "Grow distribution, visibility, and ecosystem trust.",
-    items: ["Listings & Indexation", "Ecosystem Integrations", "Community Growth"],
-  },
-  {
-    phase: "Phase 4",
-    title: "Future (Community-Led)",
-    objective: "Enable real-world relevance and long-term adoption.",
-    items: ["CAPI PASS (NFT Membership)", "CAPI IRL Toolkit", "CAPI Arena", "Proof-of-Good"],
-  },
+  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
+  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
+  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
 ];
 ---
 
@@ -78,12 +57,12 @@ const roadmap = [
       </div>
 
       <h1>
-        Capitoken (CAPI) is <span style="color: var(--accent)">live on Ethereum</span> — verified, transparent, and community-owned.
+        Capitoken is building a <span style="color: var(--accent)">community-first</span> memecoin ecosystem.
       </h1>
 
       <p class="hero__lead">
-        Verify-first launch engineering, on-chain clarity, and official links you can trust.
-        Join the chillest experiment in collective ownership — built to grow with the community.
+        Deep-green premium design, clear narrative, and verified links — built for adoption.
+        Live market data will appear automatically once the verified contract/pair is published.
       </p>
 
       <!-- Mini-boxes (left) + Trust bar (right) in ONE ROW -->
@@ -95,11 +74,11 @@ const roadmap = [
           </div>
           <div class="hero-stat">
             <div class="k">Status</div>
-            <div class="v">Live</div>
+            <div class="v">Building</div>
           </div>
           <div class="hero-stat">
             <div class="k">Focus</div>
-            <div class="v">Community-owned</div>
+            <div class="v">Community-first</div>
           </div>
           <div class="hero-stat">
             <div class="k">Symbol</div>
@@ -691,7 +670,7 @@ function iconCandidates(it){
   <section class="section" id="roadmap">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Phases, progress, and what’s next.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash">/</span><span class="title-kicker">From Launch To a Community Future.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         {roadmap.map((r) => (
@@ -704,8 +683,6 @@ function iconCandidates(it){
           </div>
         ))}
       </div>
-      <div class="small" style="margin-top:14px; opacity:.9;">All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.</div>
-
       </div>
     </div>
   </section>
