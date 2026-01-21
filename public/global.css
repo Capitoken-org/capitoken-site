@@ -88,10 +88,17 @@ section{padding:24px 0}
   display:inline-flex;
   align-items:center;
   gap:10px;
-  padding:2px 4px;
-  border-radius:12px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  line-height:0;
 }
-.brand:hover{background:rgba(255,255,255,0.04)}
+.brand:hover{background:transparent}
+.brand:focus-visible{
+  outline:2px solid rgba(46,229,157,0.55);
+  outline-offset:4px;
+  border-radius:10px;
+}
 .brand__dot{
   width:10px;height:10px;border-radius:999px;
   background:rgba(46,229,157,0.95);
