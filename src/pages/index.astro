@@ -28,9 +28,38 @@ const tokenomics = [
 ];
 
 const roadmap = [
-  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
-  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
-  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
+  {
+    id: "phase-1",
+    phase: "Phase 1",
+    title: "Foundation",
+    status: "ACTIVE",
+    objective: "Build trust, clarity, and a single source of truth.",
+    items: ["Brand & Identity", "Website & Documentation", "On-Chain Transparency"],
+  },
+  {
+    id: "phase-2",
+    phase: "Phase 2",
+    title: "Launch Prep",
+    status: "NEXT",
+    objective: "Engineer a clean, fair, and controlled market entry.",
+    items: ["Launch Engineering", "Temporary Anti-Bot & Anti-Whale", "Verification Ready"],
+  },
+  {
+    id: "phase-3",
+    phase: "Phase 3",
+    title: "Expansion",
+    status: "LATER",
+    objective: "Grow distribution, visibility, and ecosystem trust.",
+    items: ["Listings & Indexation", "Ecosystem Integrations", "Community Growth"],
+  },
+  {
+    id: "phase-4",
+    phase: "Phase 4",
+    title: "Future (Community-Led)",
+    status: "FUTURE",
+    objective: "Enable real-world relevance and long-term adoption.",
+    items: ["CAPI PASS (NFT Membership)", "CAPI IRL Toolkit", "CAPI Arena", "Proof-of-Good"],
+  },
 ];
 ---
 
@@ -670,19 +699,41 @@ function iconCandidates(it){
   <section class="section" id="roadmap">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash">/</span><span class="title-kicker">From Launch To a Community Future.</span></h2>
+        <h2 class="section-title section-title--split">
+          <span class="title-main">Roadmap</span>
+          <span class="title-kicker">From Launch To a Community Future.</span>
+        </h2>
 
-      <div class="grid" style="margin-top:14px;">
-        {roadmap.map((r) => (
-          <div class="card col-6">
-            <div class="small">{r.phase}</div>
-            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
-            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
-              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
+        <div class="rm-grid" style="margin-top:14px;">
+          {roadmap.map((r, idx) => (
+            <details class="rm-card" id={r.id} open={idx === 0}>
+              <summary class="rm-summary">
+                <div class="rm-top">
+                  <div class="rm-phase">{r.phase} <span style="opacity:.9;">•</span> <span style="font-weight:800; color: rgba(255,255,255,0.82);">{r.status}</span></div>
+                  <div class="rm-title">{r.title}</div>
+                </div>
+                <div class="rm-cta" aria-hidden="true">
+                  <span class="sr-only">Toggle</span>
+                  <span class="rm-chevron">▾</span>
+                </div>
+              </summary>
+
+              <div class="rm-body">
+                <div class="rm-obj">
+                  <span class="rm-obj-label">Objective:</span>{r.objective}
+                </div>
+
+                <ul class="rm-points">
+                  {r.items.map((i) => <li>{i}</li>)}
+                </ul>
+              </div>
+            </details>
+          ))}
+        </div>
+
+        <div class="rm-note" style="margin-top:16px;">
+          All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.
+        </div>
       </div>
     </div>
   </section>
