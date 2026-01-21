@@ -76,8 +76,8 @@ section{padding:24px 0}
   background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.18));
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
-\.nav__inner{
-  height:auto;
+.nav__inner{
+  height:96px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -562,14 +562,12 @@ body::after{
 }
 
 @media (max-width: 900px){
-  \.nav__inner{
-  height:auto;}
+  .nav__inner{height: 86px;}
   .brand__img{height: 88px;}
 }
 
 @media (max-width: 520px){
-  \.nav__inner{
-  height:auto;}
+  .nav__inner{height: 78px;}
   .brand__img{height: 64px;}
 }
 
@@ -958,8 +956,8 @@ section{padding:24px 0}
   background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.18));
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
-\.nav__inner{
-  height:auto;
+.nav__inner{
+  height:96px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -2252,152 +2250,127 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 
-/* ===========================
-   NAV: socials + live ticker
-   =========================== */
-.nav__stack{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  padding:10px 0 12px;
-}
-.nav__inner{
-  align-items:center;
-}
-.brand__img{
-  height:92px;
-  width:auto;
-  display:block;
+/* ===============================
+   NAV + Socials + Ticker (v52)
+   Fixes requested:
+   - Social icons are real SVG logos
+   - Alternating colors between quotes (white/yellow)
+   - Ticker starts from the extreme right and moves to the left
+   =============================== */
+
+.nav__meta,
+.nav__ticker {
+  border-top: 1px solid rgba(255,255,255,.06);
 }
 
-/* Row 2 */
-.nav__meta{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding-top:2px;
-}
-.nav__socials{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.social{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  text-decoration:none;
-  border-radius:999px;
-  padding:0;
-}
-.social__badge{
-  width:34px;
-  height:34px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(0,0,0,0.30);
-  color:rgba(255,255,255,0.92);
-  font-weight:800;
-  font-size:12px;
-  letter-spacing:0.04em;
-  box-shadow:0 10px 26px rgba(0,0,0,0.20);
-}
-.social:hover .social__badge{
-  border-color:rgba(255,255,255,0.22);
-  background:rgba(255,255,255,0.05);
-}
-.nav__clock{
-  font-size:12px;
-  color:rgba(255,255,255,0.72);
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(0,0,0,0.22);
-  white-space:nowrap;
+.nav__row--meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
 }
 
-/* Row 3: ticker */
-.nav__ticker{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 10px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(0,0,0,0.18);
-  overflow:hidden; /* keep ticker inside the same visual boundary */
-}
-.ticker__pill{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-  font-size:11px;
-  letter-spacing:0.08em;
-  padding:6px 10px;
-  border-radius:999px;
-  color:var(--gold);
-  background:rgba(255,180,0,0.10);
-  border:1px solid rgba(255,180,0,0.22);
-  flex:0 0 auto;
-}
-.ticker{
-  flex:1 1 auto;
-  min-width:0;
-}
-.ticker__viewport{
-  position:relative;
-  overflow:hidden;
-  width:100%;
-}
-.ticker__track{
-  display:inline-flex;
-  align-items:center;
-  gap:0;
-  white-space:nowrap;
-  will-change:transform;
-  padding-right:48px; /* breathing room */
-  animation:tickerScroll 26s linear infinite;
-}
-.ticker__track--clone{
-  position:absolute;
-  left:0;
-  top:0;
-  transform:translateX(100%);
-  opacity:0.98;
-}
-.ticker:hover .ticker__track{
-  animation-play-state:paused;
-}
-@keyframes tickerScroll{
-  from{ transform:translateX(0); }
-  to{ transform:translateX(-100%); }
+.nav__socials {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.ticker__item{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  font-size:12px;
-  color:rgba(255,255,255,0.92);
-}
-.ticker__item--alt{
-  color:var(--gold);
-}
-.ticker__sep{
-  color:rgba(255,255,255,0.35);
-  margin:0 12px;
-  user-select:none;
+.social__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
-/* Responsive */
-@media (max-width: 880px){
-  .nav__meta{flex-direction:column;align-items:flex-start}
-  .nav__clock{align-self:flex-end}
-  .brand__img{height:76px}
+.social__icon svg {
+  width: 16px;
+  height: 16px;
+  fill: rgba(255,255,255,.88);
 }
+
+.social__icon:hover {
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06);
+}
+
+.social__icon.is-disabled {
+  opacity: .35;
+  pointer-events: none;
+}
+
+.nav__clock {
+  white-space: nowrap;
+  font-size: 12px;
+  color: rgba(255,255,255,.75);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+}
+
+/* Ticker bar aligned to container */
+.tickerbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.tickerbar__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .03em;
+  background: rgba(242,201,76,.16);
+  border: 1px solid rgba(242,201,76,.35);
+  color: rgba(242,201,76,.95);
+}
+
+.tickerbar__viewport {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.tickerbar__track {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  width: max-content;
+  will-change: transform;
+  animation: ticker-marquee-right 22s linear infinite;
+}
+
+/* start from far right */
+@keyframes ticker-marquee-right {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-50%); }
+}
+
+.tickerbar__viewport:hover .tickerbar__track {
+  animation-play-state: paused;
+}
+
+.ticker {
+  white-space: nowrap;
+  font-size: 13px;
+  color: rgba(255,255,255,.92);
+}
+
+.ticker--clone { padding-left: 28px; }
+
+.ticker__item { color: #ffffff; font-weight: 650; }
+.ticker__item--alt { color: #f2c94c; font-weight: 650; }
+.ticker__sep { color: rgba(255,255,255,.55); }
