@@ -34,7 +34,7 @@ const roadmap = [
     title: "Foundation",
     status: "ACTIVE",
     objective: "Build trust, clarity, and a single source of truth.",
-    items: ["Brand & Identity", "Website & Documentation", "On-Chain Transparency"],
+    items: [{ t: "Brand & Identity", d: "Unify visuals, voice, and trust signals across web & socials." }, { t: "Website & Documentation", d: "Keep one source of truth for contract links, guides, and updates." }, { t: "On-Chain Transparency", d: "Clear links to verified contract, LP, and key on-chain metrics." }],
   },
   {
     id: "phase-2",
@@ -42,7 +42,7 @@ const roadmap = [
     title: "Launch Prep",
     status: "COMPLETED",
     objective: "Engineer a clean, fair, and controlled market entry.",
-    items: ["Launch Engineering", "Temporary Anti-Bot & Anti-Whale", "Verification Ready"],
+    items: [{ t: "Launch Engineering", d: "Clean launch flow, verified links, and controlled communication." }, { t: "Temporary Anti-Bot & Anti-Whale", d: "Short-term protections to reduce sniping and early manipulation." }, { t: "Verification Ready", d: "Everything prepared for explorers, listings, and trust dashboards." }],
   },
   {
     id: "phase-3",
@@ -50,7 +50,7 @@ const roadmap = [
     title: "Expansion",
     status: "IN-PROGRESS",
     objective: "Grow distribution, visibility, and ecosystem trust.",
-    items: ["Listings & Indexation", "Ecosystem Integrations", "Community Growth"],
+    items: [{ t: "Listings & Indexation", d: "Expand visibility through verified listings and ecosystem indexation." }, { t: "Ecosystem Integrations", d: "Connect with tools, dashboards, and community-friendly utilities." }, { t: "Community Growth", d: "Sustainable distribution through content, events, and collaborations." }],
   },
   {
     id: "phase-4",
@@ -58,7 +58,7 @@ const roadmap = [
     title: "Future Horizon",
     status: "COMMUNITY-LED",
     objective: "Enable real-world relevance and long-term adoption.",
-    items: ["CAPI PASS (NFT Membership)", "CAPI IRL Toolkit", "CAPI Arena", "Proof-of-Good"],
+    items: [{ t: "CAPI PASS (NFT Membership)", d: "Optional membership layer for perks and community identity." }, { t: "CAPI IRL Toolkit", d: "Templates & assets for real‑world meetups and partnerships." }, { t: "CAPI Arena", d: "Community games, tournaments, and badge-style achievements." }, { t: "Proof-of-Good", d: "Impact & transparency initiatives driven by the community." }],
   },
 ];
 
@@ -723,9 +723,14 @@ function iconCandidates(it){
               <div class={"rm-media rm-media--" + (idx + 1)} aria-hidden="true"></div>
 
               <div class="rm-body">
-                <div class="rm-subhead">Key Points</div>
+                <div class="rm-subhead">Key Notes</div>
                 <ul class="rm-points">
-                  {r.items.map((i) => <li>{i}</li>)}
+                  {r.items.map((it) => (
+                    <li>
+                      <strong>{it.t}</strong>
+                      <span class="rm-note"> — {it.d}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </article>

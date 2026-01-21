@@ -2224,6 +2224,16 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   color: rgba(255,255,255,0.80);
 }
 .rm-points li{ margin: 8px 0; line-height:1.45; }
+
+.rm-points{
+  font-size: 14px;
+}
+
+.rm-note{
+  color: rgba(255,255,255,0.74);
+  font-weight: 500;
+}
+
 .rm-points strong{ color: rgba(255,255,255,0.92); }
 
 .rm-text p{
@@ -2459,12 +2469,12 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-subhead{
-  font-size: 12px;
+  font-size: 14px;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: rgba(255,255,255,0.62);
+  letter-spacing: 0.08em;
+  color: var(--accent);
   font-weight: 900;
-  margin: 14px 0 8px;
+  margin: 14px 0 10px;
 }
 
 .rm-legal{
@@ -2472,10 +2482,22 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   display:flex;
   gap: 12px;
   align-items:flex-start;
-  padding: 14px 16px;
+  padding: 16px 18px;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(180deg, rgba(0,0,0,0.42), rgba(0,0,0,0.30));
+  position: relative;
+  overflow: hidden;
+}
+
+.rm-legal::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(233,144,44,0.65);
 }
 
 .rm-legal__icon{
@@ -2490,6 +2512,8 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-legal__text strong{ color: rgba(255,255,255,0.94); }
+.rm-legal__text .small{ color: rgba(255,255,255,0.68); line-height:1.45; }
+
 
 
 /* Roadmap headings (Tokenomics-style) */
