@@ -1353,7 +1353,8 @@ h3{margin:0 0 6px;font-size:18px}
 /* =========================
    Phase 9 – Layout priority helpers
    ========================= */
-#venues{ scroll-margin-top: 90px; }
+/* Keep legacy id-specific offsets aligned with global sticky header */
+#venues{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 .section{ padding-top: 34px; padding-bottom: 34px; }
 .section + .section{ border-top: 1px solid rgba(255,255,255,0.06); }
 
@@ -2103,15 +2104,25 @@ html, body{
       behind the sticky navbar.
    ===================================================== */
 
-/* Single source of truth for sticky navbar height */
-:root{ --nav-h: 152px; }
+/*
+  Sticky header offset
+  - --nav-top-h controls ONLY the top row sizing (logo + menu)
+  - --nav-h is the TOTAL sticky header height (top row + socials + ticker)
+    and is used for anchor offsets. It is auto-updated by JS in BaseLayout.
+*/
+:root{
+  --nav-top-h: 152px;
+  --nav-h: 240px; /* safe fallback if JS is blocked */
+}
 
 /* Make anchors respect sticky navbar */
 html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
-section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 
-/* Navbar overall presence */
-.nav__inner{ height: var(--nav-h); }
+/* Apply to any element with an id (not only <section>) */
+[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
+
+/* Navbar overall presence (top row only) */
+.nav__inner{ height: var(--nav-top-h); }
 
 /* Brand/logo sizing (keep proportion) */
 .brand{
@@ -2127,7 +2138,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 .brand__img{
   height: 120px;
   width: auto;
-  max-height: calc(var(--nav-h) - 22px);
+  max-height: calc(var(--nav-top-h) - 22px);
   border-radius: 12px;
 }
 

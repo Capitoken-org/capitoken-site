@@ -13,7 +13,7 @@ const withBase = (p) => {
 };
 
 // Cache-bust for GitHub Pages / CDN
-const CSS_VERSION = "39";
+const CSS_VERSION = "40";
 const JS_VERSION = "39";
 
 const year = 2025;
@@ -56,5 +56,42 @@ const year = 2025;
     <script type="module" src={withBase(`/js/capi-dex.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/capi-ui.js?v=${JS_VERSION}`)}></script>
       <script type="module" src={withBase(`/js/ticker.js?v=${JS_VERSION}`)}></script>
+
+    <!--
+      Anchor offset fix:
+      The header is a stacked sticky block (top row + socials + ticker).
+      We measure its real height and set --nav-h so hash navigation doesn't
+      land section titles under the navbar.
+    -->
+    <script>
+      (() => {
+        const setNavOffset = () => {
+          const header = document.querySelector('header.nav');
+          if (!header) return;
+          const h = Math.ceil(header.getBoundingClientRect().height);
+          // Guard against weird zero heights during early paint
+          if (h > 60) document.documentElement.style.setProperty('--nav-h', `${h}px`);
+        };
+
+        // Run early + after layout settles
+        document.addEventListener('DOMContentLoaded', () => {
+          setNavOffset();
+          requestAnimationFrame(setNavOffset);
+          setTimeout(setNavOffset, 250);
+        });
+
+        // Recompute on resize/orientation changes
+        window.addEventListener('resize', () => {
+          setNavOffset();
+          requestAnimationFrame(setNavOffset);
+        }, { passive: true });
+
+        // If images/fonts shift header height
+        window.addEventListener('load', () => {
+          setNavOffset();
+          requestAnimationFrame(setNavOffset);
+        });
+      })();
+    </script>
 </body>
 </html>
