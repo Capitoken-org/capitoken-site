@@ -1,14 +1,31 @@
 ---
 /**
- * Capitoken NAV
- * Notes:
- * - Social icons live below the main menu.
- * - Ticker is full-width and scrolls right-to-left.
- * - Keep markup simple (no extra wrapper cards around logo).
+ * NAV (sticky) + socials + ticker
+ * - Keeps logo + menu on the first row
+ * - Social icons under the menu (right aligned)
+ * - Live ticker edge-to-edge, scrolling right-to-left
  */
+const BASE = import.meta.env.BASE_URL || "/";
+const withBase = (p) => {
+  const clean = String(p || "");
+  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
+};
+
+// Keep labels aligned with section IDs in index.astro
+const links = [
+  { href: "#launchpanel", label: "Launch Panel" },
+  { href: "#venues", label: "Markets" },
+  { href: "#tokenomics", label: "Tokenomics" },
+  { href: "#roadmap", label: "Roadmap" },
+  { href: "#daily", label: "Daily" },
+  { href: "#community", label: "Community" },
+  { href: "#faq", label: "FAQ" },
+  // Verify is a separate page
+  { href: `${BASE}verify/`, label: "Verify" },
+];
+
 const socials = [
-  { key: "x", label: "X", href: "https://x.com/Capitokenorg", enabled: true },
-  // TODO: replace with official URLs when ready
+  { key: "x",  label: "X",  href: "https://x.com/Capitokenorg", enabled: true },
   { key: "tg", label: "TG", href: "#", enabled: false },
   { key: "ds", label: "DS", href: "#", enabled: false },
   { key: "rd", label: "RD", href: "#", enabled: false },
@@ -19,24 +36,26 @@ const socials = [
 ---
 
 <header class="nav">
-  <div class="nav__inner">
-    <a class="brand" href={import.meta.env.BASE_URL}>
-      <img class="brand__img" src={`${import.meta.env.BASE_URL}logo/navbar-logo.png`} alt="Capitoken" />
+  <!-- Row 1: logo + menu -->
+  <div class="container nav__inner">
+    <a class="brand" href={BASE} aria-label="Capitoken home">
+      <img
+        class="brand__img"
+        src={withBase("/logo/navbar-logo.png")}
+        alt="Capitoken"
+        loading="eager"
+        decoding="async"
+      />
     </a>
 
     <nav class="nav__links" aria-label="Primary">
-      <a href="#launch">Launch Panel</a>
-      <a href="#markets">Markets</a>
-      <a href="#tokenomics">Tokenomics</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href="#daily">Daily</a>
-      <a href="#community">Community</a>
-      <a href="#faq">FAQ</a>
-      <a href={`${import.meta.env.BASE_URL}verify/`}>Verify</a>
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
     </nav>
   </div>
 
-  <!-- Row under menu: socials aligned right -->
+  <!-- Row 2: socials under the menu -->
   <div class="nav__subrow">
     <div class="nav__subrow-inner">
       <div class="nav__socials" aria-label="Social links">
@@ -56,15 +75,14 @@ const socials = [
     </div>
   </div>
 
-  <!-- Full-width ticker / marquee -->
+  <!-- Row 3: edge-to-edge ticker -->
   <div class="tickerbar" role="region" aria-label="Market ticker">
     <div class="tickerbar__inner">
       <span class="tickerbar__tag">LIVE</span>
 
-      <div class="tickerbar__viewport" aria-hidden="false">
+      <div class="tickerbar__viewport">
         <div class="tickerbar__track">
           <div id="ticker" class="ticker" aria-live="polite">Loading prices…</div>
-          <!-- duplicate for seamless loop -->
           <div class="ticker ticker--clone" aria-hidden="true"></div>
         </div>
       </div>

@@ -20,12 +20,13 @@
   const capi = { symbol: "CAPI" };
 
   function formatUsd(n) {
-    if (n === null || n === undefined || isNaN(n)) return "— USD";
-    // Always show 2 decimals (as requested)
-    return `${Number(n).toLocaleString(undefined, {
+    if (n === null || n === undefined || isNaN(n)) return "USD —";
+    // Spanish-style formatting: 89.898,00
+    const formatted = Number(n).toLocaleString("es-ES", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })} USD`;
+    });
+    return `USD ${formatted}`;
   }
 
   async function fetchTop() {
@@ -56,12 +57,12 @@
   }
 
   function render(items) {
-    // Build as spans for alternating colors and pipe separators
     el.innerHTML = "";
+
     items.forEach((it, idx) => {
       const span = document.createElement("span");
       span.className = idx % 2 === 0 ? "ticker__item" : "ticker__item ticker__item--alt";
-      span.textContent = `${it.symbol} ${formatUsd(it.price)}`;
+      span.textContent = `${it.symbol} = ${formatUsd(it.price)}`;
       el.appendChild(span);
 
       if (idx < items.length - 1) {
@@ -72,7 +73,7 @@
       }
     });
 
-    // mirror into clone to allow seamless marquee
+    // Mirror into clone (seamless loop)
     if (clone) clone.innerHTML = el.innerHTML;
   }
 

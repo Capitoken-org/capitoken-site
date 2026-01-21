@@ -2368,6 +2368,7 @@ html {
 .tickerbar__track {
   display: inline-flex;
   align-items: center;
+  width: max-content;
   gap: 28px;
   will-change: transform;
   animation: ticker-marquee 22s linear infinite;
