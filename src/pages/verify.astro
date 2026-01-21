@@ -21,6 +21,20 @@ const FALLBACK = {
     verified: true,
     token: { name: "Capitoken", symbol: "CAPI", decimals: 18 }
   },
+  // Fallback pair + links (keeps /verify functional even if registry fetch fails)
+  pair: {
+    address: "0xb96808b1270A89eA8A237d52df389619f347AeA2",
+    dex: "Uniswap V2",
+    chain: "ethereum"
+  },
+  links: {
+    site: "https://www.capitoken.org",
+    verify: "https://www.capitoken.org/verify",
+    // Canonical Uniswap swap link for WETH -> CAPI
+    buy: "https://app.uniswap.org/swap?inputCurrency=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&outputCurrency=0xF2dA6C9B945c688A52D3B72340E622014920de6a",
+    // Canonical Dexscreener pair page
+    market: "https://dexscreener.com/ethereum/0xb96808b1270A89eA8A237d52df389619f347AeA2"
+  },
   security: {
     mirrorsAllowed: true,
     mirrorNotice: "You are viewing a mirror. The official site is https://www.capitoken.org"
@@ -85,7 +99,8 @@ const FALLBACK = {
 
   <body>
     <div class="wrap">
-      <h1 class="h1"><span class="iconwrap"><img class="icon icon--lg icon-verified" src="${BASE}icons/shield.svg" alt="" /> Verify Capitoken</span></h1>
+      <!-- Icon removed: avoids broken/missing asset rendering on some mirrors/builds -->
+      <h1 class="h1">Verify Capitoken</h1>
       <p class="sub">Single source of truth for official domain, contract and links. If anything disagrees with this page, treat it as <b>not official</b>.</p>
 
       <!-- Mirror banner -->
@@ -108,6 +123,7 @@ const FALLBACK = {
             <div>
               <div class="tag" id="domainTag">Checking domain…</div>
               <div class="tag" id="etherscanTag" style="margin-left:8px;">Checking verification…</div>
+              <div class="tag" id="pairTag" style="margin-left:8px;">Checking pair…</div>
             </div>
             <div>
               <span class="muted">Trust Score</span>
@@ -125,9 +141,12 @@ const FALLBACK = {
             
 
             <div class="muted">DEX Pair</div>
-            <div><span class="mono" id="pairAddr">—</span> <span class="muted" id="pairDex" style="margin-left:8px;"> </span></div>
+            <div>
+              <a class="mono" id="pairLink" href="#" target="_blank" rel="noreferrer">—</a>
+              <span class="muted" id="pairDex" style="margin-left:8px;"></span>
+            </div>
 
-<div class="muted">Token</div>
+            <div class="muted">Token</div>
             <div><span id="tokenName">—</span> (<span id="tokenSymbol">—</span>) · Decimals: <span id="tokenDecimals">—</span></div>
           </div>
         </div>
@@ -151,6 +170,27 @@ const FALLBACK = {
           </div>
         </div>
 
+        <!-- DEX Pair (official) -->
+        <div class="cardx" style="grid-column: span 12;">
+          <div class="row">
+            <div>
+              <div style="font-weight:900;">Official DEX Pair</div>
+              <div class="mono" id="pairAddr">—</div>
+              <div class="small muted" id="pairMeta">—</div>
+            </div>
+            <div class="btns">
+              <button class="btnx" id="copyPair" type="button">Copy</button>
+              <a class="btnx" id="openPairEtherscan" target="_blank" rel="noreferrer">Open Pair</a>
+              <a class="btnx primary" id="openDexscreener" target="_blank" rel="noreferrer">Open Dexscreener</a>
+              <a class="btnx" id="openUniswap" target="_blank" rel="noreferrer">Open Uniswap</a>
+            </div>
+          </div>
+
+          <div class="footer">
+            Security rule: only trade if the pair matches <span class="mono">0xb96808b1270A89eA8A237d52df389619f347AeA2</span>.
+          </div>
+        </div>
+
         <!-- Official Links -->
         <div class="cardx" style="grid-column: span 12;">
           <div style="font-weight:900;">Official Links</div>
@@ -164,6 +204,12 @@ const FALLBACK = {
 
             <div class="muted">Etherscan Token</div>
             <div><a id="etherscanTokenLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Etherscan Pair</div>
+            <div><a id="etherscanPairLink" target="_blank" rel="noreferrer">—</a></div>
+
+            <div class="muted">Official /verify</div>
+            <div><a id="verifyLink" target="_blank" rel="noreferrer">—</a></div>
 
             <div class="muted">Buy (Uniswap)</div>
             <div><a id="buyLink" target="_blank" rel="noreferrer">—</a></div>
@@ -280,6 +326,14 @@ const FALLBACK = {
           etherscanTag.className = "tag " + (data.contract?.verified ? "ok" : "warn");
         }
 
+        // Pair tag
+        const pairTag = document.getElementById("pairTag");
+        if (pairTag) {
+          const hasPair = Boolean(data.pair?.address);
+          pairTag.textContent = hasPair ? "✔ Pair set" : "⚠ Pair missing";
+          pairTag.className = "tag " + (hasPair ? "ok" : "warn");
+        }
+
         // Trust score
         const score = scoreFrom(data, isOfficialHost);
         setText("trustScore", String(score));
@@ -303,9 +357,55 @@ const FALLBACK = {
         const openE = document.getElementById("openEtherscan");
         if (openE) openE.href = etherscanToken;
 
+        // Pair + official links
+        const pairAddr = data.pair?.address || "";
+        const pairDex = data.pair?.dex || "";
+        const pairExplorer = pairAddr ? `${explorer}/address/${pairAddr}` : "";
+
+        // Canonical links (prefer registry; otherwise generate)
+        const buyLink = data.links?.buy || (addr ? `https://app.uniswap.org/swap?inputCurrency=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&outputCurrency=${addr}` : "");
+        const marketLink = data.links?.market || (pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : "");
+
+        // Top KV: DEX Pair
+        setHref("pairLink", pairExplorer || "#", pairAddr || "—");
+        setText("pairDex", pairDex ? `(${pairDex})` : "");
+
+        // Pair card
+        setText("pairAddr", pairAddr || "—");
+        setText("pairMeta", pairDex ? `${pairDex}${data.pair?.chain ? ` · ${data.pair.chain}` : ""}` : (data.pair?.chain || "—"));
+        const openPair = document.getElementById("openPairEtherscan");
+        if (openPair) openPair.href = pairExplorer || "#";
+        const openDex = document.getElementById("openDexscreener");
+        if (openDex) openDex.href = marketLink || "#";
+        const openUni = document.getElementById("openUniswap");
+        if (openUni) openUni.href = buyLink || "#";
+
+        const copyPairBtn = document.getElementById("copyPair");
+        if (copyPairBtn) {
+          copyPairBtn.addEventListener("click", async () => {
+            copyPairBtn.textContent = "Copying…";
+            const ok = await copyText(pairAddr);
+            copyPairBtn.textContent = "Copy";
+            if (!ok) toast("Copy failed");
+          });
+        }
+
+        // Official links
         setHref("repoLink", data.officialRepo || "https://github.com/capitoken-org/capitoken-site");
-        setHref("siteLink", "https://www.capitoken.org", "https://www.capitoken.org");
-        setHref("etherscanTokenLink", etherscanToken, etherscanToken);
+        setHref("siteLink", data.links?.site || "https://www.capitoken.org", data.links?.site || "https://www.capitoken.org");
+        setHref("etherscanTokenLink", data.links?.etherscanToken || etherscanToken, data.links?.etherscanToken || etherscanToken);
+        setHref(
+          "etherscanPairLink",
+          data.links?.etherscanPair || pairExplorer || "#",
+          data.links?.etherscanPair || pairExplorer || "—"
+        );
+        setHref(
+          "verifyLink",
+          data.links?.verify || "https://www.capitoken.org/verify",
+          data.links?.verify || "https://www.capitoken.org/verify"
+        );
+        setHref("buyLink", buyLink || "#", buyLink || "—");
+        setHref("marketLink", marketLink || "#", marketLink || "—");
 
         // Mirror link (always show github pages)
         setHref("mirrorLink", "https://capitoken-org.github.io/capitoken-site/", "https://capitoken-org.github.io/capitoken-site/");
