@@ -33,6 +33,7 @@ const roadmap = [
     phase: "Phase 1",
     title: "Foundation",
     status: "ACTIVE",
+    img: "img/roadmap/roadmap-phase-1.webp",
     objective: "Build trust, clarity, and a single source of truth.",
     items: ["Brand & Identity", "Website & Documentation", "On-Chain Transparency"],
   },
@@ -41,6 +42,7 @@ const roadmap = [
     phase: "Phase 2",
     title: "Launch Prep",
     status: "NEXT",
+    img: "img/roadmap/roadmap-phase-2.webp",
     objective: "Engineer a clean, fair, and controlled market entry.",
     items: ["Launch Engineering", "Temporary Anti-Bot & Anti-Whale", "Verification Ready"],
   },
@@ -49,6 +51,7 @@ const roadmap = [
     phase: "Phase 3",
     title: "Expansion",
     status: "PLANNED",
+    img: "img/roadmap/roadmap-phase-3.webp",
     objective: "Grow distribution, visibility, and ecosystem trust.",
     items: ["Listings & Indexation", "Ecosystem Integrations", "Community Growth"],
   },
@@ -57,6 +60,7 @@ const roadmap = [
     phase: "Phase 4",
     title: "Future (Community-Led)",
     status: "COMMUNITY-LED",
+    img: "img/roadmap/roadmap-phase-4.webp",
     objective: "Enable real-world relevance and long-term adoption.",
     items: ["CAPI PASS (NFT Membership)", "CAPI IRL Toolkit", "CAPI Arena", "Proof-of-Good"],
   },
@@ -719,7 +723,16 @@ function iconCandidates(it){
               </div>
 
               <!-- Image placeholder (card/box). We will replace with real illustrations next. -->
-              <div class={"rm-media rm-media--" + (idx + 1)} aria-hidden="true"></div>
+              <div class="rm-media">
+                <img
+                  class="rm-media__img"
+                  src={`${import.meta.env.BASE_URL}${r.img}`}
+                  alt={`${r.title} illustration`}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class={"rm-media__overlay rm-media__overlay--" + (idx + 1)} aria-hidden="true"></div>
+              </div>
 
               <div class="rm-body">
                 <div class="rm-subhead">Key Points</div>

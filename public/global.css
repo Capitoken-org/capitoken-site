@@ -2405,15 +2405,59 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-media{
-  height: 150px; /* card/box format */
+  position: relative;
+  height: 160px; /* card/box format */
   border-top: 1px solid rgba(255,255,255,0.08);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  background:
-    radial-gradient(900px 240px at 20% 10%, rgba(25,230,211,0.22), transparent 55%),
-    radial-gradient(900px 240px at 80% 45%, rgba(233,144,44,0.14), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.25);
 }
+
+.rm-media__img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  filter: saturate(1.05) contrast(1.02);
+}
+
+/* subtle cinematic overlay + delicate neon accents per phase */
+.rm-media__overlay{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)),
+    radial-gradient(900px 240px at 20% 10%, rgba(25,230,211,0.16), transparent 60%),
+    radial-gradient(600px 220px at 85% 20%, rgba(255,183,0,0.10), transparent 55%);
+  mix-blend-mode: normal;
+}
+
+/* phase-tinted micro-neon (very delicate) */
+.rm-media__overlay--1{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    radial-gradient(700px 260px at 18% 18%, rgba(25,230,211,0.22), transparent 62%);
+}
+.rm-media__overlay--2{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    radial-gradient(700px 260px at 80% 20%, rgba(255,183,0,0.18), transparent 62%);
+}
+.rm-media__overlay--3{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    radial-gradient(700px 260px at 22% 80%, rgba(110,255,199,0.16), transparent 62%);
+}
+.rm-media__overlay--4{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.66)),
+    radial-gradient(900px 320px at 50% 20%, rgba(120,170,255,0.16), transparent 65%),
+    radial-gradient(540px 240px at 85% 70%, rgba(255,90,220,0.10), transparent 60%);
+}
+
 
 .rm-media::after{
   content:"Illustration coming next";
