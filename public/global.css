@@ -2651,3 +2651,52 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 
 
 .rm-card .rm-subhead{ color: var(--accent) !important; }
+
+
+/* === ROADMAP COSMETIC FIX v54 === */
+/* Removes boxes from Key Notes descriptions */
+
+/* Key Notes header */
+.rm-subhead {
+  color: var(--accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Key Notes list */
+.rm-notes {
+  list-style: disc;
+  padding-left: 18px;
+}
+
+/* Key Notes title */
+.rm-notes li strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Key Notes description (NO boxes) */
+.rm-note {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  border-radius: 0;
+  color: rgba(255,255,255,0.72);
+  font-weight: 400;
+}
+
+/* Legal box final polish */
+.rm-legal {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.02)
+  );
+  border-radius: 10px;
+}
