@@ -2150,3 +2150,160 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   .brand__img{ height: 78px; }
   .nav__links{ gap: 6px; }
 }
+
+
+/* =====================================================
+   Phase 11 – Navbar Social Icons + Live Ticker (Top 5 + CAPI)
+   Goals:
+   - Fill the "empty" nav bottom area with useful content (socials)
+   - Add Wall-Street style marquee + local time/date
+   - Keep everything additive and safe
+   ===================================================== */
+
+/* Slightly reduce the oversized sticky height that created empty space */
+:root{ --nav-h: 128px; }
+
+.nav__inner{
+  height: auto;
+  min-height: var(--nav-h);
+  padding: 10px 0;
+  align-items: center;
+}
+
+/* Right side: links on top, socials under */
+.nav__right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+/* Links: keep tidy */
+.nav__links{
+  justify-content:flex-end;
+}
+
+/* Social icons row */
+.nav__social{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.social{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  color: rgba(242,245,244,0.86);
+  text-decoration:none;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease, color .12s ease;
+}
+.social:hover{
+  transform: translateY(-1px);
+  background: rgba(233,144,44,0.10);
+  border-color: rgba(233,144,44,0.22);
+  color: rgba(233,144,44,0.98);
+}
+.social.is-disabled{
+  opacity: .55;
+  pointer-events:none;
+}
+
+.ico{
+  width:18px;
+  height:18px;
+  display:block;
+  fill: currentColor;
+}
+
+/* Ticker bar under nav */
+.nav__ticker{
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(0,0,0,0.20), rgba(0,0,0,0.08));
+  backdrop-filter: blur(10px);
+}
+
+.nav__ticker-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding: 10px 0 12px;
+}
+
+.ticker{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  flex: 1 1 auto;
+}
+
+.ticker__label{
+  font-size:11px;
+  letter-spacing:.10em;
+  font-weight:900;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(233,144,44,0.22);
+  background: rgba(233,144,44,0.10);
+  color: rgba(233,144,44,0.95);
+  flex: 0 0 auto;
+}
+
+.ticker__viewport{
+  overflow:hidden;
+  min-width:0;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  padding: 6px 10px;
+}
+
+.ticker__track{
+  display:inline-block;
+  white-space:nowrap;
+  color: rgba(242,245,244,0.88);
+  font-weight:650;
+  font-size:13px;
+  letter-spacing:.2px;
+  animation: tickerScroll 28s linear infinite;
+  will-change: transform;
+}
+.nav__ticker:hover .ticker__track{ animation-play-state: paused; }
+
+@keyframes tickerScroll{
+  0%{ transform: translateX(0); }
+  100%{ transform: translateX(-50%); }
+}
+
+.ticker__time{
+  flex: 0 0 auto;
+  font-size:12px;
+  color: rgba(242,245,244,0.72);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.14);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  :root{ --nav-h: 118px; }
+  .brand__img{ height: 86px; }
+  .nav__ticker-inner{ padding: 10px 0 10px; }
+  .ticker__time{ display:none; }
+}
+
+@media (max-width: 520px){
+  :root{ --nav-h: 108px; }
+  .brand__img{ height: 72px; }
+  .ticker__label{ display:none; }
+}
