@@ -33,8 +33,6 @@ const roadmap = [
     phase: "Phase 1",
     title: "Foundation",
     status: "ACTIVE",
-    statusTone: "ok",
-    img: "img/roadmap/roadmap-phase-1.webp",
     objective: "Build trust, clarity, and a single source of truth.",
     items: ["Brand & Identity", "Website & Documentation", "On-Chain Transparency"],
   },
@@ -42,23 +40,15 @@ const roadmap = [
     id: "phase-2",
     phase: "Phase 2",
     title: "Launch Prep",
-    status: "COMPLETED",
-    statusTone: "ok",
-    img: "img/roadmap/roadmap-phase-2.webp",
+    status: "NEXT",
     objective: "Engineer a clean, fair, and controlled market entry.",
-    items: [
-      "Launch Engineering",
-      "Temporary Anti-Bot & Anti-Whale",
-      "Verification Ready",
-    ],
+    items: ["Launch Engineering", "Temporary Anti-Bot & Anti-Whale", "Verification Ready"],
   },
   {
     id: "phase-3",
     phase: "Phase 3",
     title: "Expansion",
-    status: "IN-PROGRESS",
-    statusTone: "warn",
-    img: "img/roadmap/roadmap-phase-3.webp",
+    status: "PLANNED",
     objective: "Grow distribution, visibility, and ecosystem trust.",
     items: ["Listings & Indexation", "Ecosystem Integrations", "Community Growth"],
   },
@@ -67,12 +57,11 @@ const roadmap = [
     phase: "Phase 4",
     title: "Future (Community-Led)",
     status: "COMMUNITY-LED",
-    statusTone: "violet",
-    img: "img/roadmap/roadmap-phase-4.webp",
     objective: "Enable real-world relevance and long-term adoption.",
     items: ["CAPI PASS (NFT Membership)", "CAPI IRL Toolkit", "CAPI Arena", "Proof-of-Good"],
   },
 ];
+
 ---
 
 <BaseLayout title={TITLE} description={DESC}>
@@ -707,85 +696,66 @@ function iconCandidates(it){
 
   <hr class="hr" />
 
-<!-- ROADMAP -->
-<section class="section" id="roadmap">
-  <div class="container reveal">
-    <div class="section-block">
-      <div class="roadmap-head">
-        <div>
-          <h2 class="section-title section-title--split roadmap-title">
-            <span class="title-main">Roadmap</span>
-            <span class="title-slash"> / </span>
-            <span class="title-kicker">From Launch To a Community Future.</span>
-          </h2>
-          <p class="small" style="margin-top:6px;">
-            Four focused phases — engineered for trust today, optional community expansion tomorrow.
-          </p>
-        </div>
+  <!-- ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="container reveal">
+      <div class="section-block">
+        <h2 class="section-title section-title--split">
+          <span class="title-slash">/</span><span class="title-kicker">From Launch To a Community Future.</span>
+        </h2>
 
-        <nav class="roadmap-nav" aria-label="Roadmap phases">
+        <div class="rm-grid">
           {roadmap.map((r, idx) => (
-            <a
-              href={`#${r.id}`}
-              class={`rm-dot ${idx === 0 ? "is-active" : ""}`}
-              aria-label={`${r.phase}: ${r.title}`}
-              title={`${r.phase}: ${r.title}`}
-            />
-          ))}
-        </nav>
-      </div>
-
-      <div class="grid roadmap-grid" style="margin-top:14px;">
-        {roadmap.map((r) => (
-          <article class="card col-6 roadmap-card" id={r.id}>
-            <header class="roadmap-card__top">
-              <div class="rm-phasehead">
-                <span class="rm-phase">{r.phase}</span>
-                <span class="rm-sep">—</span>
-                <span class="rm-title">{r.title}</span>
+            <article class="rm-card" id={r.id}>
+              <div class="rm-top">
+                <div class="rm-phase">
+                  <span>{r.phase}</span>
+                  <span class="rm-status" data-status={r.status}>{r.status}</span>
+                </div>
+                <div class="rm-title">{r.title}</div>
+                <p class="rm-objective">
+                  <span class="rm-obj-label">Objective:</span> {r.objective}
+                </p>
               </div>
 
-              <span class={`rm-status rm-status--${r.statusTone}`}>{r.status}</span>
-            </header>
+              <!-- Image placeholder (card/box). We will replace with real illustrations next. -->
+              <div class={"rm-media rm-media--" + (idx + 1)} aria-hidden="true"></div>
 
-            <div class="rm-media" aria-label={`${r.phase} illustration`}>
-              <img
-                class="rm-media__img"
-                src={`${import.meta.env.BASE_URL}${r.img}`}
-                alt={`${r.phase} illustration`}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-
-            <p class="roadmap-objective">
-              <span class="roadmap-objective__label">Objective:</span> {r.objective}
-            </p>
-
-            <ul class="roadmap-points">
-              {r.items.map((i) => (
-                <li class="roadmap-point">
-                  <span class="roadmap-bullet" aria-hidden="true" />
-                  <span>{i}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-
-      <div class="rm-legal" role="note" aria-label="Roadmap disclaimer">
-        <div class="rm-legal__head">
-          <span class="rm-legal__icon" aria-hidden="true">⚠️</span>
-          <span class="rm-legal__title">Phrase locked (approved — do not modify)</span>
+              <div class="rm-body">
+                <div class="rm-subhead">Key Points</div>
+                <ul class="rm-points">
+                  {r.items.map((i) => <li>{i}</li>)}
+                </ul>
+              </div>
+            </article>
+          ))}
         </div>
-        <div class="rm-legal__text">
-          All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.
+
+        <div class="rm-legal" role="note" aria-label="Roadmap note">
+          <div class="rm-legal__icon" aria-hidden="true">⚠️</div>
+          <div class="rm-legal__text">
+            <strong>All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.</strong>
+            <div class="small" style="margin-top:6px;">
+              This protects the project legally and technically, and keeps the narrative community-first.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:14px;">
+          <div class="card col-6">
+            <h3>Have ideas?</h3>
+            <p class="small">Roadmap items can evolve as the community grows. We post verified updates here first.</p>
+            <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer">Reply on X</a>
+          </div>
+          <div class="card col-6">
+            <h3>Build in public</h3>
+            <p class="small">Bookmark this page. Verified links and updates belong here — then mirrored to socials.</p>
+            <a class="btn" href="#launchpanel">Back to Launch Panel</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <hr class="hr" />
 
