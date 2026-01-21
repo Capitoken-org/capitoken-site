@@ -2194,7 +2194,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   line-height:1.35;
 }
 .rm-obj-label{
-  color: var(--accent);
+  color: rgba(255,255,255,0.55);
   margin-right:6px;
 }
 
@@ -2375,18 +2375,6 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background: rgba(25, 230, 211, 0.12);
   color: rgba(107, 243, 230, 0.98);
 }
-.rm-status[data-status="COMPLETED"]{
-  background: rgba(25,230,211,0.12);
-  color: rgba(25,230,211,0.92);
-  border-color: rgba(25,230,211,0.22);
-}
-
-.rm-status[data-status="IN-PROGRESS"]{
-  background: rgba(233,144,44,0.12);
-  color: rgba(233,144,44,0.92);
-  border-color: rgba(233,144,44,0.22);
-}
-
 .rm-status[data-status="NEXT"]{
   border-color: rgba(233,144,44,0.38);
   background: rgba(233,144,44,0.12);
@@ -2411,56 +2399,62 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-obj-label{
-  color: var(--accent);
+  color: rgba(255,255,255,0.92);
   font-weight: 900;
   margin-right: 6px;
 }
 
 .rm-media{
-  height: 240px; /* card/box format */
+  position: relative;
+  height: 240px; /* more vertical room */
   border-top: 1px solid rgba(255,255,255,0.08);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  background:
-    radial-gradient(900px 240px at 20% 10%, rgba(25,230,211,0.22), transparent 55%),
-    radial-gradient(900px 240px at 80% 45%, rgba(233,144,44,0.14), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-  position: relative;
   overflow: hidden;
   border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; /* do not crop */
 }
 
-.rm-media__img{
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain; /* do not crop */
-  object-position: center;
-  background: rgba(0,0,0,0.18);
-}
+
+.rm-media::after{ content:""; display:none; }
 
 .rm-media--1{
-  background:
-    radial-gradient(1000px 280px at 20% 10%, rgba(25,230,211,0.26), transparent 55%),
-    radial-gradient(800px 230px at 82% 40%, rgba(107,243,230,0.12), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    url("img/roadmap/roadmap-phase-1.webp");
+  background-size: cover, contain;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 .rm-media--2{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(233,144,44,0.20), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(25,230,211,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    url("img/roadmap/roadmap-phase-2.webp");
+  background-size: cover, contain;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 .rm-media--3{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(25,230,211,0.16), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(255,255,255,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    url("img/roadmap/roadmap-phase-3.webp");
+  background-size: cover, contain;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 .rm-media--4{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(153,119,255,0.18), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(25,230,211,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
+    url("img/roadmap/roadmap-phase-4.webp");
+  background-size: cover, contain;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
 .rm-subhead{
@@ -2495,3 +2489,128 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-legal__text strong{ color: rgba(255,255,255,0.94); }
+
+
+/* Roadmap headings (Tokenomics-style) */
+.rm-headrow{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.rm-heading{
+  margin: 0;
+  line-height: 1.15;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.rm-heading__phase{
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.rm-heading__dash{
+  color: rgba(255,255,255,0.65);
+  margin: 0 8px;
+  font-weight: 700;
+}
+
+.rm-heading__title{
+  color: #fff;
+  font-weight: 800;
+}
+
+/* Objective label in accent */
+.rm-obj-label{
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* Status pills (fintech clean) */
+.rm-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.22);
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+}
+
+.rm-status[data-status="ACTIVE"]{
+  border-color: rgba(0, 255, 174, 0.22);
+  background: rgba(0, 255, 174, 0.10);
+}
+
+.rm-status[data-status="COMPLETED"]{
+  border-color: rgba(88, 214, 141, 0.26);
+  background: rgba(88, 214, 141, 0.10);
+}
+
+.rm-status[data-status="IN-PROGRESS"]{
+  border-color: rgba(241, 196, 15, 0.26);
+  background: rgba(241, 196, 15, 0.10);
+}
+
+.rm-status[data-status="COMMUNITY-LED"]{
+  border-color: rgba(155, 89, 182, 0.26);
+  background: rgba(155, 89, 182, 0.10);
+}
+
+/* Roadmap cards (less shadow, cleaner borders) */
+.rm-card{
+  background: rgba(0,0,0,0.24);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: none;
+}
+
+.rm-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* Spacing tweaks */
+.rm-top{
+  padding-bottom: 10px;
+}
+
+.rm-objective{
+  margin-top: 10px;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.86);
+}
+
+.rm-points li strong{
+  font-weight: 700;
+}
+
+/* Roadmap title styling */
+.section-title--split .title-main{
+  color: #fff;
+}
+.section-title--split .title-kicker{
+  color: var(--accent);
+}
+
+/* Legal box refinement */
+.rm-legal{
+  margin-top: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.28);
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 840px){
+  .rm-heading{ font-size: 20px; }
+  .rm-media{ height: 220px; }
+}
