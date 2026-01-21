@@ -2,7 +2,10 @@
   const el = document.getElementById("ticker");
   if (!el) return;
 
+  const track = document.querySelector(".tickerbar__track");
+  const viewport = document.querySelector(".tickerbar__viewport");
   const clone = document.querySelector(".ticker--clone");
+  const clock = document.getElementById("navClock");
 
   const REFRESH_MS = 60000;
 
@@ -50,13 +53,37 @@
     return frag;
   }
 
+  function setMarquee() {
+    if (!track || !viewport) return;
+    // start exactly at the right edge of the marquee viewport
+    const start = viewport.clientWidth;
+    const gap = 28;
+
+    // width of a single run (el + separators)
+    const single = el.scrollWidth;
+    const end = -(single + gap);
+
+    track.style.setProperty("--marquee-start", `${start}px`);
+    track.style.setProperty("--marquee-end", `${end}px`);
+
+    // restart animation reliably
+    track.classList.remove("is-animating");
+    // force reflow
+    void track.offsetWidth;
+    track.classList.add("is-animating");
+  }
+
   function render(items) {
     el.innerHTML = "";
     el.appendChild(build(items));
+
     if (clone) {
       clone.innerHTML = "";
       clone.appendChild(build(items));
+      clone.style.paddingLeft = "28px";
     }
+
+    setMarquee();
   }
 
   async function tick() {
@@ -64,12 +91,12 @@
       const top = await fetchTop();
       render([...top, capi]);
     } catch {
-      // keep last good values
+      // keep last values
+      setMarquee();
     }
   }
 
-  // Clock (top-right, above ticker)
-  const clock = document.getElementById("navClock");
+  // Local clock
   if (clock) {
     const paint = () => (clock.textContent = new Date().toLocaleString("es-ES"));
     paint();
@@ -78,4 +105,5 @@
 
   tick();
   setInterval(tick, REFRESH_MS);
+  window.addEventListener("resize", () => setMarquee());
 })();

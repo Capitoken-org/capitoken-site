@@ -1,11 +1,28 @@
 ---
 /**
- * nav_v52 (based on V40_FIXED)
- * Fixes:
- * - Social icons are real logos (inline SVG)
- * - Social row stays under menu and above ticker
- * - Ticker container ids: #ticker and #navClock
+ * nav.astro (v53)
+ * Based on V40_FIXED patterns, adds:
+ * - Social icons row (SVG logos)
+ * - Local clock
+ * - Ticker row (aligned to .container)
  */
+const BASE = import.meta.env.BASE_URL || "/";
+const withBase = (p) => {
+  const clean = String(p || "");
+  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
+};
+
+const links = [
+  { href: "#launchpanel", label: "Launch Panel" },
+  { href: "#venues", label: "Markets" },
+  { href: "#tokenomics", label: "Tokenomics" },
+  { href: "#roadmap", label: "Roadmap" },
+  { href: "#daily", label: "Daily" },
+  { href: "#community", label: "Community" },
+  { href: "#faq", label: "FAQ" },
+  { href: withBase("/verify/"), label: "Verify" },
+];
+
 const socials = [
   { key: "x",  label: "X",        href: "https://x.com/Capitokenorg", enabled: true },
   { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official", enabled: true },
@@ -28,25 +45,20 @@ const ICONS = {
 ---
 
 <header class="nav nav--stack">
-  <div class="container nav__row nav__row--top">
-    <a class="brand" href={import.meta.env.BASE_URL} aria-label="Capitoken home">
-      <img class="brand__img" src={`${import.meta.env.BASE_URL}brand/logo-navbar.png`} alt="Capitoken" />
+  <div class="container nav__inner">
+    <a class="brand" href={withBase("/")} aria-label="Capitoken home">
+      <img class="brand__img" src={withBase("/brand/logo-navbar.png")} alt="Capitoken" />
     </a>
 
-    <nav class="nav__links" aria-label="Primary">
-      <a href="#launch">Launch Panel</a>
-      <a href="#markets">Markets</a>
-      <a href="#tokenomics">Tokenomics</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href="#daily">Daily</a>
-      <a href="#community">Community</a>
-      <a href="#faq">FAQ</a>
-      <a href={`${import.meta.env.BASE_URL}verify/`}>Verify</a>
+    <nav class="nav__links" aria-label="Primary navigation">
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
     </nav>
   </div>
 
   <div class="nav__meta">
-    <div class="container nav__row nav__row--meta">
+    <div class="container nav__meta-inner">
       <div class="nav__socials" aria-label="Social links">
         {socials.map((s) => (
           <a
@@ -56,8 +68,9 @@ const ICONS = {
             title={s.enabled ? s.label : `${s.label} (coming soon)`}
             target={s.enabled ? "_blank" : undefined}
             rel={s.enabled ? "noopener noreferrer" : undefined}
-            set:html={ICONS[s.key] ?? ""}
-          />
+          >
+            <span class="social__svg" set:html={ICONS[s.key] ?? ""} />
+          </a>
         ))}
       </div>
 
@@ -65,11 +78,11 @@ const ICONS = {
     </div>
   </div>
 
-  <div class="nav__ticker">
-    <div class="container tickerbar">
+  <div class="nav__ticker" role="region" aria-label="Market ticker">
+    <div class="container tickerbar__inner">
       <span class="tickerbar__tag">LIVE</span>
       <div class="tickerbar__viewport">
-        <div class="tickerbar__track" aria-hidden="false">
+        <div class="tickerbar__track">
           <div id="ticker" class="ticker" aria-live="polite">Loading prices…</div>
           <div class="ticker ticker--clone" aria-hidden="true"></div>
         </div>

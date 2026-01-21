@@ -2251,126 +2251,94 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 
 
 /* ===============================
-   NAV + Socials + Ticker (v52)
-   Fixes requested:
-   - Social icons are real SVG logos
-   - Alternating colors between quotes (white/yellow)
-   - Ticker starts from the extreme right and moves to the left
+   NAV/Ticker patches (v53)
+   - Social icons: force SVG display (no letters)
+   - Ticker: start from right edge (variable-based)
+   - Alternate colors: white/yellow
+   - Pills: green active dots
    =============================== */
 
-.nav__meta,
-.nav__ticker {
-  border-top: 1px solid rgba(255,255,255,.06);
+:root{
+  --ok: #19c37d;
+  --ok-glow: rgba(25,195,125,0.18);
 }
 
-.nav__row--meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
+/* Make Verify/Mainnet pills green */
+.pill-dot{
+  background: var(--ok) !important;
+  box-shadow: 0 0 0 4px var(--ok-glow) !important;
 }
 
-.nav__socials {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+/* Socials row */
+.nav--stack .nav__meta{
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.nav--stack .nav__meta-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 0;
+}
+.nav__socials{display:inline-flex;align-items:center;gap:10px;}
+.social__icon{
+  width:34px;height:34px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.14);
+  background:rgba(0,0,0,0.25);
+  display:inline-flex;align-items:center;justify-content:center;
+  text-decoration:none;
+}
+.social__svg{display:inline-flex;align-items:center;justify-content:center;}
+.social__svg svg{width:16px;height:16px;fill:rgba(255,255,255,0.88);display:block;}
+.social__icon.is-disabled{opacity:.35;pointer-events:none;}
+.nav__clock{
+  white-space:nowrap;
+  font-size:12px;
+  color:rgba(255,255,255,0.75);
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);
 }
 
-.social__icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.25);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
+/* Ticker aligned */
+.nav--stack .nav__ticker{
+  border-top:1px solid rgba(255,255,255,0.06);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:rgba(0,0,0,0.28);
 }
-
-.social__icon svg {
-  width: 16px;
-  height: 16px;
-  fill: rgba(255,255,255,.88);
+.tickerbar__inner{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 0;
 }
-
-.social__icon:hover {
-  border-color: rgba(255,255,255,.22);
-  background: rgba(255,255,255,.06);
+.tickerbar__tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:6px 10px;border-radius:999px;
+  font-weight:800;font-size:12px;letter-spacing:.03em;
+  background:rgba(242,201,76,0.16);
+  border:1px solid rgba(242,201,76,0.35);
+  color:rgba(242,201,76,0.95);
 }
-
-.social__icon.is-disabled {
-  opacity: .35;
-  pointer-events: none;
+.tickerbar__viewport{position:relative;overflow:hidden;flex:1;min-width:0;}
+.tickerbar__track{
+  display:inline-flex;align-items:center;gap:28px;width:max-content;
+  will-change:transform;
+  --marquee-start: 0px;
+  --marquee-end: -600px;
 }
-
-.nav__clock {
-  white-space: nowrap;
-  font-size: 12px;
-  color: rgba(255,255,255,.75);
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.04);
+.tickerbar__track.is-animating{
+  animation: ticker-marquee-var 22s linear infinite;
 }
-
-/* Ticker bar aligned to container */
-.tickerbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
+@keyframes ticker-marquee-var{
+  0%{ transform: translateX(var(--marquee-start)); }
+  100%{ transform: translateX(var(--marquee-end)); }
 }
+.tickerbar__viewport:hover .tickerbar__track.is-animating{ animation-play-state:paused; }
 
-.tickerbar__tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 12px;
-  letter-spacing: .03em;
-  background: rgba(242,201,76,.16);
-  border: 1px solid rgba(242,201,76,.35);
-  color: rgba(242,201,76,.95);
-}
-
-.tickerbar__viewport {
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-  min-width: 0;
-}
-
-.tickerbar__track {
-  display: inline-flex;
-  align-items: center;
-  gap: 28px;
-  width: max-content;
-  will-change: transform;
-  animation: ticker-marquee-right 22s linear infinite;
-}
-
-/* start from far right */
-@keyframes ticker-marquee-right {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-50%); }
-}
-
-.tickerbar__viewport:hover .tickerbar__track {
-  animation-play-state: paused;
-}
-
-.ticker {
-  white-space: nowrap;
-  font-size: 13px;
-  color: rgba(255,255,255,.92);
-}
-
-.ticker--clone { padding-left: 28px; }
-
-.ticker__item { color: #ffffff; font-weight: 650; }
-.ticker__item--alt { color: #f2c94c; font-weight: 650; }
-.ticker__sep { color: rgba(255,255,255,.55); }
+.ticker{white-space:nowrap;font-size:13px;color:rgba(255,255,255,0.92);}
+.ticker--clone{padding-left:28px;}
+.ticker__item{color:#fff;font-weight:650;}
+.ticker__item--alt{color:var(--brand-gold);font-weight:650;}
+.ticker__sep{color:rgba(255,255,255,0.55);}
