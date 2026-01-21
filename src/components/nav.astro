@@ -1,86 +1,83 @@
 ---
 /**
- * NAV v50 (aligned to body using .container)
- * - Row 1: Logo + menu (aligned)
- * - Row 2: Social icons + local time (aligned)
- * - Row 3: Ticker (aligned)
+ * Navbar + Socials + Live ticker (CAPI).
+ * - All rows aligned to the same .container width as the rest of the site.
+ * - Social icons + clock sit between menu and ticker (as requested).
  */
+const BASE = import.meta.env.BASE_URL || "/";
+const withBase = (p) => {
+  const clean = String(p || "");
+  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
+};
+
 const links = [
-  { href: "#launch", label: "Launch Panel" },
-  { href: "#markets", label: "Markets" },
+  { href: "#launchpanel", label: "Launch Panel" },
+  { href: "#venues", label: "Markets" },
   { href: "#tokenomics", label: "Tokenomics" },
   { href: "#roadmap", label: "Roadmap" },
   { href: "#daily", label: "Daily" },
   { href: "#community", label: "Community" },
   { href: "#faq", label: "FAQ" },
-  { href: `${import.meta.env.BASE_URL}verify/`, label: "Verify" },
+  { href: `${BASE}verify/`, label: "Verify" },
 ];
 
 const socials = [
-  { key: "x", label: "X", href: "https://x.com/Capitokenorg", enabled: true },
-  { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official", enabled: true },
-  { key: "dc", label: "Discord", href: "#", enabled: false },
-  { key: "rd", label: "Reddit", href: "#", enabled: false },
-  { key: "yt", label: "YouTube", href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true },
-  { key: "ig", label: "Instagram", href: "#", enabled: false },
-  { key: "fb", label: "Facebook", href: "#", enabled: false },
+  { key: "x", label: "X", href: "https://x.com/Capitokenorg" },
+  { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official" },
+  { key: "dc", label: "Discord", href: "#" },
+  { key: "rd", label: "Reddit", href: "#" },
+  { key: "yt", label: "YouTube", href: "https://www.youtube.com/@CapiToken" },
+  { key: "ig", label: "Instagram", href: "#" },
+  { key: "fb", label: "Facebook", href: "#" },
 ];
-
-const ICONS = {
-  x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.3L6.4 22H3.3l7.3-8.4L1 2h6.3l4.4 5.7L18.9 2Zm-1.1 18h1.7L6.2 3.9H4.4L17.8 20Z"/></svg>`,
-  tg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6 19 20.8c-.2 1.2-1 1.5-2 .9l-5.6-4.1-2.7 2.6c-.3.3-.6.6-1.2.6l.4-6.1L19 5.6c.5-.4-.1-.7-.8-.3L4.9 13.6l-5.7-1.8c-1.2-.4-1.2-1.2.3-1.8L20.3 3c1-.4 1.8.2 1.6 1.6Z"/></svg>`,
-  dc: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.3A19.9 19.9 0 0 0 16.6 3c-.2.4-.5 1-.7 1.5a18.6 18.6 0 0 0-7.7 0c-.2-.5-.5-1.1-.7-1.5A20 20 0 0 0 3.7 4.3C1.4 7.7.8 11 .9 14.3a20 20 0 0 0 6.2 3.2c.5-.7 1-1.5 1.3-2.3a12 12 0 0 1-2-.9l.5-.4c3.9 1.8 8.1 1.8 12 0l.5.4c-.6.4-1.3.7-2 .9.4.8.8 1.6 1.3 2.3a20 20 0 0 0 6.2-3.2c.2-3.8-.8-7-2.9-10ZM8.6 13.2c-.7 0-1.2-.7-1.2-1.5s.5-1.5 1.2-1.5 1.2.7 1.2 1.5-.5 1.5-1.2 1.5Zm6.8 0c-.7 0-1.2-.7-1.2-1.5s.5-1.5 1.2-1.5 1.2.7 1.2 1.5-.5 1.5-1.2 1.5Z"/></svg>`,
-  rd: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.3 2.5a1 1 0 0 0-1.2.7l-1 3.3c-2.1-.1-4.1.4-5.7 1.4l-2.6-2a1 1 0 1 0-1.2 1.6l2.4 1.9C3.5 11 2.6 12.8 2.6 14.8c0 3.7 4.2 6.7 9.4 6.7s9.4-3 9.4-6.7c0-2-1-3.8-2.7-5.1l2.4-1.9a1 1 0 0 0-1.2-1.6l-2.6 2c-1.6-1-3.6-1.5-5.7-1.4l1-3.3a1 1 0 0 0-.7-1.2ZM8.8 14.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm6.4 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"/></svg>`,
-  yt: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.3c.2.8.4 2 .4 4.7s-.2 3.9-.4 4.7a2.8 2.8 0 0 1-2 2c-.8.2-3 .4-7.6.4s-6.8-.2-7.6-.4a2.8 2.8 0 0 1-2-2C2.2 15.6 2 14.4 2 12s.2-3.9.4-4.7a2.8 2.8 0 0 1 2-2C5.2 5.1 7.4 5 12 5s6.8.2 7.6.4a2.8 2.8 0 0 1 2 2ZM10 15.3 16 12 10 8.7v6.6Z"/></svg>`,
-  ig: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Z"/></svg>`,
-  fb: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6h1.7V4.8c-.3 0-1.4-.1-2.7-.1-2.7 0-4.5 1.6-4.5 4.7V11H7v3h2.6v8h3.9Z"/></svg>`,
-};
 ---
 
-<header class="nav nav--stacked">
-  <!-- Row 1: Logo + menu (aligned to .container) -->
-  <div class="container nav__inner">
-    <a class="brand" href={import.meta.env.BASE_URL} aria-label="Capitoken home">
-      <img class="brand__img" src={`${import.meta.env.BASE_URL}brand/logo-navbar.png`} alt="Capitoken" />
-    </a>
+<header class="nav" role="banner">
+  <div class="container nav__stack">
+    <!-- Row 1: Logo + menu -->
+    <div class="nav__inner">
+      <a class="brand" href={BASE} aria-label="Capitoken home">
+        <img
+          class="brand__img"
+          src={withBase("/brand/logo-navbar.png")}
+          alt="Capitoken"
+          loading="eager"
+          decoding="async"
+        />
+        <span class="sr-only">Capitoken</span>
+      </a>
 
-    <nav class="nav__links" aria-label="Primary navigation">
-      {links.map((l) => (
-        <a href={l.href}>{l.label}</a>
-      ))}
-    </nav>
-  </div>
+      <nav class="nav__links" aria-label="Primary navigation">
+        {links.map((l) => (
+          <a href={l.href}>{l.label}</a>
+        ))}
+      </nav>
+    </div>
 
-  <!-- Row 2: Socials + clock (aligned) -->
-  <div class="nav__subrow">
-    <div class="container nav__subrow-inner">
+    <!-- Row 2: Social icons + local clock (between menu and ticker) -->
+    <div class="nav__meta" aria-label="Social links and local time">
       <div class="nav__socials" aria-label="Social links">
         {socials.map((s) => (
-          <a
-            class={`social__icon ${s.enabled ? "" : "is-disabled"}`}
-            href={s.enabled ? s.href : undefined}
-            aria-label={s.enabled ? s.label : `${s.label} (coming soon)`}
-            title={s.enabled ? s.label : `${s.label} (coming soon)`}
-            target={s.enabled ? "_blank" : undefined}
-            rel={s.enabled ? "noopener noreferrer" : undefined}
-            set:html={ICONS[s.key] ?? ""}
-          />
+          <a class="social" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+            <span class={`social__badge social__badge--${s.key}`}>{s.key.toUpperCase()}</span>
+            <span class="sr-only">{s.label}</span>
+          </a>
         ))}
       </div>
 
-      <div id="ticker-clock" class="nav__clock" aria-label="Local time"></div>
+      <div class="nav__clock" aria-label="Local time">
+        <span id="navClock">--/--/----, --:--:--</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Row 3: Ticker (aligned) -->
-  <div class="tickerbar" role="region" aria-label="Market ticker">
-    <div class="container tickerbar__inner">
-      <span class="tickerbar__tag">LIVE</span>
+    <!-- Row 3: Live ticker (aligned to container edges) -->
+    <div class="nav__ticker" aria-label="Live prices ticker">
+      <span class="ticker__pill">LIVE</span>
 
-      <div class="tickerbar__viewport">
-        <div class="tickerbar__track">
-          <div id="ticker" class="ticker" aria-live="polite">Loading prices…</div>
-          <div class="ticker ticker--clone" aria-hidden="true"></div>
+      <div class="ticker" aria-hidden="false">
+        <div class="ticker__viewport">
+          <div id="ticker" class="ticker__track">Loading prices…</div>
+          <div class="ticker__track ticker__track--clone" aria-hidden="true"></div>
         </div>
       </div>
     </div>

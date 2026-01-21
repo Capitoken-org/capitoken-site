@@ -13,8 +13,8 @@ const withBase = (p) => {
 };
 
 // Cache-bust for GitHub Pages / CDN
-const CSS_VERSION = "43";
-const JS_VERSION = "43";
+const CSS_VERSION = "39";
+const JS_VERSION = "39";
 
 const year = new Date().getFullYear();
 ---
@@ -46,10 +46,10 @@ const year = new Date().getFullYear();
     <!-- Site JS (modules to allow import/export and import.meta usage) -->
     <script type="module" src={withBase(`/js/capi-config.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/trust-engine.js?v=${JS_VERSION}`)}></script>
-    <script type="module" src={withBase(`/js/ticker.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/market-engine.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/capi-wallets.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/capi-dex.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/capi-ui.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/ticker.js?v=${JS_VERSION}`)}></script>
   </body>
 </html>
