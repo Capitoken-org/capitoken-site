@@ -2279,3 +2279,53 @@ html { scroll-padding-top: var(--scroll-pad); }
 .ticker__item{ color:#fff; font-weight:650; }
 .ticker__item--alt{ color:#f2c94c; font-weight:650; }
 .ticker__sep{ color:rgba(255,255,255,.55); }
+
+
+/* ===============================
+   NAV alignment fix (v49)
+   Goal: Row 1 (logo + menu) aligns with site body (maxw + pad)
+   =============================== */
+
+.nav {
+  /* keep background full width, but content centered */
+}
+
+.nav__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+
+/* Ensure menu aligns nicely and doesn't drift right */
+.nav__links {
+  justify-content: flex-end;
+}
+
+/* Prevent brand card from forcing weird spacing */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 420px;
+}
+
+.brand__img {
+  width: 100%;
+  max-width: 340px; /* keep strong but not oversized */
+  height: auto;
+  display: block;
+}
+
+/* Make sure nav inner doesn't create a second 'frame' feel */
+.brand {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* If there is any generic header container forcing full bleed, keep it but align content */
+@media (max-width: 900px) {
+  .brand__img { max-width: 260px; }
+}
