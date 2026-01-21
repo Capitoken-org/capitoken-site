@@ -30,7 +30,9 @@
   --radius-sm:12px;
 
   --container:1120px;
+  --nav-offset:190px;
 }
+
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -412,6 +414,20 @@ h3{margin:0 0 6px;font-size:18px}
   border-top:1px solid rgba(255,255,255,0.06);
   color:rgba(242,245,244,0.65);
 }
+
+.footer__disclaimer{
+  margin:0 0 14px;
+  padding:12px 14px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  background:rgba(0,0,0,0.22);
+  color:rgba(242,245,244,0.72);
+  line-height:1.45;
+}
+.footer__disclaimer p{margin:0 0 10px}
+.footer__disclaimer p:last-child{margin-bottom:0}
+.footer__disclaimer strong{color:rgba(242,245,244,0.92)}
+.footer__copyright{color:rgba(242,245,244,0.62)}
 /* ===== Launch Panel hard spacing fix ===== */
 #launchpanel {
   display: flex;
@@ -910,7 +926,9 @@ body::after{
   --radius-sm:12px;
 
   --container:1120px;
+  --nav-offset:190px;
 }
+
 
 *{box-sizing:border-box}
 html,body{height:100%}

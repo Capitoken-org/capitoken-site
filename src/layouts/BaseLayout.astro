@@ -16,7 +16,7 @@ const withBase = (p) => {
 const CSS_VERSION = "39";
 const JS_VERSION = "39";
 
-const year = new Date().getFullYear();
+const year = 2025;
 ---
 
 <!doctype html>
@@ -39,7 +39,12 @@ const year = new Date().getFullYear();
 
     <footer class="footer">
       <div class="container">
-        © {year} Capitoken.org • All rights reserved
+        <div class="footer__disclaimer">
+  <p><strong>Disclaimer:</strong> Capitoken (CAPI) is an experimental crypto asset and community project. Capitoken.org is an informational website only. We are <strong>not</strong> a financial institution, bank, broker, exchange, custodian, money-services business, or investment adviser. Nothing on this website constitutes (or should be construed as) financial, legal, tax, or investment advice.</p>
+  <p>No content on this website is an offer, solicitation, recommendation, endorsement, or promise of returns. Crypto assets are highly volatile and involve significant risk — you may lose <strong>all</strong> funds. You are solely responsible for conducting your own research (DYOR) and for any decisions, transactions, or interactions with smart contracts and third-party services.</p>
+  <p>All information is provided “as is” without warranties of any kind. Third-party links (including explorers, DEXs, and social platforms) are provided for convenience; we do not control or guarantee their availability, accuracy, or security.</p>
+</div>
+        <div class="footer__copyright">© {year} Capitoken.org • All rights reserved</div>
       </div>
     </footer>
 
