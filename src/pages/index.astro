@@ -28,10 +28,50 @@ const tokenomics = [
 ];
 
 const roadmap = [
-  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
-  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
-  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
+  {
+    phase: "Phase 1 — Live",
+    title: "Foundation",
+    items: [
+      "Capitoken deployed on Ethereum Mainnet",
+      "Community-first tokenomics (97% community)",
+      "Anti-bot & anti-whale protections",
+      "Verified smart contract & official links",
+      "Launch Panel as the single source of truth",
+    ],
+  },
+  {
+    phase: "Phase 2 — In Progress",
+    title: "Expansion",
+    items: [
+      "Liquidity growth and market indexing",
+      "Markets expansion (DEX first)",
+      "Community growth across X, Telegram & media",
+      "Trust Score evolution and monitoring",
+      "Continuous transparency updates",
+    ],
+  },
+  {
+    phase: "Phase 3 — Planned",
+    title: "Utility & Adoption",
+    items: [
+      "Real-world adoption experiments",
+      "Community-driven utilities and proposals",
+      "NFT-ready ecosystem integration",
+      "Capibara narrative & IP expansion",
+    ],
+  },
+  {
+    phase: "Phase 4 — Vision",
+    title: "Community-Owned Future",
+    items: [
+      "Community-defined initiatives",
+      "Open experiments powered by CAPI",
+      "Long-term ecosystem evolution",
+      "Capitoken as a symbol of collective ownership",
+    ],
+  },
 ];
+
 ---
 
 <BaseLayout title={TITLE} description={DESC}>
@@ -670,7 +710,7 @@ function iconCandidates(it){
   <section class="section" id="roadmap">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Phases, progress, and what’s next.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Four phases — from launch to a community-owned future.</span></h2>
 
       <div class="grid" style="margin-top:14px;">
         {roadmap.map((r) => (
