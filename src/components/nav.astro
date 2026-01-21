@@ -1,34 +1,37 @@
 ---
-// Simple navbar component (NO html/head/body here)
-const BASE = import.meta.env.BASE_URL || "/";
-const withBase = (p) => {
-  const clean = String(p || "");
+/**
+ * Simple navbar component (NO <html>/<head>/<body> here)
+ * Uses import.meta.env.BASE_URL for GitHub Pages subpath support
+ */
+const BASE = import.meta.env.BASE_URL ?? "/";
+
+const withBase = (p: string) => {
+  const clean = String(p ?? "");
+  if (!clean) return BASE;
   return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
 };
 
 // Site sections in index.astro (keep nav labels aligned with panel titles)
 const links = [
   { href: "#launchpanel", label: "Launch Panel" },
-  { href: "#venues", label: "Venues" },
+  { href: "#markets", label: "Markets" }, // <- antes estaba "venues"
   { href: "#tokenomics", label: "Tokenomics" },
   { href: "#roadmap", label: "Roadmap" },
   { href: "#daily", label: "Daily" },
   { href: "#community", label: "Community" },
   { href: "#faq", label: "FAQ" },
   // Verify is a separate page, not an on-page panel
-  { href: `${BASE}verify/`, label: "Verify" },
+  { href: withBase("verify/"), label: "Verify" },
 ];
 ---
 
 <header class="nav">
   <div class="container nav__inner">
-    <a class="brand" href={BASE} aria-label="Capitoken home">
-      <img class="brand__img" src={withBase("/brand/logo-navbar.png")} alt="Capitoken" loading="eager" />
-    </a>
-
     <nav class="nav__links" aria-label="Primary">
       {links.map((l) => (
-        <a href={l.href}>{l.label}</a>
+        <a class="nav__link" href={l.href}>
+          {l.label}
+        </a>
       ))}
     </nav>
   </div>
