@@ -6,7 +6,6 @@
   const el = document.getElementById(TICKER_ID);
   if (!el) return;
 
-  // Optional clone for seamless marquee
   const clone = document.querySelector(".ticker--clone");
 
   const coins = [
@@ -19,14 +18,12 @@
 
   const capi = { symbol: "CAPI" };
 
-  function formatUsd(n) {
+  function formatUsdEs(n) {
     if (n === null || n === undefined || isNaN(n)) return "USD —";
-    // Spanish-style formatting: 89.898,00
-    const formatted = Number(n).toLocaleString("es-ES", {
+    return `USD ${Number(n).toLocaleString("es-ES", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    });
-    return `USD ${formatted}`;
+    })}`;
   }
 
   async function fetchTop() {
@@ -41,7 +38,6 @@
   }
 
   async function fetchCAPI() {
-    // Replace TOKEN_ADDRESS when available for live price via DexScreener
     const TOKEN_ADDRESS = "";
     if (!TOKEN_ADDRESS) return { symbol: capi.symbol, price: null };
 
@@ -56,25 +52,34 @@
     }
   }
 
-  function render(items) {
-    el.innerHTML = "";
+  function buildNodes(items) {
+    const frag = document.createDocumentFragment();
 
     items.forEach((it, idx) => {
       const span = document.createElement("span");
       span.className = idx % 2 === 0 ? "ticker__item" : "ticker__item ticker__item--alt";
-      span.textContent = `${it.symbol} = ${formatUsd(it.price)}`;
-      el.appendChild(span);
+      span.textContent = `${it.symbol} = ${formatUsdEs(it.price)}`;
+      frag.appendChild(span);
 
       if (idx < items.length - 1) {
         const sep = document.createElement("span");
         sep.className = "ticker__sep";
-        sep.textContent = " | ";
-        el.appendChild(sep);
+        sep.textContent = "  |  ";
+        frag.appendChild(sep);
       }
     });
 
-    // Mirror into clone (seamless loop)
-    if (clone) clone.innerHTML = el.innerHTML;
+    return frag;
+  }
+
+  function render(items) {
+    el.innerHTML = "";
+    el.appendChild(buildNodes(items));
+
+    if (clone) {
+      clone.innerHTML = "";
+      clone.appendChild(buildNodes(items));
+    }
   }
 
   async function tick() {
@@ -83,16 +88,15 @@
       const c = await fetchCAPI();
       render([...top, c]);
     } catch {
-      // Keep existing UI; don't hard-fail.
+      // keep previous content if fetch fails
     }
   }
 
-  // Clock
   const clock = document.getElementById("ticker-clock");
   if (clock) {
     const paint = () => {
       const d = new Date();
-      clock.textContent = d.toLocaleString();
+      clock.textContent = d.toLocaleString("es-ES");
     };
     paint();
     setInterval(paint, CLOCK_MS);
