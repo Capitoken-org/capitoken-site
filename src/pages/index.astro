@@ -691,29 +691,21 @@ function iconCandidates(it){
   <section class="section" id="roadmap">
     <div class="container reveal">
       <div class="section-block">
-        <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Phases, progress, and what’s next.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Phases, progress, and what’s next.</span></h2>
 
-        <div class="grid" style="margin-top:14px;">
-          {roadmap.map((r) => (
-            <div class="card col-6">
-              <div class="small">{r.phase}</div>
-              <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+      <div class="grid" style="margin-top:14px;">
+        {roadmap.map((r) => (
+          <div class="card col-6">
+            <div class="small">{r.phase}</div>
+            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
+            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
+              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div class="small" style="margin-top:14px; opacity:.9;">All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.</div>
 
-              <p class="small" style="margin-top:8px; color: var(--muted); line-height:1.5;">
-                <strong style="color: rgba(242,245,244,0.92);">Objective:</strong>{" "}
-                {r.objective}
-              </p>
-
-              <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
-                {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div class="small" style="margin-top:14px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.10); background: rgba(0,0,0,0.22);">
-          All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.
-        </div>
       </div>
     </div>
   </section>
