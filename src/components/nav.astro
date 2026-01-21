@@ -1,91 +1,75 @@
 ---
 /**
- * Nav component (NO <html>/<body> here).
- * Uses BASE_URL for GitHub Pages subpath safety.
+ * Capitoken NAV
+ * Notes:
+ * - Social icons live below the main menu.
+ * - Ticker is full-width and scrolls right-to-left.
+ * - Keep markup simple (no extra wrapper cards around logo).
  */
-const BASE = import.meta.env.BASE_URL || "/";
-const withBase = (p) => {
-  const clean = String(p || "");
-  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
-};
-
-const links = [
-  { href: "#launchpanel", label: "Launch Panel" },
-  { href: "#venues", label: "Markets" },
-  { href: "#tokenomics", label: "Tokenomics" },
-  { href: "#roadmap", label: "Roadmap" },
-  { href: "#daily", label: "Daily" },
-  { href: "#community", label: "Community" },
-  { href: "#faq", label: "FAQ" },
-  // /verify is a separate page (not a section on index)
-  { href: withBase("/verify/"), label: "Verify", isPage: true },
-];
-
-// Social links (activate as you confirm official URLs)
 const socials = [
-  { key: "x", label: "X", href: "https://x.com/Capitokenorg" },
-  { key: "telegram", label: "Telegram", href: null },
-  { key: "discord", label: "Discord", href: null },
-  { key: "reddit", label: "Reddit", href: null },
-  { key: "youtube", label: "YouTube", href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ" },
-  { key: "instagram", label: "Instagram", href: null },
-  { key: "facebook", label: "Facebook", href: null },
+  { key: "x", label: "X", href: "https://x.com/Capitokenorg", enabled: true },
+  // TODO: replace with official URLs when ready
+  { key: "tg", label: "TG", href: "#", enabled: false },
+  { key: "ds", label: "DS", href: "#", enabled: false },
+  { key: "rd", label: "RD", href: "#", enabled: false },
+  { key: "yt", label: "YT", href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true },
+  { key: "ig", label: "IG", href: "#", enabled: false },
+  { key: "fb", label: "FB", href: "#", enabled: false },
 ];
-
-const icon = (k) => {
-  const label = ({
-    x: "X",
-    telegram: "TG",
-    discord: "DS",
-    reddit: "RD",
-    youtube: "YT",
-    instagram: "IG",
-    facebook: "FB",
-  })[k] || "?";
-
-  return `<svg viewBox="0 0 24 24" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
-    <text x="12" y="16" text-anchor="middle" font-size="8.5" fill="currentColor" font-family="system-ui, sans-serif">${label}</text>
-  </svg>`;
-};
 ---
 
-<header class="nav" role="banner">
-  <div class="container nav__inner">
-    <a class="brand" href={BASE} aria-label="Capitoken home">
-      <img
-        class="brand__img"
-        src={withBase("/brand/logo-navbar.png")}
-        alt="Capitoken"
-        loading="eager"
-        decoding="async"
-      />
-      <span class="sr-only">Capitoken</span>
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href={import.meta.env.BASE_URL}>
+      <img class="brand__img" src={`${import.meta.env.BASE_URL}logo/navbar-logo.png`} alt="Capitoken" />
     </a>
 
-    <nav class="nav__links" aria-label="Primary navigation">
-      {links.map((l) => (
-        <a href={l.href}>{l.label}</a>
-      ))}
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#launch">Launch Panel</a>
+      <a href="#markets">Markets</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#daily">Daily</a>
+      <a href="#community">Community</a>
+      <a href="#faq">FAQ</a>
+      <a href={`${import.meta.env.BASE_URL}verify/`}>Verify</a>
     </nav>
   </div>
 
-  <!-- Secondary row: socials + live ticker -->
-  <div class="container nav__sub" aria-label="Live ticker and socials">
-    <div class="nav__social" aria-label="Official socials">
-      {socials.map((s) => (
-        s.href ? (
-          <a class="social-ico" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} set:html={icon(s.key)} />
-        ) : (
-          <span class="social-ico is-disabled" aria-label={`${s.label} (coming soon)`} set:html={icon(s.key)} />
-        )
-      ))}
+  <!-- Row under menu: socials aligned right -->
+  <div class="nav__subrow">
+    <div class="nav__subrow-inner">
+      <div class="nav__socials" aria-label="Social links">
+        {socials.map((s) => (
+          <a
+            class={`social__icon ${s.enabled ? "" : "is-disabled"}`}
+            href={s.enabled ? s.href : undefined}
+            aria-label={s.enabled ? s.label : `${s.label} (coming soon)`}
+            title={s.enabled ? s.label : `${s.label} (coming soon)`}
+            target={s.enabled ? "_blank" : undefined}
+            rel={s.enabled ? "noopener noreferrer" : undefined}
+          >
+            {s.label}
+          </a>
+        ))}
+      </div>
     </div>
+  </div>
 
-    <div class="nav__ticker" aria-label="Market ticker">
-      <span class="live-pill">LIVE</span>
-      <div id="ticker" class="ticker" aria-live="polite">Loading prices...</div>
-      <div id="ticker-clock" class="ticker-clock" aria-label="Local time"></div>
+  <!-- Full-width ticker / marquee -->
+  <div class="tickerbar" role="region" aria-label="Market ticker">
+    <div class="tickerbar__inner">
+      <span class="tickerbar__tag">LIVE</span>
+
+      <div class="tickerbar__viewport" aria-hidden="false">
+        <div class="tickerbar__track">
+          <div id="ticker" class="ticker" aria-live="polite">Loading prices…</div>
+          <!-- duplicate for seamless loop -->
+          <div class="ticker ticker--clone" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div id="ticker-clock" class="tickerbar__clock" aria-label="Local time"></div>
     </div>
   </div>
 </header>
