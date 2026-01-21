@@ -77,7 +77,7 @@ section{padding:24px 0}
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 .nav__inner{
-  height:96px;
+  height:92px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -88,14 +88,14 @@ section{padding:24px 0}
   display:inline-flex;
   align-items:center;
   gap:10px;
-  padding:10px 12px;
+  padding:2px 4px;
   border-radius:12px;
 }
 .brand:hover{background:rgba(255,255,255,0.04)}
 .brand__dot{
   width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
+  background:rgba(46,229,157,0.95);
+  box-shadow:0 0 0 4px rgba(46,229,157,0.14);
 }
 .brand__name{font-weight:700;letter-spacing:.2px}
 
@@ -132,8 +132,8 @@ section{padding:24px 0}
 }
 .pill__dot{
   width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
+  background:rgba(46,229,157,0.95);
+  box-shadow:0 0 0 4px rgba(46,229,157,0.14);
 }
 .hero h1{
   margin:14px 0 10px;
@@ -554,7 +554,7 @@ body::after{
 .brand__name{display:none}
 
 .brand__img{
-  height: 110px;
+  height:92px;
   width: auto;
   display: block;
   border-radius: 10px; /* mantiene look "badge" */
@@ -640,8 +640,8 @@ body::after{
 
 .pill-dot{
   width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
+  background:rgba(46,229,157,0.95);
+  box-shadow:0 0 0 4px rgba(46,229,157,0.14);
 }
 
 /* Trust score bar */
@@ -974,8 +974,8 @@ section{padding:24px 0}
 .brand:hover{background:rgba(255,255,255,0.04)}
 .brand__dot{
   width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
+  background:rgba(46,229,157,0.95);
+  box-shadow:0 0 0 4px rgba(46,229,157,0.14);
 }
 .brand__name{font-weight:700;letter-spacing:.2px}
 
@@ -1012,8 +1012,8 @@ section{padding:24px 0}
 }
 .pill__dot{
   width:10px;height:10px;border-radius:999px;
-  background:var(--accent);
-  box-shadow:0 0 0 4px rgba(233,144,44,0.12);
+  background:rgba(46,229,157,0.95);
+  box-shadow:0 0 0 4px rgba(46,229,157,0.14);
 }
 .hero h1{
   margin:14px 0 10px;
@@ -2145,388 +2145,252 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 /* =========================================================
-   Roadmap (Expandable Panels) — Phase Cards
-   NOTE: Styles are scoped to .rm-* to avoid side effects.
+   ROADMAP — 4 Phases (definitivo)
+   Scope: only styles used inside #roadmap section
    ========================================================= */
-.rm-grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:18px;
-  margin-top:18px;
-}
-@media (max-width: 880px){
-  .rm-grid{ grid-template-columns: 1fr; }
-}
 
-.rm-card{
-  border-radius: 18px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  overflow:hidden;
-}
-
-.rm-summary{
-  list-style:none;
-  cursor:pointer;
+.roadmap-head{
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
   gap:14px;
-  padding:18px 18px 14px;
-}
-.rm-summary::-webkit-details-marker{ display:none; }
-
-.rm-top{ min-width: 0; }
-.rm-phase{
-  font-size:12px;
-  color: rgba(255,255,255,0.65);
-  margin-bottom:6px;
-}
-.rm-title{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:-0.02em;
-  margin-bottom:8px;
-}
-.rm-obj{
-  font-size:14px;
-  color: rgba(255,255,255,0.78);
-  line-height:1.35;
-}
-.rm-obj-label{
-  color: rgba(255,255,255,0.55);
-  margin-right:6px;
+  flex-wrap:wrap;
 }
 
-.rm-cta{
+.roadmap-nav{
   display:flex;
   align-items:center;
   gap:10px;
-  color: rgba(233,144,44,0.95); /* orange accent */
-  font-weight:800;
-  white-space:nowrap;
-}
-.rm-chevron{
-  display:inline-block;
-  transform: rotate(0deg);
-  transition: transform .18s ease;
-  opacity:.95;
-}
-.rm-card[open] .rm-chevron{ transform: rotate(180deg); }
-
-.rm-body{
-  padding: 0 18px 18px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-.rm-points{
-  margin: 14px 0 10px;
-  padding-left: 18px;
-  color: rgba(255,255,255,0.80);
-}
-.rm-points li{ margin: 8px 0; line-height:1.45; }
-.rm-points strong{ color: rgba(255,255,255,0.92); }
-
-.rm-text p{
-  margin: 10px 0;
-  color: rgba(255,255,255,0.74);
-  line-height:1.65;
-}
-.rm-note{
-  padding:10px 12px;
-  border-radius: 12px;
-  background: rgba(25, 230, 211, 0.10);
-  border: 1px solid rgba(25, 230, 211, 0.22);
-  color: rgba(255,255,255,0.86);
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.03);
 }
 
-/* Small accessibility helper (if not already present) */
-.sr-only{
-  position:absolute;
-  width:1px;height:1px;
-  padding:0;margin:-1px;
-  overflow:hidden;
-  clip:rect(0,0,0,0);
-  white-space:nowrap;border:0;
+.rm-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.10);
+  box-shadow: 0 0 0 0 rgba(15,157,88,0.0);
+  transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 
-
-/* ===============================
-   NAV/Ticker patches (v53)
-   - Social icons: force SVG display (no letters)
-   - Ticker: start from right edge (variable-based)
-   - Alternate colors: white/yellow
-   - Pills: green active dots
-   =============================== */
-
-:root{
-  --ok: #19c37d;
-  --ok-glow: rgba(25,195,125,0.18);
+.rm-dot:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.16);
 }
 
-/* Make Verify/Mainnet pills green */
-.pill-dot{
-  background: var(--ok) !important;
-  box-shadow: 0 0 0 4px var(--ok-glow) !important;
+.rm-dot.is-active{
+  border-color: rgba(15,157,88,0.55);
+  background: linear-gradient(90deg, rgba(233,144,44,0.92), rgba(244, 212, 89, 0.90), rgba(15,157,88,0.90));
+  box-shadow: 0 0 0 6px rgba(15,157,88,0.10);
 }
 
-/* Socials row */
-.nav--stack .nav__meta{
-  border-top:1px solid rgba(255,255,255,0.06);
+.roadmap-grid .roadmap-card{
+  position: relative;
+  overflow: hidden;
 }
-.nav--stack .nav__meta-inner{
+
+.roadmap-card__top{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  padding:10px 0;
-}
-.nav__socials{display:inline-flex;align-items:center;gap:10px;}
-.social__icon{
-  width:34px;height:34px;border-radius:999px;
-  border:1px solid rgba(255,255,255,0.14);
-  background:rgba(0,0,0,0.25);
-  display:inline-flex;align-items:center;justify-content:center;
-  text-decoration:none;
-}
-.social__svg{display:inline-flex;align-items:center;justify-content:center;}
-.social__svg svg{width:16px;height:16px;fill:rgba(255,255,255,0.88);display:block;}
-.social__icon.is-disabled{opacity:.35;pointer-events:none;}
-.nav__clock{
-  white-space:nowrap;
-  font-size:12px;
-  color:rgba(255,255,255,0.75);
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:rgba(255,255,255,0.04);
 }
 
-/* Ticker aligned */
-.nav--stack .nav__ticker{
-  border-top:1px solid rgba(255,255,255,0.06);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  background:rgba(0,0,0,0.28);
+.roadmap-phase__label{
+  margin: 0;
 }
-.tickerbar__inner{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px 0;
-}
-.tickerbar__tag{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:6px 10px;border-radius:999px;
-  font-weight:800;font-size:12px;letter-spacing:.03em;
-  background:rgba(242,201,76,0.16);
-  border:1px solid rgba(242,201,76,0.35);
-  color:rgba(242,201,76,0.95);
-}
-.tickerbar__viewport{position:relative;overflow:hidden;flex:1;min-width:0;}
-.tickerbar__track{
-  display:inline-flex;align-items:center;gap:28px;width:max-content;
-  will-change:transform;
-  --marquee-start: 0px;
-  --marquee-end: -600px;
-}
-.tickerbar__track.is-animating{
-  animation: ticker-marquee-var 22s linear infinite;
-}
-@keyframes ticker-marquee-var{
-  0%{ transform: translateX(var(--marquee-start)); }
-  100%{ transform: translateX(var(--marquee-end)); }
-}
-.tickerbar__viewport:hover .tickerbar__track.is-animating{ animation-play-state:paused; }
 
-.ticker{white-space:nowrap;font-size:13px;color:rgba(255,255,255,0.92);}
-.ticker--clone{padding-left:28px;}
-.ticker__item{color:#fff;font-weight:650;}
-.ticker__item--alt{color:var(--brand-gold);font-weight:650;}
-.ticker__sep{color:rgba(255,255,255,0.55);}
-
-
-/* =========================================================
-   Roadmap (WOW) — Add-ons (safe)
-   - Keeps existing .rm-* base intact
-   - Adds image placeholders + status pills + legal note
-   ========================================================= */
-
-.rm-card{
-  box-shadow: 0 22px 70px rgba(0,0,0,0.45);
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
-}
-.rm-card:hover{
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.075);
+.roadmap-phase__title{
+  margin-top: 6px;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.01em;
 }
 
 .rm-status{
-  font-size: 12px;
-  font-weight: 900;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.88);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.86);
+  white-space: nowrap;
 }
 
-.rm-status[data-status="ACTIVE"]{
-  border-color: rgba(25, 230, 211, 0.38);
-  background: rgba(25, 230, 211, 0.12);
-  color: rgba(107, 243, 230, 0.98);
+.rm-status--ok{
+  border-color: rgba(15,157,88,0.35);
+  background: rgba(15,157,88,0.10);
+  color: rgba(160,255,210,0.95);
 }
-.rm-status[data-status="NEXT"]{
+
+.rm-status--warn{
   border-color: rgba(233,144,44,0.38);
-  background: rgba(233,144,44,0.12);
-  color: rgba(255, 214, 153, 0.96);
+  background: rgba(233,144,44,0.10);
+  color: rgba(255,210,165,0.95);
 }
-.rm-status[data-status="PLANNED"]{
+
+.rm-status--neutral{
   border-color: rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.70);
-}
-.rm-status[data-status="COMMUNITY-LED"]{
-  border-color: rgba(153,119,255,0.40);
-  background: rgba(153,119,255,0.12);
-  color: rgba(205, 190, 255, 0.98);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.75);
 }
 
-.rm-objective{
-  margin: 10px 0 0 0;
-  color: rgba(255,255,255,0.74);
-  line-height: 1.55;
-  font-size: 14px;
+.rm-status--violet{
+  border-color: rgba(140, 92, 255, 0.40);
+  background: rgba(140, 92, 255, 0.10);
+  color: rgba(220, 205, 255, 0.95);
 }
 
-.rm-obj-label{
-  color: rgba(255,255,255,0.92);
-  font-weight: 900;
-  margin-right: 6px;
-}
-
+/* Roadmap media (card/box) */
 .rm-media{
-  position: relative;
-  height: 160px; /* card/box format */
-  border-top: 1px solid rgba(255,255,255,0.08);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  overflow: hidden;
+  margin-top: 12px;
   border-radius: 14px;
-  background: rgba(0,0,0,0.25);
-}
-
-.rm-media__img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transform: scale(1.02);
-  filter: saturate(1.05) contrast(1.02);
-}
-
-/* subtle cinematic overlay + delicate neon accents per phase */
-.rm-media__overlay{
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)),
-    radial-gradient(900px 240px at 20% 10%, rgba(25,230,211,0.16), transparent 60%),
-    radial-gradient(600px 220px at 85% 20%, rgba(255,183,0,0.10), transparent 55%);
-  mix-blend-mode: normal;
-}
-
-/* phase-tinted micro-neon (very delicate) */
-.rm-media__overlay--1{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
-    radial-gradient(700px 260px at 18% 18%, rgba(25,230,211,0.22), transparent 62%);
-}
-.rm-media__overlay--2{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
-    radial-gradient(700px 260px at 80% 20%, rgba(255,183,0,0.18), transparent 62%);
-}
-.rm-media__overlay--3{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
-    radial-gradient(700px 260px at 22% 80%, rgba(110,255,199,0.16), transparent 62%);
-}
-.rm-media__overlay--4{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.66)),
-    radial-gradient(900px 320px at 50% 20%, rgba(120,170,255,0.16), transparent 65%),
-    radial-gradient(540px 240px at 85% 70%, rgba(255,90,220,0.10), transparent 60%);
-}
-
-
-.rm-media::after{
-  content:"Illustration coming next";
-  position:absolute;
-  left: 14px;
-  bottom: 12px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.68);
-  letter-spacing: 0.02em;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-.rm-media--1{
-  background:
-    radial-gradient(1000px 280px at 20% 10%, rgba(25,230,211,0.26), transparent 55%),
-    radial-gradient(800px 230px at 82% 40%, rgba(107,243,230,0.12), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-}
-.rm-media--2{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(233,144,44,0.20), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(25,230,211,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-}
-.rm-media--3{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(25,230,211,0.16), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(255,255,255,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-}
-.rm-media--4{
-  background:
-    radial-gradient(900px 260px at 20% 10%, rgba(153,119,255,0.18), transparent 55%),
-    radial-gradient(900px 260px at 80% 40%, rgba(25,230,211,0.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));
-}
-
-.rm-subhead{
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: rgba(255,255,255,0.62);
-  font-weight: 900;
-  margin: 14px 0 8px;
-}
-
-.rm-legal{
-  margin-top: 16px;
-  display:flex;
-  gap: 12px;
-  align-items:flex-start;
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.32);
-}
-
-.rm-legal__icon{
-  width: 28px;
-  height: 28px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.30);
+  overflow: hidden;
+  /* Taller frame to show more of the illustration */
+  aspect-ratio: 16 / 10;
+  min-height: 170px;
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius: 10px;
-  background: rgba(233,144,44,0.14);
-  border: 1px solid rgba(233,144,44,0.26);
+  position: relative;
+}
+.rm-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.45));
+}
+.rm-media__img{
+  width:100%;
+  height:100%;
+  object-fit: contain; /* do not crop */
+  position: relative;
+  z-index: 1;
 }
 
-.rm-legal__text strong{ color: rgba(255,255,255,0.94); }
+/* Phase heading style (Tokenomics-like: title white, rest orange) */
+.rm-phasehead{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  flex-wrap:wrap;
+  line-height:1.05;
+}
+.rm-phase{
+  color: rgba(233,144,44,0.95);
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  font-size: 12px;
+  text-transform: none;
+}
+.rm-sep{
+  color: rgba(233,144,44,0.85);
+  font-weight: 800;
+}
+.rm-title{
+  color: rgba(255,255,255,0.96);
+  font-weight: 950;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+/* Roadmap title: keep main word white like other panels */
+.roadmap-title .title-main{ color: rgba(255,255,255,0.96); }
+.roadmap-title .title-kicker{ color: rgba(233,144,44,0.90); }
+
+/* Locked phrase box */
+.rm-legal{
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.32);
+}
+.rm-legal__head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom: 6px;
+}
+.rm-legal__icon{
+  display:inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items:center;
+  justify-content:center;
+  filter: drop-shadow(0 6px 18px rgba(233,144,44,0.20));
+}
+.rm-legal__title{
+  font-weight: 850;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
+}
+.rm-legal__text{
+  color: rgba(255,255,255,0.82);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.roadmap-objective{
+  margin: 12px 0 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.roadmap-objective__label{
+  color: rgba(255,255,255,0.88);
+  font-weight: 800;
+}
+
+.roadmap-points{
+  margin: 12px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap-point{
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+  margin: 8px 0;
+  color: var(--muted);
+}
+
+.roadmap-bullet{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-top: 7px;
+  flex: 0 0 8px;
+  background: linear-gradient(90deg, rgba(233,144,44,0.95), rgba(244, 212, 89, 0.92), rgba(15,157,88,0.90));
+  box-shadow: 0 0 0 5px rgba(233,144,44,0.08);
+}
+
+.roadmap-disclaimer{
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.55);
+  font-style: italic;
+}
+
+@media (max-width: 860px){
+  .roadmap-head{
+    align-items:flex-start;
+  }
+}
