@@ -28,50 +28,10 @@ const tokenomics = [
 ];
 
 const roadmap = [
-  {
-    phase: "Phase 1 — Live",
-    title: "Foundation",
-    items: [
-      "Capitoken deployed on Ethereum Mainnet",
-      "Community-first tokenomics (97% community)",
-      "Anti-bot & anti-whale protections",
-      "Verified smart contract & official links",
-      "Launch Panel as the single source of truth",
-    ],
-  },
-  {
-    phase: "Phase 2 — In Progress",
-    title: "Expansion",
-    items: [
-      "Liquidity growth and market indexing",
-      "Markets expansion (DEX first)",
-      "Community growth across X, Telegram & media",
-      "Trust Score evolution and monitoring",
-      "Continuous transparency updates",
-    ],
-  },
-  {
-    phase: "Phase 3 — Planned",
-    title: "Utility & Adoption",
-    items: [
-      "Real-world adoption experiments",
-      "Community-driven utilities and proposals",
-      "NFT-ready ecosystem integration",
-      "Capibara narrative & IP expansion",
-    ],
-  },
-  {
-    phase: "Phase 4 — Vision",
-    title: "Community-Owned Future",
-    items: [
-      "Community-defined initiatives",
-      "Open experiments powered by CAPI",
-      "Long-term ecosystem evolution",
-      "Capitoken as a symbol of collective ownership",
-    ],
-  },
+  { phase: "Phase 1", title: "Foundation", items: ["Brand + Website", "Docs/Whitepaper", "Official channels live"] },
+  { phase: "Phase 2", title: "Launch Prep", items: ["Final checks", "DEX readiness", "Verified links live"] },
+  { phase: "Phase 3", title: "Expansion", items: ["Listings", "Ecosystem features", "Partnerships"] },
 ];
-
 ---
 
 <BaseLayout title={TITLE} description={DESC}>
@@ -708,26 +668,168 @@ function iconCandidates(it){
 
   <!-- ROADMAP -->
   <section class="section" id="roadmap">
-    <div class="container reveal">
+    <div class="container reveal reveal--6">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Roadmap</span><span class="title-slash"> / </span><span class="title-kicker">Four phases — from launch to a community-owned future.</span></h2>
+        <h2 class="section-title section-title--split">
+          <span class="title-main">Roadmap</span>
+          <span class="title-sub">Four phases — from launch to a community-owned future.</span>
+        </h2>
 
-      <div class="grid" style="margin-top:14px;">
-        {roadmap.map((r) => (
-          <div class="card col-6">
-            <div class="small">{r.phase}</div>
-            <div style="margin-top:6px; font-weight:900; font-size:18px;">{r.title}</div>
-            <ul style="margin:12px 0 0 0; padding-left: 18px; color: var(--muted);">
-              {r.items.map((i) => <li style="margin: 6px 0;">{i}</li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
+        <div class="rm-grid">
+          <!-- Phase 1 -->
+          <details class="rm-card" open>
+            <summary class="rm-summary">
+              <div class="rm-top">
+                <div class="rm-phase">Phase 1 — Live</div>
+                <div class="rm-title">Foundation</div>
+                <div class="rm-obj">
+                  <span class="rm-obj-label">Objective:</span>
+                  Build trust, clarity, and a single source of truth.
+                </div>
+              </div>
+              <div class="rm-cta">
+                <span class="rm-cta-text">Read more</span>
+                <span class="rm-chevron" aria-hidden="true">▾</span>
+              </div>
+            </summary>
+
+            <div class="rm-body">
+              <ul class="rm-points">
+                <li><strong>Brand & Identity</strong> — consistent visual language and official channels to reduce impersonation.</li>
+                <li><strong>Website & Documentation</strong> — whitepaper + runbook as the single source of truth.</li>
+                <li><strong>On-Chain Transparency</strong> — fixed supply, verified code, no taxes, no rebases, no hidden mechanics.</li>
+              </ul>
+
+              <div class="rm-text">
+                <p>
+                  Capitoken was designed from day one as a transparent, verifiable, and non-custodial experiment.
+                  The foundation phase focuses on identity, documentation, and on-chain clarity — so anyone can
+                  independently verify what CAPI is (and what it is not) without relying on trust or promises.
+                </p>
+                <p>
+                  This phase establishes the project’s single source of truth: verified links, on-chain references,
+                  and clear documentation that protects the community from fragmentation and impersonation.
+                </p>
+              </div>
+            </div>
+          </details>
+
+          <!-- Phase 2 -->
+          <details class="rm-card">
+            <summary class="rm-summary">
+              <div class="rm-top">
+                <div class="rm-phase">Phase 2 — In Progress</div>
+                <div class="rm-title">Launch Prep</div>
+                <div class="rm-obj">
+                  <span class="rm-obj-label">Objective:</span>
+                  Engineer a clean, fair, and controlled market entry.
+                </div>
+              </div>
+              <div class="rm-cta">
+                <span class="rm-cta-text">Read more</span>
+                <span class="rm-chevron" aria-hidden="true">▾</span>
+              </div>
+            </summary>
+
+            <div class="rm-body">
+              <ul class="rm-points">
+                <li><strong>Launch Engineering</strong> — AMM wiring, pair marking, and verification following a strict runbook.</li>
+                <li><strong>Anti-Bot & Anti-Whale (Temporary)</strong> — early protections designed to auto-expire.</li>
+                <li><strong>Verification Ready</strong> — official explorers and links prepared to reduce confusion and scams.</li>
+              </ul>
+
+              <div class="rm-text">
+                <p>
+                  The launch is treated as engineering, not hype. This phase focuses on operational correctness:
+                  wiring the AMM path explicitly, validating the pair address, and following a strict activation discipline.
+                </p>
+                <p>
+                  Early protections exist only to reduce avoidable launch risks. They are temporary by design and
+                  fade out automatically — pushing the protocol toward long-term neutrality.
+                </p>
+              </div>
+            </div>
+          </details>
+
+          <!-- Phase 3 -->
+          <details class="rm-card">
+            <summary class="rm-summary">
+              <div class="rm-top">
+                <div class="rm-phase">Phase 3 — Planned</div>
+                <div class="rm-title">Expansion</div>
+                <div class="rm-obj">
+                  <span class="rm-obj-label">Objective:</span>
+                  Grow distribution, visibility, and ecosystem trust.
+                </div>
+              </div>
+              <div class="rm-cta">
+                <span class="rm-cta-text">Read more</span>
+                <span class="rm-chevron" aria-hidden="true">▾</span>
+              </div>
+            </summary>
+
+            <div class="rm-body">
+              <ul class="rm-points">
+                <li><strong>Listings & Indexation</strong> — progressive visibility across trackers and explorers.</li>
+                <li><strong>Ecosystem Integrations</strong> — tools and dashboards built around CAPI (without contract changes).</li>
+                <li><strong>Community Growth</strong> — organic adoption across channels with verified information paths.</li>
+              </ul>
+
+              <div class="rm-text">
+                <p>
+                  Expansion is about trust and distribution — not promises. This phase grows visibility through
+                  consistent indexing and external integrations that make CAPI easier to verify, track, and use.
+                </p>
+                <p>
+                  Integrations are designed to live outside the core ERC-20 contract to preserve simplicity and reduce risk,
+                  while still enabling the ecosystem to evolve around the token.
+                </p>
+              </div>
+            </div>
+          </details>
+
+          <!-- Phase 4 -->
+          <details class="rm-card">
+            <summary class="rm-summary">
+              <div class="rm-top">
+                <div class="rm-phase">Phase 4 — Vision</div>
+                <div class="rm-title">Future (Community-Led)</div>
+                <div class="rm-obj">
+                  <span class="rm-obj-label">Objective:</span>
+                  Enable real-world relevance and long-term adoption.
+                </div>
+              </div>
+              <div class="rm-cta">
+                <span class="rm-cta-text">Read more</span>
+                <span class="rm-chevron" aria-hidden="true">▾</span>
+              </div>
+            </summary>
+
+            <div class="rm-body">
+              <ul class="rm-points">
+                <li><strong>CAPI PASS</strong> — optional NFT membership layers for access, identity, and perks.</li>
+                <li><strong>CAPI IRL Toolkit</strong> — verified partner framework for real-world adoption experiments.</li>
+                <li><strong>CAPI Arena</strong> — gaming events, tournaments, and digital badges.</li>
+                <li><strong>Proof-of-Good</strong> — transparent impact initiatives with on-chain proof.</li>
+              </ul>
+
+              <div class="rm-text">
+                <p>
+                  The future phase is intentionally community-led: initiatives are prioritized by demand, executed as
+                  external integrations, and validated in public.
+                </p>
+                <p class="rm-note">
+                  All future initiatives are optional, community-driven, and developed without altering the core CAPI smart contract.
+                </p>
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   </section>
 
-  <hr class="hr" />
+<hr class="hr" />
 
   <!-- DAILY CAPI / NARRATIVE -->
   <section class="section" id="daily">

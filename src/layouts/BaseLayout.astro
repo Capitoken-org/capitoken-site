@@ -4,9 +4,8 @@ import Nav from "../components/nav.astro";
 const title = Astro.props.title || "Capitoken (CAPI)";
 const description =
   Astro.props.description ||
-  "Deep-green premium design, clear narrative, and verified links — built for adoption.";
+  "Capitoken official website — verified info, on-chain transparency, and a community-owned future.";
 
-// GitHub Pages base (astro.config.mjs: base: "/capitoken-site/")
 const BASE = import.meta.env.BASE_URL || "/";
 const withBase = (p) => {
   const clean = String(p || "");
@@ -14,9 +13,10 @@ const withBase = (p) => {
 };
 
 // Cache-bust for GitHub Pages / CDN
-// Bump to bust caches after nav sizing/scroll fixes
-const CSS_VERSION = "19";
-const JS_VERSION = "15";
+const CSS_VERSION = "39";
+const JS_VERSION = "39";
+
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -24,14 +24,11 @@ const JS_VERSION = "15";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>{title}</title>
     <meta name="description" content={description} />
+    <title>{title}</title>
 
-    <!-- IMPORTANT: single source of truth for global styles -->
-    <link rel="stylesheet" href={`${withBase(`/global.css?v=${CSS_VERSION}`)}`} />
-
-    <slot name="head" />
+    <link rel="icon" href={withBase("/favicon.ico")} />
+    <link rel="stylesheet" href={withBase(`/global.css?v=${CSS_VERSION}`)} />
   </head>
 
   <body>
@@ -40,12 +37,18 @@ const JS_VERSION = "15";
       <slot />
     </main>
 
-    <!-- Site JS (MUST be modules to allow import/export and import.meta usage) -->
-    <script type="module" src={`${withBase(`/js/capi-config.js?v=${JS_VERSION}`)}`}></script>
-    <script type="module" src={`${withBase(`/js/trust-engine.js?v=${JS_VERSION}`)}`}></script>
-    <script type="module" src={`${withBase(`/js/market-engine.js?v=${JS_VERSION}`)}`}></script>
-    <script type="module" src={`${withBase(`/js/capi-wallets.js?v=${JS_VERSION}`)}`}></script>
-    <script type="module" src={`${withBase(`/js/capi-dex.js?v=${JS_VERSION}`)}`}></script>
-    <script type="module" src={`${withBase(`/js/capi-ui.js?v=${JS_VERSION}`)}`}></script>
+    <footer class="footer">
+      <div class="container">
+        © {year} Capitoken.org • All rights reserved
+      </div>
+    </footer>
+
+    <!-- Site JS (modules to allow import/export and import.meta usage) -->
+    <script type="module" src={withBase(`/js/capi-config.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/trust-engine.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/market-engine.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/capi-wallets.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/capi-dex.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/capi-ui.js?v=${JS_VERSION}`)}></script>
   </body>
 </html>
