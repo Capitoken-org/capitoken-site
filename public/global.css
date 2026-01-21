@@ -2307,3 +2307,22 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   .brand__img{ height: 72px; }
   .ticker__label{ display:none; }
 }
+/* Ticker alternating colors */
+#ticker {
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+.ticker__item {
+  color: #ffffff;
+}
+
+.ticker__item--alt {
+  color: #f2c94c; /* yellow */
+}
+
+.ticker__sep {
+  color: rgba(255,255,255,0.6);
+  margin: 0 6px;
+}
