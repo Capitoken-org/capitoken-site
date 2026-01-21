@@ -2405,8 +2405,9 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 .rm-media{
+  /* more vertical room; fill horizontally */
   position: relative;
-  height: 240px; /* more vertical room */
+  height: 280px; /* more vertical room */
   border-top: 1px solid rgba(255,255,255,0.08);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   overflow: hidden;
@@ -2414,7 +2415,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background: rgba(0,0,0,0.18);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain; /* do not crop */
+  background-size: cover; /* fill horizontally */
 }
 
 
@@ -2424,7 +2425,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background-image:
     linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
     url("img/roadmap/roadmap-phase-1.webp");
-  background-size: cover, contain;
+  background-size: cover, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
@@ -2433,7 +2434,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background-image:
     linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
     url("img/roadmap/roadmap-phase-2.webp");
-  background-size: cover, contain;
+  background-size: cover, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
@@ -2442,7 +2443,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background-image:
     linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
     url("img/roadmap/roadmap-phase-3.webp");
-  background-size: cover, contain;
+  background-size: cover, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
@@ -2451,7 +2452,7 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
   background-image:
     linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62)),
     url("img/roadmap/roadmap-phase-4.webp");
-  background-size: cover, contain;
+  background-size: cover, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
@@ -2578,6 +2579,9 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 }
 
 /* Spacing tweaks */
+.rm-card > .rm-top{
+  padding: 18px 18px 10px;
+}
 .rm-top{
   padding-bottom: 10px;
 }
@@ -2612,5 +2616,5 @@ section[id]{ scroll-margin-top: calc(var(--nav-h) + 18px); }
 /* Responsive */
 @media (max-width: 840px){
   .rm-heading{ font-size: 20px; }
-  .rm-media{ height: 220px; }
+  .rm-media{ height: 240px; }
 }
