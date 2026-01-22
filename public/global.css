@@ -2134,6 +2134,40 @@ html, body{
 .tokenomics-split__row span{ flex: 1; }
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
+@media (max-width: 980px){
+  /* HARD RULE: keep Tokenomics horizontal (do NOT collapse to 1 column) */
+  #tokenomics .tokenomics-wrap{
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: end;
+  }
+
+  /* Allow grid children to actually shrink inside the row (critical for non-stacking) */
+  #tokenomics .tokenomics-ring,
+  #tokenomics .tokenomics-rules{
+    min-width: 0;
+  }
+
+  /* Keep message box left + ring right (no vertical stacking) */
+  #tokenomics .tokenomics-ringrow{
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* Fit widths (approved sizing baseline) */
+  #tokenomics .tokenomics-notes-stack{ width: 240px; max-width: 240px; margin-right: -10px; }
+  #tokenomics .tokenomics-mascot-card{ width: 240px; max-width: 240px; }
+  #tokenomics .tokenomics-unibox{ width: 240px; max-width: 240px; min-height: 380px; }
+  #tokenomics .tokenomics-stage{ width: 280px; max-width: 280px; }
+  #tokenomics .trust-ring{ width: 280px; max-width: 280px; padding: 14px; }
+
+  /* Right panel stays 2 columns and can shrink */
+  #tokenomics .tokenomics-rules{ grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
+  #tokenomics .tokenomics-rule,
+  #tokenomics .tokenomics-split{ min-width: 0; }
+}
+
 /* Tokenomics: keep the 3-part layout horizontal (Left message box + Ring + Right panel)
    even on narrow viewports.
    NOTE: Previously we collapsed to 1 column under 560px, which is exactly what the
