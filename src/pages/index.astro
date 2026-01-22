@@ -1,6 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
+const BASE = import.meta.env.BASE_URL || "/";
+const withBase = (p) => {
+  const clean = String(p || "");
+  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
+};
+
+
 const TITLE = "Capitoken (CAPI) — Official Website";
 const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
@@ -545,14 +552,9 @@ function iconCandidates(it){
           -->
           <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
             <div class="tokenomics-notes-stack" aria-hidden="true">
-              <div class="tokenomics-mascot-card">
-                <img
-                    src="/img/capi-cartoon.png"
-                      alt="Capitoken mascot"
-                     class="tokenomics-mascot-img"
-                     loading="lazy"
-                      />
-                   </div>
+              <div class="tokenomics-mascot-card" aria-label="Capitoken mascot">
+                <img class="tokenomics-mascot-img" src={withBase("/img/capi-cartoon.png")} alt="Capitoken mascot" loading="lazy" decoding="async" />
+              </div>
               <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
               <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
               <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
