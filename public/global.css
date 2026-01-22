@@ -213,7 +213,7 @@ section{padding:24px 0}
   transition:width .35s ease;
 }
 
-@media (max-width: 980px){
+@media (max-width: 720px){
   .hero-stats{grid-template-columns:repeat(2, minmax(0, 1fr));max-width:680px}
 }
 @media (max-width: 520px){
@@ -1948,7 +1948,7 @@ html, body{
 
 /* Hide everything when nothing is active */
 .tokenomics-ringrow[data-active="none"] /* Reveal only the active message (same state machine as before) */
-.tokenomics-ringrow[data-active="community"] .tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"],
+.tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"],
 .tokenomics-ringrow[data-active="ops"] .tok-msg[data-whisper="ops"],
 .tokenomics-ringrow[data-active="growth"] .tok-msg[data-whisper="growth"],
 .tokenomics-ringrow[data-active="ambient"] .tok-msg[data-whisper="ambient"],
