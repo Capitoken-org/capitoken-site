@@ -1,10 +1,12 @@
 ---
 /**
- * Capitoken /verify — Single Source of Truth + Trust Logic
+ * Capitoken /verify — Single Source of Truth + Trust Logic (Hardened)
  * - Works with Astro base path (e.g., /capitoken-site/)
  * - Reads official registry from: /official-registry.json (served from public/)
- * - Also supports pair + official links when present
  * - Shows mirror warning if hostname is not allowed
+ * - HARDENING (Option 2):
+ *   - On mirrors: disable trading/market/pair buttons + disable external trade links
+ *   - On mirrors: apply strict Trust Score cap
  */
 
 const BASE = import.meta.env.BASE_URL; // respects astro.config.mjs "base"
@@ -53,7 +55,7 @@ const FALLBACK = {
     <link rel="stylesheet" href={`${BASE}global.css`} />
 
     <style>
-      /* Phase 8 small polish for /verify (keeps existing layout) */
+      /* /verify polish (keeps existing layout) */
       .scorewrap{display:flex;flex-direction:column;gap:10px;margin-top:10px}
       .bar{height:10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);overflow:hidden}
       .barfill{height:100%;width:0%;background:linear-gradient(90deg, rgba(241,196,15,1), rgba(46,204,113,1));transition:width .85s ease}
@@ -71,12 +73,23 @@ const FALLBACK = {
         backdrop-filter: blur(8px);
       }
       .row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-      .badgeRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; word-break: break-all; }
-      .tag { display:inline-flex; align-items:center; gap:6px; font-size: 12px; padding: 6px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); }
+
+      /* ✅ Badge harmony: more space + wrap */
+      .badgeRow{display:flex;align-items:center;gap:12px 12px;flex-wrap:wrap;margin-top:6px}
+      .tag {
+        display:inline-flex; align-items:center; gap:6px;
+        font-size: 12px; padding: 7px 12px;
+        border-radius: 999px;
+        border:1px solid rgba(255,255,255,.14);
+        background: rgba(255,255,255,.05);
+        line-height: 1;
+        white-space: nowrap;
+      }
       .tag.ok{background: rgba(46,204,113,.10); border-color: rgba(46,204,113,.25)}
       .tag.warn{background: rgba(241,196,15,.10); border-color: rgba(241,196,15,.25)}
       .tag.bad{background: rgba(231,76,60,.10); border-color: rgba(231,76,60,.25)}
+
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; word-break: break-all; }
       .ok { color:#2ecc71; }
       .warn { color:#f1c40f; }
       .bad { color:#e74c3c; }
@@ -87,6 +100,7 @@ const FALLBACK = {
         border:1px solid rgba(255,255,255,.14);
         background: rgba(255,255,255,.06);
         text-decoration:none; font-weight:700;
+        cursor: pointer;
       }
       .btnx:hover{ transform: translateY(-1px); }
       .primary{ background: rgba(233,144,44,.18); border-color: rgba(233,144,44,.30); }
@@ -98,6 +112,23 @@ const FALLBACK = {
       .muted { opacity: .7; }
       .notice{ border-color: rgba(255,200,0,.35); background: rgba(255,200,0,.06); }
       .footer { margin-top: 18px; opacity: .7; font-size: 12px; }
+
+      /* ✅ Hardening UI: disabled buttons/links on mirrors */
+      .disabledBtn{
+        opacity: .55;
+        filter: grayscale(1);
+        cursor: not-allowed !important;
+        transform: none !important;
+      }
+      .disabledBtn:hover{ transform:none !important; }
+      .lockNote{
+        margin-top: 10px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(231,76,60,.28);
+        background: rgba(231,76,60,.08);
+        font-size: 13px;
+      }
     </style>
   </head>
 
@@ -117,6 +148,9 @@ const FALLBACK = {
           <div class="btns">
             <a class="btnx primary" href="https://www.capitoken.org/verify" target="_blank" rel="noreferrer">Open Official /verify</a>
           </div>
+        </div>
+        <div class="lockNote" id="mirrorLockNote" style="display:none;">
+          <b>Hardening active:</b> Trading and external market links are disabled on mirrors. Use only the official domain.
         </div>
       </div>
 
@@ -145,8 +179,6 @@ const FALLBACK = {
 
             <div class="muted">Network</div>
             <div id="networkName">—</div>
-
-            
 
             <div class="muted">DEX Pair</div>
             <div>
@@ -244,7 +276,6 @@ const FALLBACK = {
             <div class="muted">Live Market</div>
             <div><a id="marketLink" target="_blank" rel="noreferrer">—</a></div>
 
-
             <div class="muted">Mirror (GitHub Pages)</div>
             <div><a id="mirrorLink" target="_blank" rel="noreferrer">—</a></div>
           </div>
@@ -252,34 +283,22 @@ const FALLBACK = {
       </div>
     </div>
 
-
-    <!-- Toast (shared pattern with /) -->
+    <!-- Toast -->
     <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;z-index:9999;"></div>
-    <!-- ✅ FIX: define:vars para inyectar BASE y FALLBACK correctamente -->
+
+    <!-- ✅ define:vars injects BASE and FALLBACK -->
     <script type="module" define:vars={{ BASE, FALLBACK }}>
       const IMMUTABLE = {
         officialDomain: "www.capitoken.org",
         chainId: 1,
         contract: "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
         pair: "0xb96808b1270A89eA8A237d52df389619f347AeA2",
-        weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        officialVerify: "https://www.capitoken.org/verify"
       };
 
       const norm = (v) => String(v || "").trim().toLowerCase();
-      const isAddr = (v) => /^0x[a-fA-F0-9]{40}$/.test(String(v || ""));
-      const eqAddr = (a, b) => norm(a) === norm(b);
-
-      function scoreFrom({ isOfficialHost, chainOk, contractOk, pairOk, linksOk, verifiedOk }) {
-        // Keep score conservative and based on immutable checks.
-        let s = 0;
-        if (isOfficialHost) s += 20;
-        if (chainOk) s += 15;
-        if (contractOk) s += 30;
-        if (verifiedOk) s += 15;
-        if (pairOk) s += 10;
-        if (linksOk) s += 10;
-        return Math.min(100, s);
-      }
+      const sameAddr = (a, b) => norm(a) === norm(b);
 
       function setText(id, v){ const el=document.getElementById(id); if(el) el.textContent = v ?? "—"; }
       function setHref(id, href, label){
@@ -287,6 +306,19 @@ const FALLBACK = {
         if(!el) return;
         el.href = href;
         el.textContent = label ?? href;
+      }
+      function addDisabled(el){
+        if(!el) return;
+        el.classList.add("disabledBtn");
+        el.setAttribute("aria-disabled", "true");
+        // Prevent clicks from navigating anywhere in mirror mode unless we explicitly set a safe target.
+        el.addEventListener("click", (e) => {
+          // allow Ctrl/cmd click to still open official verify if href is set to it
+          const href = el.getAttribute("href") || "";
+          if (href && href.startsWith(IMMUTABLE.officialVerify)) return;
+          e.preventDefault();
+          e.stopPropagation();
+        }, { capture: true });
       }
 
       function toast(msg){
@@ -303,7 +335,7 @@ const FALLBACK = {
       }
 
       async function copyText(val){
-        if(!val) return;
+        if(!val) return false;
         try{
           await navigator.clipboard.writeText(val);
           toast('Copied');
@@ -342,18 +374,6 @@ const FALLBACK = {
       (async function init(){
         const data = await loadRegistry();
 
-        // Immutable anchors: if a mirror modifies registry.json, /verify should still flag it.
-        const IMMUTABLE = {
-          officialDomain: "www.capitoken.org",
-          chainId: 1,
-          contract: "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
-          pair: "0xb96808b1270A89eA8A237d52df389619f347AeA2",
-          weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-        };
-
-        const norm = (v) => String(v || "").trim().toLowerCase();
-        const sameAddr = (a, b) => norm(a) === norm(b);
-
         const host = window.location.hostname;
         const allowed = new Set((data.allowedDomains || []).map(x => String(x).toLowerCase()));
         const isOfficialHost = allowed.has(String(host).toLowerCase());
@@ -362,9 +382,11 @@ const FALLBACK = {
         if (!isOfficialHost) {
           const b = document.getElementById("mirrorBanner");
           const t = document.getElementById("mirrorText");
+          const ln = document.getElementById("mirrorLockNote");
           if (b) b.style.display = "block";
           if (t) t.textContent = (data.security?.mirrorNotice || "You are viewing a mirror. The official site is https://www.capitoken.org")
-            + " — Do NOT connect wallets or trust links on mirrors.";
+            + " — DO NOT connect wallets or trust links on mirrors.";
+          if (ln) ln.style.display = "block";
         }
 
         const chainOk = Number(data.network?.chainId) === IMMUTABLE.chainId;
@@ -374,12 +396,12 @@ const FALLBACK = {
         const pairOk = sameAddr(pairAddr, IMMUTABLE.pair);
         const domainCfgOk = norm(data.officialDomain) === norm(IMMUTABLE.officialDomain);
 
-        // Domain tag (host + registry domain must align)
+        // Tags
         const domainTag = document.getElementById("domainTag");
         if (domainTag) {
           if (!isOfficialHost) {
-            domainTag.textContent = "⚠ Mirror domain";
-            domainTag.className = "tag warn";
+            domainTag.textContent = "✖ Mirror domain";
+            domainTag.className = "tag bad";
           } else if (!domainCfgOk) {
             domainTag.textContent = "✖ Registry domain mismatch";
             domainTag.className = "tag bad";
@@ -389,21 +411,18 @@ const FALLBACK = {
           }
         }
 
-        // Chain tag
         const chainTag = document.getElementById("chainTag");
         if (chainTag) {
           chainTag.textContent = chainOk ? "✔ Ethereum Mainnet" : "✖ Wrong network";
           chainTag.className = "tag " + (chainOk ? "ok" : "bad");
         }
 
-        // Contract tag (must match immutable)
         const contractTag = document.getElementById("contractTag");
         if (contractTag) {
           contractTag.textContent = contractOk ? "✔ Contract matches" : "✖ Contract mismatch";
           contractTag.className = "tag " + (contractOk ? "ok" : "bad");
         }
 
-        // Pair tag (must match immutable)
         const pairTag = document.getElementById("pairTag");
         if (pairTag) {
           const hasPair = Boolean(pairAddr);
@@ -412,17 +431,18 @@ const FALLBACK = {
           pairTag.className = "tag " + (ok ? "ok" : (hasPair ? "bad" : "warn"));
         }
 
-        // Canonical links (prefer registry; if wrong, force correct + mark)
+        // Canonical links
         const explorer = data.network?.explorer || "https://etherscan.io";
         const etherscanToken = addr ? `${explorer}/token/${addr}` : explorer;
         const pairExplorer = pairAddr ? `${explorer}/address/${pairAddr}` : "";
 
-        const buyLinkFromRegistry = data.links?.buy || "";
-        const marketLinkFromRegistry = data.links?.market || "";
         const buyCanonical = addr
           ? `https://app.uniswap.org/swap?inputCurrency=${IMMUTABLE.weth}&outputCurrency=${addr}`
           : "";
         const marketCanonical = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : "";
+
+        const buyLinkFromRegistry = data.links?.buy || "";
+        const marketLinkFromRegistry = data.links?.market || "";
 
         const buyOk = buyLinkFromRegistry
           ? (norm(buyLinkFromRegistry).includes(norm(addr)) && norm(buyLinkFromRegistry).includes(norm(IMMUTABLE.weth)))
@@ -430,24 +450,36 @@ const FALLBACK = {
         const marketOk = marketLinkFromRegistry
           ? (norm(marketLinkFromRegistry).includes(norm(pairAddr)) && norm(marketLinkFromRegistry).includes("dexscreener.com/ethereum"))
           : false;
-        const linksOk = buyOk && marketOk;
+        const linksMatch = buyOk && marketOk;
 
         const linksTag = document.getElementById("linksTag");
         if (linksTag) {
-          linksTag.textContent = linksOk ? "✔ Links match" : "⚠ Links adjusted";
-          linksTag.className = "tag " + (linksOk ? "ok" : "warn");
+          if (!isOfficialHost) {
+            linksTag.textContent = "✖ Links disabled on mirror";
+            linksTag.className = "tag bad";
+          } else {
+            linksTag.textContent = linksMatch ? "✔ Links match" : "⚠ Links adjusted";
+            linksTag.className = "tag " + (linksMatch ? "ok" : "warn");
+          }
         }
 
-        // Trust score (stronger + defensive)
+        // Trust score (hardened)
         let score = 0;
-        if (isOfficialHost) score += 20;
+        if (isOfficialHost) score += 25;
         if (domainCfgOk) score += 10;
         if (chainOk) score += 15;
         if (contractOk) score += 25;
         if (data.contract?.verified) score += 10;
         if (pairOk) score += 15;
-        if (linksOk) score += 5;
+        if (linksMatch) score += 0; // links match is informative only (no score boost)
+
         score = Math.min(100, score);
+
+        // ✅ Option 2 hardening: strict mirror cap
+        if (!isOfficialHost) {
+          score = Math.min(score, 45);
+        }
+
         setText("trustScore", String(score));
 
         // Hard checks table
@@ -462,49 +494,29 @@ const FALLBACK = {
         // Core fields
         const officialUrl = "https://" + (data.officialDomain || "www.capitoken.org");
         setHref("officialDomainLink", officialUrl, officialUrl);
-
         setText("networkName", data.network?.name || "—");
         setText("tokenName", data.contract?.token?.name || "—");
         setText("tokenSymbol", data.contract?.token?.symbol || "—");
         setText("tokenDecimals", String(data.contract?.token?.decimals ?? "—"));
-
         setText("contractAddr", addr);
 
         // Buttons / links
         const openE = document.getElementById("openEtherscan");
         if (openE) openE.href = etherscanToken;
 
-        // Pair + official links
-        const pairDex = data.pair?.dex || "";
-        // Use safe canonical links if registry links don't match
-        const buyLink = linksOk ? (buyLinkFromRegistry || buyCanonical) : buyCanonical;
-        const marketLink = linksOk ? (marketLinkFromRegistry || marketCanonical) : marketCanonical;
-
-        // Top KV: DEX Pair
+        // Pair KV
         setHref("pairLink", pairExplorer || "#", pairAddr || "—");
-        setText("pairDex", pairDex ? `(${pairDex})` : "");
+        setText("pairDex", data.pair?.dex ? `(${data.pair.dex})` : "");
 
         // Pair card
         setText("pairAddr", pairAddr || "—");
-        setText("pairMeta", pairDex ? `${pairDex}${data.pair?.chain ? ` · ${data.pair.chain}` : ""}` : (data.pair?.chain || "—"));
+        setText("pairMeta", data.pair?.dex ? `${data.pair.dex}${data.pair?.chain ? ` · ${data.pair.chain}` : ""}` : (data.pair?.chain || "—"));
+
         const openPair = document.getElementById("openPairEtherscan");
-        if (openPair) openPair.href = pairExplorer || "#";
         const openDex = document.getElementById("openDexscreener");
-        if (openDex) openDex.href = marketLink || "#";
         const openUni = document.getElementById("openUniswap");
-        if (openUni) openUni.href = buyLink || "#";
 
-        const copyPairBtn = document.getElementById("copyPair");
-        if (copyPairBtn) {
-          copyPairBtn.addEventListener("click", async () => {
-            copyPairBtn.textContent = "Copying…";
-            const ok = await copyText(pairAddr);
-            copyPairBtn.textContent = "Copy";
-            if (!ok) toast("Copy failed");
-          });
-        }
-
-        // Official links
+        // Official links (always show)
         setHref("repoLink", data.officialRepo || "https://github.com/capitoken-org/capitoken-site");
         setHref("siteLink", data.links?.site || "https://www.capitoken.org", data.links?.site || "https://www.capitoken.org");
         setHref("etherscanTokenLink", data.links?.etherscanToken || etherscanToken, data.links?.etherscanToken || etherscanToken);
@@ -515,15 +527,50 @@ const FALLBACK = {
         );
         setHref(
           "verifyLink",
-          data.links?.verify || "https://www.capitoken.org/verify",
-          data.links?.verify || "https://www.capitoken.org/verify"
+          data.links?.verify || IMMUTABLE.officialVerify,
+          data.links?.verify || IMMUTABLE.officialVerify
         );
-        setHref("buyLink", buyLink || "#", buyLink || "—");
-        setHref("marketLink", marketLink || "#", marketLink || "—");
+
+        // For official host: use canonical/registry; for mirror: LOCK to official verify
+        const buyLink = linksMatch ? (buyLinkFromRegistry || buyCanonical) : buyCanonical;
+        const marketLink = linksMatch ? (marketLinkFromRegistry || marketCanonical) : marketCanonical;
+
+        const buyEl = document.getElementById("buyLink");
+        const marketEl = document.getElementById("marketLink");
+        const pairKvEl = document.getElementById("pairLink");
+
+        if (!isOfficialHost) {
+          // ✅ Hardening Option 2: disable external trading links on mirrors
+          if (openPair) { openPair.href = IMMUTABLE.officialVerify; addDisabled(openPair); }
+          if (openDex)  { openDex.href  = IMMUTABLE.officialVerify; addDisabled(openDex); }
+          if (openUni)  { openUni.href  = IMMUTABLE.officialVerify; addDisabled(openUni); }
+
+          if (buyEl)   { buyEl.href   = IMMUTABLE.officialVerify; buyEl.textContent = IMMUTABLE.officialVerify; addDisabled(buyEl); }
+          if (marketEl){ marketEl.href = IMMUTABLE.officialVerify; marketEl.textContent = IMMUTABLE.officialVerify; addDisabled(marketEl); }
+          if (pairKvEl){ pairKvEl.href = IMMUTABLE.officialVerify; addDisabled(pairKvEl); }
+        } else {
+          if (openPair) openPair.href = pairExplorer || "#";
+          if (openDex)  openDex.href  = marketLink || "#";
+          if (openUni)  openUni.href  = buyLink || "#";
+
+          if (buyEl)   { buyEl.href = buyLink || "#"; buyEl.textContent = buyLink || "—"; }
+          if (marketEl){ marketEl.href = marketLink || "#"; marketEl.textContent = marketLink || "—"; }
+        }
 
         // Mirror link (always show github pages)
         setHref("mirrorLink", "https://capitoken-org.github.io/capitoken-site/", "https://capitoken-org.github.io/capitoken-site/");
-        // Copy contract
+
+        // Copy handlers
+        const copyPairBtn = document.getElementById("copyPair");
+        if (copyPairBtn) {
+          copyPairBtn.addEventListener("click", async () => {
+            copyPairBtn.textContent = "Copying…";
+            const ok = await copyText(pairAddr);
+            copyPairBtn.textContent = "Copy";
+            if (!ok) toast("Copy failed");
+          });
+        }
+
         const copyBtn = document.getElementById("copyContract");
         if (copyBtn) {
           copyBtn.addEventListener("click", async () => {
