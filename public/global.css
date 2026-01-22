@@ -1838,8 +1838,8 @@ html, body{
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
 .tokenomics-stage{
   position: relative;
-  width: 320px;
-  max-width: 320px;
+  width: 280px;
+  max-width: 280px;
   aspect-ratio: 1 / 1;
 }
 
@@ -1857,8 +1857,8 @@ html, body{
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 270px;
-  max-width: 270px;
+  width: 240px;
+  max-width: 240px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1867,8 +1867,8 @@ html, body{
 }
 
 .tokenomics-mascot-card{
-  width: 270px;
-  max-width: 270px;
+  width: 240px;
+  max-width: 240px;
   min-height: 92px;
   display: flex;
   align-items: center;
@@ -1897,8 +1897,8 @@ html, body{
 */
 .tokenomics-unibox{
   position: relative;
-  width: 270px;
-  max-width: 270px;
+  width: 240px;
+  max-width: 240px;
   border-radius: 16px;
 
   /* single visible big message box */
@@ -2014,7 +2014,7 @@ html, body{
   --p-growth: 1;
 
   position: relative;
-  width: 340px;
+  width: 280px;
   aspect-ratio: 1 / 1;
   border-radius: 999px;
   padding: 16px;
@@ -2098,6 +2098,7 @@ html, body{
 
 
 .tokenomics-rules{
+  min-width: 320px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -2137,8 +2138,8 @@ html, body{
 @media (max-width: 420px){
   .tokenomics-wrap{ grid-template-columns: 1fr; }
   .tokenomics-ring{ min-height: auto; }
-  .tokenomics-stage{ width: 320px; max-width: 320px; }
-  .trust-ring{ width: 340px; max-width: 100%; }
+  .tokenomics-stage{ width: 280px; max-width: 280px; }
+  .trust-ring{ width: 280px; max-width: 100%; }
   .tokenomics-ringrow{ flex-direction: column; align-items: center; margin-left: 0; }
   .tokenomics-notes-stack{ width: 270px; max-width: 270px; }
   .whisper--stack{ width: 100%; max-width: 100%; }
