@@ -1803,8 +1803,20 @@ html, body{
   scrollbar-width: thin;
 }
 
+
+/* Tokenomics: force 3-column horizontal layout (notes | ring | rules) */
+.tokenomics-notes-stack{ flex: 0 0 240px; }
+.tokenomics-ring{ flex: 0 1 320px; min-width: 0; }
+.tokenomics-rules{ flex: 1 1 0; min-width: 320px; }
+
+/* Let the rules grid shrink gracefully */
+.tokenomics-rules{
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+}
 .tokenomics-wrap > *{
-  flex: 0 0 auto;
+  /* Allow shrink so the 3-column layout can fit without stacking */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
@@ -2981,3 +2993,16 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   );
   border-radius: 10px;
 }
+
+@media (max-width: 860px){
+  .tokenomics-notes-stack{ flex-basis: 220px; width: 220px; max-width: 220px; margin-right: -10px; }
+  .tokenomics-unibox{ width: 220px; max-width: 220px; }
+  .tokenomics-mascot-card{ width: 220px; max-width: 220px; }
+  .tokenomics-stage{ width: 240px; max-width: 240px; }
+  .trust-ring{ width: 240px; max-width: 240px; }
+  .tokenomics-rules{ min-width: 280px; gap: 10px; }
+  .tokenomics-rule{ padding: 10px 10px; }
+  .tokenomics-rule__top{ font-size: 14px; }
+  .tokenomics-rules .small{ font-size: 12px; }
+}
+
