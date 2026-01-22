@@ -1791,9 +1791,17 @@ html, body{
 
 
 /* Tokenomics layout hard-lock (prevent accidental stacking from other rules)
-   Goal: Always keep the 3 main blocks side-by-side:
+   Goal: Keep the 3 main blocks side-by-side WITHOUT forcing scroll.
+   We let items shrink via clamp() so the full layout stays visible on most screens.
    [ Message Box + Mascot ]  [ Ring ]  [ Rules ]
 */
+
+#tokenomics{
+  --tok-left:  clamp(200px, 22vw, 240px);
+  --tok-stage: clamp(220px, 26vw, 280px);
+  --tok-right: clamp(260px, 32vw, 320px);
+}
+
 #tokenomics .tokenomics-wrap{
   display:flex !important;
   flex-direction:row !important;
@@ -1802,13 +1810,12 @@ html, body{
   justify-content:space-between !important;
   gap:12px !important;
 
-  /* If a viewport is too narrow, allow horizontal scroll rather than stacking. */
-  overflow-x:auto !important;
-  overflow-y:hidden !important;
-  -webkit-overflow-scrolling:touch !important;
+  /* Important: do NOT auto-stack and do NOT force scroll.
+     Instead, allow children to shrink responsibly. */
+  overflow:visible !important;
 }
 
-/* Ensure the LEFT (message box) and RING never jump above/below each other */
+/* Ensure the LEFT (message box) and RING stay side-by-side */
 #tokenomics .tokenomics-ringrow{
   display:flex !important;
   flex-direction:row !important;
@@ -1818,14 +1825,30 @@ html, body{
   gap:10px !important;
 }
 
-/* Fixed columns (tuned to your approved sizes) */
-#tokenomics .tokenomics-notes-stack{ flex:0 0 240px !important; width:240px !important; max-width:240px !important; }
-#tokenomics .tokenomics-stage{ flex:0 0 280px !important; width:280px !important; max-width:280px !important; }
-#tokenomics .tokenomics-ring{ flex:0 0 auto !important; }
-#tokenomics .tokenomics-rules{ flex:0 0 320px !important; min-width:320px !important; }
+/* Responsive fixed-ish columns (approved targets, but shrinkable) */
+#tokenomics .tokenomics-notes-stack{
+  flex: 0 1 var(--tok-left) !important;
+  width: var(--tok-left) !important;
+  max-width: var(--tok-left) !important;
+}
+#tokenomics .tokenomics-stage{
+  flex: 0 1 var(--tok-stage) !important;
+  width: var(--tok-stage) !important;
+  max-width: var(--tok-stage) !important;
+}
+#tokenomics .tokenomics-ring{ flex: 0 1 auto !important; min-width: 0 !important; }
+#tokenomics .tokenomics-rules{
+  flex: 0 1 var(--tok-right) !important;
+  min-width: 0 !important;
+  width: var(--tok-right) !important;
+  max-width: var(--tok-right) !important;
+}
 
-/* Keep children shrink-safe without overriding the fixed bases above */
-.tokenomics-wrap > *{ min-width:0; }
+/* Make sure nested grids can shrink */
+#tokenomics .tokenomics-rules{ grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+
+/* Keep children shrink-safe */
+#tokenomics .tokenomics-wrap > *{ min-width:0 !important; }
 
 
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
