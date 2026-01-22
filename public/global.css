@@ -1790,10 +1790,12 @@ html, body{
    ===================================================== */
 
 
-/* Tokenomics layout hard-lock (GRID)
-   Goal: Always keep the 3 main blocks horizontal:
-   [ Message Box + Mascot ]  [ Ring ]  [ Rules ]
-   This avoids flex wrap/column overrides from any other responsive rules.
+/* Tokenomics layout hard-lock (2-col + internal 2-col)
+   Goal: keep the section ALWAYS horizontal like:
+   [ Message Box + Mascot | Ring ]  [ Rules ]
+   And inside the ring block keep:
+   [ Message Box ] [ Donut ]
+   This avoids any flex/column responsive overrides from other rules.
 */
 #tokenomics{
   --tok-left:  clamp(200px, 22vw, 240px);
@@ -1801,83 +1803,36 @@ html, body{
   --tok-right: clamp(280px, 34vw, 420px);
 }
 
-/* 3-column grid: LEFT / RING / RULES */
+/* Main: 2 columns -> (ring block) + (rules block) */
 #tokenomics .tokenomics-wrap{
   display:grid !important;
-  grid-template-columns: var(--tok-left) var(--tok-stage) minmax(var(--tok-right), 1fr);
+  grid-template-columns: minmax(calc(var(--tok-left) + var(--tok-stage) + 14px), 1fr) minmax(var(--tok-right), 420px);
   column-gap: 14px !important;
   align-items: end !important;
 }
 
-/* 2-column grid inside the ring block: NOTES / STAGE */
+/* Ring block: force 2 columns -> notes + donut */
 #tokenomics .tokenomics-ringrow{
   display:grid !important;
   grid-template-columns: var(--tok-left) var(--tok-stage);
-  column-gap: 10px !important;
+  column-gap: 14px !important;
   align-items: end !important;
 }
 
-/* Column sizing */
-#tokenomics .tokenomics-notes-stack{
-  width: var(--tok-left) !important;
-  max-width: var(--tok-left) !important;
-}
-#tokenomics .tokenomics-stage{
-  width: var(--tok-stage) !important;
-  max-width: var(--tok-stage) !important;
-}
-#tokenomics .tokenomics-rules{
-  min-width: var(--tok-right) !important;
-  width: 100% !important;
-}
+/* Notes stack and donut stage sizing */
+#tokenomics .tokenomics-notes-stack{ width: var(--tok-left) !important; min-width: var(--tok-left) !important; }
+#tokenomics .tokenomics-stage{ width: var(--tok-stage) !important; height: var(--tok-stage) !important; min-width: var(--tok-stage) !important; }
+#tokenomics .trust-ring{ width: var(--tok-stage) !important; height: var(--tok-stage) !important; }
 
-/* Ensure nested grids can shrink safely */
-#tokenomics .tokenomics-rules{
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-}
-#tokenomics .tokenomics-wrap > *{ min-width:0 !important; }
+/* Rules: allow shrink but keep minimum */
+#tokenomics .tokenomics-rules{ min-width: var(--tok-right) !important; }
 
-/* Small screens: keep horizontal via gentle downscale; allow scroll only when truly necessary */
-@media (max-width: 560px){
-  #tokenomics{ --tok-left: 200px; --tok-stage: 220px; --tok-right: 280px; }
-  #tokenomics .tokenomics-wrap{ overflow-x:auto; padding-bottom: 6px; }
-}
-/* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
-.tokenomics-supplybar{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:rgba(0,0,0,0.22);
-  border:1px solid rgba(255,255,255,0.08);
-  box-shadow:0 14px 40px rgba(0,0,0,0.18);
-}
-.tokenomics-supplybar__label{
-  font-size:12px;
-  text-transform:uppercase;
-  letter-spacing:0.08em;
-  color:rgba(242,245,244,0.72);
-}
-.tokenomics-supplybar__value{
-  font-weight:800;
-  color:var(--accent);
-}
-.tokenomics-supplybar__sep{
-  color:rgba(233,144,44,0.75);
-}
-.tokenomics-supplybar__meta{
-  color:rgba(242,245,244,0.80);
-}
-
-.tokenomics-ring{
-  position: relative;
-  min-height: 420px;
-  display: grid;
-  /* Push the ring + notes down (more breathing room under the section title) */
-  place-items: end center;
-  padding-bottom: 6px;
+/* If viewport is too narrow, keep horizontal but allow safe scroll (no stacking) */
+@media (max-width: 900px){
+  #tokenomics .tokenomics-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
