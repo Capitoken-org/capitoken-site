@@ -551,18 +551,41 @@ function iconCandidates(it){
                - On hover over a ring segment, the matching note slides right ("reveal" effect).
           -->
           <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
+            
             <div class="tokenomics-notes-stack" aria-hidden="true">
               <div class="tokenomics-mascot-card" aria-label="Capitoken mascot">
                 <img class="tokenomics-mascot-img" src={withBase("/img/capi-cartoon.png")} alt="Capitoken mascot" loading="lazy" decoding="async" />
               </div>
-              <div class="whisper whisper--stack" data-whisper="community"><span class="whisper__text">🦫 No whales here. Just chill capis.</span></div>
-              <div class="whisper whisper--stack" data-whisper="ops"><span class="whisper__text">🦫 Yes, devs eat too. But just a snack.</span></div>
-              <div class="whisper whisper--stack" data-whisper="growth"><span class="whisper__text">🦫 Marketing = memes, not Lambos.</span></div>
-              <div class="whisper whisper--stack" data-whisper="ambient"><span class="whisper__text">🦫 Capibara doesn’t rush. Neither does supply.</span></div>
-              <div class="whisper whisper--stack" data-whisper="fixed"><span class="whisper__text">🦫 Fixed supply. No minting magic.</span></div>
-              <div class="whisper whisper--stack" data-whisper="taxes"><span class="whisper__text">🦫 No hidden taxes. Clean swaps only.</span></div>
-              <div class="whisper whisper--stack" data-whisper="renounce"><span class="whisper__text">🦫 Token keys go to the river. Verifiable on-chain.</span></div>
+
+              <!-- Single large box: hover items to reveal one message (slides to the right) -->
+              <div class="tokenomics-hotbox" id="tokHotbox">
+                <button class="tok-hot" type="button" data-title="Fixed Supply" data-body="100,000,000,000 CAPI — No minting. Ever.">
+                  <span class="tok-hot__dot tok-hot__dot--green" aria-hidden="true"></span>
+                  <span class="tok-hot__label">Fixed Supply</span>
+                </button>
+
+                <button class="tok-hot" type="button" data-title="No Hidden Taxes" data-body="What you see is what you trade. 0% hidden taxes.">
+                  <span class="tok-hot__dot tok-hot__dot--yellow" aria-hidden="true"></span>
+                  <span class="tok-hot__label">No Hidden Taxes</span>
+                </button>
+
+                <button class="tok-hot" type="button" data-title="Anti-bot Phase" data-body="Temporary. Transparent. Timed. Designed to keep launch fair.">
+                  <span class="tok-hot__dot tok-hot__dot--orange" aria-hidden="true"></span>
+                  <span class="tok-hot__label">Anti-bot Phase</span>
+                </button>
+
+                <button class="tok-hot" type="button" data-title="Token Ownership Renounce" data-body="Planned. Announced. Verifiable on-chain. No governance tricks.">
+                  <span class="tok-hot__dot tok-hot__dot--blue" aria-hidden="true"></span>
+                  <span class="tok-hot__label">Ownership Renounce</span>
+                </button>
+              </div>
+
+              <div class="tokenomics-slideout" id="tokSlideout" aria-live="polite" aria-atomic="true">
+                <div class="tok-slideout__title" id="tokSlideTitle">Hover an item</div>
+                <div class="tok-slideout__body" id="tokSlideBody">Move your mouse over the badges to reveal one clear message.</div>
+              </div>
             </div>
+
 
             <div class="tokenomics-stage">
               <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
@@ -712,7 +735,44 @@ function iconCandidates(it){
       // initial
       if(row) row.dataset.active = 'none';
       setSeg('community');
-    })();
+    
+      // Left-side hover box -> single slideout message (no layout shift)
+      const hotbox = document.getElementById('tokHotbox');
+      const slide = document.getElementById('tokSlideout');
+      const tTitle = document.getElementById('tokSlideTitle');
+      const tBody  = document.getElementById('tokSlideBody');
+
+      function showSlide(title, body){
+        if(!slide || !tTitle || !tBody) return;
+        tTitle.textContent = title || 'Details';
+        tBody.textContent = body || '';
+        slide.classList.add('is-open');
+        // Auto-close after a while (but keep open while interacting)
+        clearTimeout(showSlide._t);
+        showSlide._t = setTimeout(() => slide.classList.remove('is-open'), 2200);
+      }
+
+      if(hotbox){
+        hotbox.addEventListener('mouseenter', () => {
+          // keep current copy, just open if already set
+          if(slide) slide.classList.add('is-open');
+        });
+
+        hotbox.addEventListener('mouseleave', () => {
+          if(slide) slide.classList.remove('is-open');
+        });
+
+        hotbox.querySelectorAll('.tok-hot').forEach((btn) => {
+          const title = btn.getAttribute('data-title') || '';
+          const body  = btn.getAttribute('data-body') || '';
+          btn.addEventListener('mouseenter', () => showSlide(title, body));
+          btn.addEventListener('focus', () => showSlide(title, body));
+          // Mobile: tap toggles
+          btn.addEventListener('click', () => showSlide(title, body));
+        });
+      }
+
+})();
   </script>
   </section>
 
