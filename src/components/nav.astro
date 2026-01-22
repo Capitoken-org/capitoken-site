@@ -41,6 +41,14 @@ const ICONS = {
   ig: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Z"/></svg>`,
   fb: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6h1.7V4.8c-.3 0-1.4-.1-2.7-.1-2.7 0-4.5 1.6-4.5 4.7V11H7v3h2.6v8h3.9Z"/></svg>`,
 };
+
+const domainFromHref = (href) => {
+  try {
+    return new URL(String(href)).hostname;
+  } catch {
+    return "";
+  }
+};
 ---
 
 <header class="nav nav--stack">
@@ -68,7 +76,18 @@ const ICONS = {
             target={s.enabled ? "_blank" : undefined}
             rel={s.enabled ? "noopener noreferrer" : undefined}
           >
-            <span class="social__svg" set:html={ICONS[s.key] ?? ""} />
+            {s.enabled && domainFromHref(s.href) ? (
+              <img
+                class="social__img"
+                src={`https://www.google.com/s2/favicons?domain=${domainFromHref(s.href)}&sz=64`}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+              />
+            ) : (
+              <span class="social__svg" set:html={ICONS[s.key] ?? ""} />
+            )}
           </a>
         ))}
       </div>

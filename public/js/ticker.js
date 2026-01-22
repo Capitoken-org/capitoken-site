@@ -8,15 +8,7 @@
   const clock = document.getElementById("navClock");
 
   const REFRESH_MS = 60000;
-  const COIN_LIMIT = 5;
-
-  const coins = [
-    { id: "bitcoin", symbol: "BTC" },
-    { id: "ethereum", symbol: "ETH" },
-    { id: "solana", symbol: "SOL" },
-    { id: "binancecoin", symbol: "BNB" },
-    { id: "ripple", symbol: "XRP" },
-  ];
+  const COIN_LIMIT = 10;
 
   const capi = { symbol: "CAPI", price: null };
 
@@ -29,11 +21,19 @@
   }
 
   async function fetchTop() {
-    const ids = coins.slice(0, COIN_LIMIT).map((c) => c.id).join(",");
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+    // Pull top coins by market cap directly (keeps the list current without hardcoding IDs).
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${COIN_LIMIT}&page=1&sparkline=false&price_change_percentage=24h`;
     const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("coingecko markets failed");
     const j = await r.json();
-    return coins.slice(0, COIN_LIMIT).map((c) => ({ symbol: c.symbol, price: j?.[c.id]?.usd ?? null }));
+    if (!Array.isArray(j)) throw new Error("coingecko markets shape invalid");
+    return j
+      .slice(0, COIN_LIMIT)
+      .map((c) => ({
+        symbol: String(c?.symbol || "").toUpperCase(),
+        price: c?.current_price ?? null,
+        change24h: c?.price_change_percentage_24h ?? null,
+      }));
   }
 
   function build(items) {
@@ -44,9 +44,13 @@
       span.className = isCapi
         ? 'ticker__item ticker__item--capi'
         : (idx % 2 === 0 ? 'ticker__item' : 'ticker__item ticker__item--alt');
+      const ch = (it && typeof it.change24h === "number" && isFinite(it.change24h))
+        ? `${it.change24h >= 0 ? "+" : ""}${it.change24h.toFixed(2)}%`
+        : null;
+
       span.textContent = isCapi
         ? `★ ${it.symbol} = ${fmt(it.price)}`
-        : `${it.symbol} = ${fmt(it.price)}`;
+        : `${it.symbol} = ${fmt(it.price)}${ch ? ` (${ch})` : ""}`;
       frag.appendChild(span);
 
       if (idx < items.length - 1) {
@@ -104,7 +108,29 @@
 
   // Local clock
   if (clock) {
-    const paint = () => (clock.textContent = new Date().toLocaleString("es-ES"));
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const tzFmt = new Intl.DateTimeFormat(undefined, { timeZoneName: "short" });
+    const dowFmt = new Intl.DateTimeFormat(undefined, { weekday: "short" });
+    const monFmt = new Intl.DateTimeFormat(undefined, { month: "short" });
+
+    const paint = () => {
+      const d = new Date();
+      const h = pad2(d.getHours());
+      const m = pad2(d.getMinutes());
+      const s = pad2(d.getSeconds());
+
+      // Example: "Wed • Jan 21" and timezone suffix "GMT-6" (varies by user locale).
+      const dow = dowFmt.format(d);
+      const mon = monFmt.format(d);
+      const day = d.getDate();
+      const tz = (tzFmt.formatToParts(d).find((p) => p.type === "timeZoneName")?.value) || "";
+
+      clock.innerHTML = `
+        <div class="clock__time">${h}:${m}<span class="clock__sec">:${s}</span></div>
+        <div class="clock__date">${dow} • ${mon} ${day}<span class="clock__tz"> • ${tz}</span></div>
+      `.trim();
+    };
+
     paint();
     setInterval(paint, 1000);
   }
