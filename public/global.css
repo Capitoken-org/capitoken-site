@@ -1791,10 +1791,14 @@ html, body{
 
 .tokenomics-wrap{
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 12px;
-  /* Bottom-align both columns so we can create more air above the first bubble */
-  align-items: end;
+  /* Two columns: left (message box + ring) and right (rule cards).
+     Use explicit min/max so the two areas don't collide.
+  */
+  /* Slightly smaller minimums so the layout fits comfortably on common laptop widths */
+  grid-template-columns: minmax(580px, 1fr) minmax(340px, 420px);
+  gap: 34px;
+  /* Center align to keep all three visual blocks equidistant */
+  align-items: center;
 }
 
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
@@ -1802,6 +1806,9 @@ html, body{
   display:flex;
   flex-wrap:wrap;
   align-items:center;
+  /* Keep the supply bar visually centered under the title */
+  justify-content:center;
+  text-align:center;
   gap:10px;
   padding:10px 12px;
   border-radius:14px;
@@ -1831,15 +1838,15 @@ html, body{
   min-height: 420px;
   display: grid;
   /* Push the ring + notes down (more breathing room under the section title) */
-  place-items: end center;
+  place-items: center;
   padding-bottom: 6px;
 }
 
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
 .tokenomics-stage{
   position: relative;
-  width: 360px;
-  max-width: 360px;
+  width: 340px;
+  max-width: 340px;
   aspect-ratio: 1 / 1;
 }
 
@@ -1847,9 +1854,9 @@ html, body{
 .tokenomics-ringrow{
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   /* Bring bubbles closer to the ring (no negative offsets that can affect other sections) */
-  gap: 6px;
+  gap: 24px;
   margin-left: 0;
 }
 
@@ -1857,19 +1864,20 @@ html, body{
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 290px;
-  max-width: 290px;
+  width: 280px;
+  max-width: 280px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
-  margin-right: -12px;
+  /* No negative margins: they were causing overlap/collisions */
+  margin-right: 0;
 }
 
 /* Mascot + Single Message Box (unified) */
 .tokenomics-mascot-card{
-  width: 290px;
-  max-width: 290px;
+  width: 280px;
+  max-width: 280px;
   height: 110px;
   display:flex;
   align-items:center;
@@ -1997,7 +2005,7 @@ html, body{
   --p-growth: 1;
 
   position: relative;
-  width: 360px;
+  width: 340px;
   aspect-ratio: 1 / 1;
   border-radius: 999px;
   padding: 16px;
@@ -2136,7 +2144,7 @@ html, body{
 
 /* Tokenomics micro-tune V35: bring left whispers 2px closer to ring */
 .tokenomics .tokenomics-notes-stack{
-  margin-right: -16px;
+  margin-right: 0;
 }
 
 /* Title separator styling */
