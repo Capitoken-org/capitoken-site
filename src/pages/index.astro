@@ -551,41 +551,49 @@ function iconCandidates(it){
                - On hover over a ring segment, the matching note slides right ("reveal" effect).
           -->
           <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
-            
             <div class="tokenomics-notes-stack" aria-hidden="true">
               <div class="tokenomics-mascot-card" aria-label="Capitoken mascot">
                 <img class="tokenomics-mascot-img" src={withBase("/img/capi-cartoon.png")} alt="Capitoken mascot" loading="lazy" decoding="async" />
               </div>
+              <div class="tokenomics-messagebox" aria-label="Tokenomics highlights">
+                <div class="tokenomics-message" data-key="community">
+                  <div class="tokenomics-message__title">🟢 Community First</div>
+                  <div class="tokenomics-message__body"><strong>97%</strong> of supply is allocated to the community. No governance, no politics — just holders.</div>
+                </div>
 
-              <!-- Single large box: hover items to reveal one message (slides to the right) -->
-              <div class="tokenomics-hotbox" id="tokHotbox">
-                <button class="tok-hot" type="button" data-title="Fixed Supply" data-body="100,000,000,000 CAPI — No minting. Ever.">
-                  <span class="tok-hot__dot tok-hot__dot--green" aria-hidden="true"></span>
-                  <span class="tok-hot__label">Fixed Supply</span>
-                </button>
+                <div class="tokenomics-message" data-key="ops">
+                  <div class="tokenomics-message__title">🟡 Ops / Dev (Minimal)</div>
+                  <div class="tokenomics-message__body"><strong>2%</strong> for operations &amp; dev. Transparent, capped, and visible on-chain.</div>
+                </div>
 
-                <button class="tok-hot" type="button" data-title="No Hidden Taxes" data-body="What you see is what you trade. 0% hidden taxes.">
-                  <span class="tok-hot__dot tok-hot__dot--yellow" aria-hidden="true"></span>
-                  <span class="tok-hot__label">No Hidden Taxes</span>
-                </button>
+                <div class="tokenomics-message" data-key="growth">
+                  <div class="tokenomics-message__title">🟠 Growth / Marketing</div>
+                  <div class="tokenomics-message__body"><strong>1%</strong> for growth. Memes &amp; distribution — not inflation.</div>
+                </div>
 
-                <button class="tok-hot" type="button" data-title="Anti-bot Phase" data-body="Temporary. Transparent. Timed. Designed to keep launch fair.">
-                  <span class="tok-hot__dot tok-hot__dot--orange" aria-hidden="true"></span>
-                  <span class="tok-hot__label">Anti-bot Phase</span>
-                </button>
+                <div class="tokenomics-message" data-key="ambient">
+                  <div class="tokenomics-message__title">🧠 Anti-bot Phase</div>
+                  <div class="tokenomics-message__body">Temporary protections. Transparent rules. Timed behavior — designed to keep launch fair.</div>
+                </div>
 
-                <button class="tok-hot" type="button" data-title="Token Ownership Renounce" data-body="Planned. Announced. Verifiable on-chain. No governance tricks.">
-                  <span class="tok-hot__dot tok-hot__dot--blue" aria-hidden="true"></span>
-                  <span class="tok-hot__label">Ownership Renounce</span>
-                </button>
+                <div class="tokenomics-message" data-key="fixed">
+                  <div class="tokenomics-message__title">🔒 Fixed Supply</div>
+                  <div class="tokenomics-message__body">Total supply is fixed at <strong>100,000,000,000 CAPI</strong>. No minting. Ever.</div>
+                </div>
+
+                <div class="tokenomics-message" data-key="taxes">
+                  <div class="tokenomics-message__title">🧯 No Hidden Taxes</div>
+                  <div class="tokenomics-message__body">What you see is what you trade. No stealth fees built into swaps.</div>
+                </div>
+
+                <div class="tokenomics-message" data-key="renounce">
+                  <div class="tokenomics-message__title">🔑 Ownership Renounce</div>
+                  <div class="tokenomics-message__body">Planned, announced, and verifiable on-chain. Control moves to the community — permanently.</div>
+                </div>
+<div class="tokenomics-message__body">Move your cursor over the ring or the trust cards to see details.</div>
+                </div>
               </div>
-
-              <div class="tokenomics-slideout" id="tokSlideout" aria-live="polite" aria-atomic="true">
-                <div class="tok-slideout__title" id="tokSlideTitle">Hover an item</div>
-                <div class="tok-slideout__body" id="tokSlideBody">Move your mouse over the badges to reveal one clear message.</div>
-              </div>
-            </div>
-
+</div>
 
             <div class="tokenomics-stage">
               <div class="trust-ring" id="tokenomicsRing" data-seg="community" aria-label="Tokenomics allocation ring" role="img">
@@ -735,44 +743,7 @@ function iconCandidates(it){
       // initial
       if(row) row.dataset.active = 'none';
       setSeg('community');
-    
-      // Left-side hover box -> single slideout message (no layout shift)
-      const hotbox = document.getElementById('tokHotbox');
-      const slide = document.getElementById('tokSlideout');
-      const tTitle = document.getElementById('tokSlideTitle');
-      const tBody  = document.getElementById('tokSlideBody');
-
-      function showSlide(title, body){
-        if(!slide || !tTitle || !tBody) return;
-        tTitle.textContent = title || 'Details';
-        tBody.textContent = body || '';
-        slide.classList.add('is-open');
-        // Auto-close after a while (but keep open while interacting)
-        clearTimeout(showSlide._t);
-        showSlide._t = setTimeout(() => slide.classList.remove('is-open'), 2200);
-      }
-
-      if(hotbox){
-        hotbox.addEventListener('mouseenter', () => {
-          // keep current copy, just open if already set
-          if(slide) slide.classList.add('is-open');
-        });
-
-        hotbox.addEventListener('mouseleave', () => {
-          if(slide) slide.classList.remove('is-open');
-        });
-
-        hotbox.querySelectorAll('.tok-hot').forEach((btn) => {
-          const title = btn.getAttribute('data-title') || '';
-          const body  = btn.getAttribute('data-body') || '';
-          btn.addEventListener('mouseenter', () => showSlide(title, body));
-          btn.addEventListener('focus', () => showSlide(title, body));
-          // Mobile: tap toggles
-          btn.addEventListener('click', () => showSlide(title, body));
-        });
-      }
-
-})();
+    })();
   </script>
   </section>
 
