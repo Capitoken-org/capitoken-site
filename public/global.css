@@ -247,6 +247,9 @@ section{padding:24px 0}
   border-color:rgba(255,255,255,0.14);
   transform:translateY(-1px);
 }
+.btn:not(.btn--primary):hover{
+  color:var(--accent);
+}
 .btn--primary{
   background:linear-gradient(180deg, rgba(233,144,44,1), rgba(181,93,9,1));
   border-color:rgba(0,0,0,0.18);
@@ -350,6 +353,12 @@ section{padding:24px 0}
   .grid{grid-template-columns:1fr}
   .col-12,.col-6,.col-4{grid-column:auto}
 }
+
+/* FAQ (12 cards) */
+.faq-grid{ align-items: stretch; }
+.faq-card{ display:flex; flex-direction:column; justify-content:flex-start; }
+.faq-card h3{ margin:0 0 6px; font-size:16px; letter-spacing:-0.01em; }
+.faq-card p{ margin:0; }
 
 /* Typography helpers */
 .small{font-size:13px;color:rgba(242,245,244,0.72)}
@@ -1073,6 +1082,9 @@ section{padding:24px 0}
   border-color:rgba(255,255,255,0.14);
   transform:translateY(-1px);
 }
+.btn:not(.btn--primary):hover{
+  color:var(--accent);
+}
 .btn--primary{
   background:linear-gradient(180deg, rgba(233,144,44,1), rgba(181,93,9,1));
   border-color:rgba(0,0,0,0.18);
@@ -1783,6 +1795,35 @@ html, body{
   gap: 12px;
   /* Bottom-align both columns so we can create more air above the first bubble */
   align-items: end;
+}
+
+/* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
+.tokenomics-supplybar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(0,0,0,0.22);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 14px 40px rgba(0,0,0,0.18);
+}
+.tokenomics-supplybar__label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:rgba(242,245,244,0.72);
+}
+.tokenomics-supplybar__value{
+  font-weight:800;
+  color:var(--accent);
+}
+.tokenomics-supplybar__sep{
+  color:rgba(233,144,44,0.75);
+}
+.tokenomics-supplybar__meta{
+  color:rgba(242,245,244,0.80);
 }
 
 .tokenomics-ring{

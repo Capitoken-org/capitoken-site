@@ -523,6 +523,18 @@ function iconCandidates(it){
       <div class="section-block">
       <h2 class="section-title section-title--split"><span class="title-main">Tokenomics</span><span class="title-slash"> / </span><span class="title-kicker">Simple. Honest. Unbreakable math — <strong>97 / 2 / 1</strong>.</span></h2>
 
+      <!-- Supply quick facts (from Whitepaper Key Facts) -->
+      <div class="tokenomics-supplybar" aria-label="Token supply quick facts" style="margin-top:12px;">
+        <span class="tokenomics-supplybar__label">Total Supply</span>
+        <span class="tokenomics-supplybar__value">100,000,000,000 CAPI</span>
+        <span class="tokenomics-supplybar__sep">•</span>
+        <span class="tokenomics-supplybar__meta">Fixed</span>
+        <span class="tokenomics-supplybar__sep">•</span>
+        <span class="tokenomics-supplybar__meta">18 Decimals</span>
+        <span class="tokenomics-supplybar__sep">•</span>
+        <span class="tokenomics-supplybar__meta">ERC‑20</span>
+      </div>
+
       <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
         <div class="tokenomics-ring" id="tokenomicsNarrative">
@@ -557,7 +569,7 @@ function iconCandidates(it){
           <!-- Row 1: Fixed Supply (left) + No Hidden Taxes (right) -->
           <div class="card tokenomics-rule" id="tokenomicsFixedSupply">
             <div class="tokenomics-rule__top">🔒 Fixed Supply</div>
-            <div class="small">No minting. Ever.</div>
+            <div class="small"><b>100,000,000,000 CAPI</b> — No minting. Ever.</div>
           </div>
           <div class="card tokenomics-rule" id="tokenomicsNoTaxes">
             <div class="tokenomics-rule__top">🧯 No Hidden Taxes</div>
@@ -853,25 +865,65 @@ function iconCandidates(it){
       <div class="section-block">
       <h2 class="section-title section-title--split"><span class="title-main">FAQ</span><span class="title-slash"> / </span><span class="title-kicker">Quick answers. Zero fluff.</span></h2>
 
-      <div class="grid" style="margin-top:14px;">
-        <div class="card col-6">
+      <div class="grid faq-grid" style="margin-top:14px;">
+        <div class="card col-4 faq-card">
           <h3>Where is the official contract?</h3>
-          <p class="small">We publish the verified contract address in the Launch Panel and Official Links.</p>
+          <p class="small">Only the Launch Panel and /verify publish the official contract address. If it’s not here, it’s not official.</p>
         </div>
 
-        <div class="card col-6">
-          <h3>Is this financial advice?</h3>
-          <p class="small">No. Crypto is high risk. Always do your own research.</p>
+        <div class="card col-4 faq-card">
+          <h3>What is the total supply?</h3>
+          <p class="small"><b>100,000,000,000 CAPI</b> (fixed). Standard ERC‑20, 18 decimals.</p>
         </div>
 
-        <div class="card col-6">
+        <div class="card col-4 faq-card">
+          <h3>Can supply change later?</h3>
+          <p class="small">No minting. No hidden “supply switch.” Any claim of “new supply” is a scam signal.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>Are there buy/sell taxes?</h3>
+          <p class="small">No hidden taxes. What you see is what you trade. Always verify the token contract before swapping.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>When does ownership renounce?</h3>
+          <p class="small">Planned ~90 days after trading activation. It will be announced and verifiable on-chain.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>What is the anti-bot phase?</h3>
+          <p class="small">Temporary protections designed to reduce sniping and early manipulation. Transparent and time‑bounded.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>Where do I trade safely?</h3>
+          <p class="small">Use official swap links from the Launch Panel only. Fake pairs are the #1 scam vector.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>How do I add CAPI to MetaMask?</h3>
+          <p class="small">Use “Add to MetaMask” from the Launch Panel after verifying the contract on /verify.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
           <h3>Why verify only here?</h3>
-          <p class="small">Scammers frequently clone brands. This site is the single source of truth for official links.</p>
+          <p class="small">Scammers clone brands and UIs. This site is the single source of truth for official links and addresses.</p>
         </div>
 
-        <div class="card col-6">
-          <h3>When live market data?</h3>
-          <p class="small">As soon as the verified contract/pair is published, live metrics auto-populate.</p>
+        <div class="card col-4 faq-card">
+          <h3>Why is my trust score lower on a mirror?</h3>
+          <p class="small">Mirrors can be useful, but only <b>www.capitoken.org</b> is the canonical source. The UI flags mirrors by design.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>When will live market data appear?</h3>
+          <p class="small">Once the verified pair is published, live metrics auto‑populate. If you see data elsewhere first, treat it as unverified.</p>
+        </div>
+
+        <div class="card col-4 faq-card">
+          <h3>Is this financial advice?</h3>
+          <p class="small">No. Crypto is high‑risk. You are responsible for your decisions. Never invest more than you can afford to lose.</p>
         </div>
       </div>
       </div>
