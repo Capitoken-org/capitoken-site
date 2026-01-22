@@ -22,16 +22,28 @@ const links = [
   { href: withBase("/verify/"), label: "Verify" },
 ];
 
+const localSocialIcon = (key) => withBase(`/social/${key}.svg`);
+const faviconSrc = (href) => {
+  try {
+    const host = new URL(String(href)).hostname;
+    return host ? `https://www.google.com/s2/favicons?domain=${host}&sz=64` : "";
+  } catch {
+    return "";
+  }
+};
+const svgDataUri = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg || "")}`;
+
 const socials = [
-  { key: "x",  label: "X",        href: "https://x.com/Capitokenorg", enabled: true },
-  { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official", enabled: true },
-  { key: "dc", label: "Discord",  href: "#", enabled: true },
-  { key: "rd", label: "Reddit",   href: "https://www.reddit.com/user/CapiToken", enabled: true },
-  { key: "yt", label: "YouTube",  href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true },
-  { key: "md", label: "Medium",   href: "https://medium.com/@info_43649/capitoken-capi-official-contract-verification-launch-overview-02d8f4bbc8b9", enabled: true },
-  { key: "ig", label: "Instagram",href: "#", enabled: true },
-  { key: "fb", label: "Facebook", href: "#", enabled: true },
+  { key: "x",  label: "X",        href: "https://x.com/Capitokenorg", enabled: true,  icon: localSocialIcon("x") },
+  { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official", enabled: true, icon: localSocialIcon("tg") },
+  { key: "dc", label: "Discord",  href: "#", enabled: false, icon: localSocialIcon("dc") },
+  { key: "rd", label: "Reddit",   href: "#", enabled: false, icon: localSocialIcon("rd") },
+  { key: "yt", label: "YouTube",  href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true, icon: localSocialIcon("yt") },
+  { key: "md", label: "Medium",   href: "https://medium.com/@info_43649/capitoken-capi-official-contract-verification-launch-overview-02d8f4bbc8b9", enabled: true, icon: localSocialIcon("md") },
+  { key: "ig", label: "Instagram",href: "#", enabled: false, icon: localSocialIcon("ig") },
+  { key: "fb", label: "Facebook", href: "#", enabled: false, icon: localSocialIcon("fb") },
 ];
+
 
 const ICONS = {
   x:  `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.3L6.4 22H3.3l7.3-8.4L1 2h6.3l4.4 5.7L18.9 2Zm-1.1 18h1.7L6.2 3.9H4.4L17.8 20Z"/></svg>`,
@@ -78,10 +90,13 @@ const domainFromHref = (href) => {
             target={s.enabled ? "_blank" : undefined}
             rel={s.enabled ? "noopener noreferrer" : undefined}
           >
-            {s.enabled && domainFromHref(s.href) ? (
+            {s.enabled ? (
               <img
                 class="social__img"
-                src={`https://www.google.com/s2/favicons?domain=${domainFromHref(s.href)}&sz=64`}
+                src={s.icon}
+                data-fallback1={faviconSrc(s.href)}
+                data-fallback2={svgDataUri(ICONS[s.key] ?? "")}
+                onerror="if(!this.dataset._fb){this.dataset._fb='1'; this.src=this.dataset.fallback1 || this.dataset.fallback2;} else if(this.dataset._fb==='1'){this.dataset._fb='2'; this.src=this.dataset.fallback2;} else {this.onerror=null;}"
                 alt=""
                 loading="lazy"
                 decoding="async"
