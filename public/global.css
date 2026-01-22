@@ -1838,8 +1838,8 @@ html, body{
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
 .tokenomics-stage{
   position: relative;
-  width: 360px;
-  max-width: 360px;
+  width: 340px;
+  max-width: 340px;
   aspect-ratio: 1 / 1;
 }
 
@@ -1909,7 +1909,7 @@ html, body{
   overflow: hidden;
 
   /* make it tall (reach the bottom of the left column) */
-  min-height: 390px;
+  min-height: 420px;
   display: flex;
   align-items: flex-start;
 }
@@ -1930,7 +1930,7 @@ html, body{
   left: 0;
   top: 0;
   right: 0;
-  padding: 18px 18px;
+  padding: 22px 22px;
 
   pointer-events: none;
   opacity: 0;
@@ -1940,20 +1940,15 @@ html, body{
 
 .tok-msg__text{
   display: block;
-  font-size: 15.5px;
-  line-height: 1.35;
+  font-size: 17.5px;
+  line-height: 1.4;
   color: rgba(255,255,255,.92);
   text-shadow: 0 2px 10px rgba(0,0,0,.35);
 }
 
 /* Hide everything when nothing is active */
-.tokenomics-ringrow[data-active="none"] .tok-msg{
-  opacity: 0 !important;
-  transform: translateX(-420px) !important;
-}
-
-/* Reveal only the active message (same state machine as before) */
-.tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"],
+.tokenomics-ringrow[data-active="none"] /* Reveal only the active message (same state machine as before) */
+.tokenomics-ringrow[data-active="community"] .tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"],
 .tokenomics-ringrow[data-active="ops"] .tok-msg[data-whisper="ops"],
 .tokenomics-ringrow[data-active="growth"] .tok-msg[data-whisper="growth"],
 .tokenomics-ringrow[data-active="ambient"] .tok-msg[data-whisper="ambient"],
@@ -2019,7 +2014,7 @@ html, body{
   --p-growth: 1;
 
   position: relative;
-  width: 360px;
+  width: 340px;
   aspect-ratio: 1 / 1;
   border-radius: 999px;
   padding: 16px;
@@ -2359,7 +2354,7 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 .rm-obj{
   font-size:14px;
   color: rgba(255,255,255,0.78);
-  line-height:1.35;
+  line-height: 1.4;
 }
 .rm-obj-label{
   color: rgba(255,255,255,0.55);
