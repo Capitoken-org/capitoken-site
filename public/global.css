@@ -1790,67 +1790,58 @@ html, body{
    ===================================================== */
 
 
-/* Tokenomics layout hard-lock (prevent accidental stacking from other rules)
-   Goal: Keep the 3 main blocks side-by-side WITHOUT forcing scroll.
-   We let items shrink via clamp() so the full layout stays visible on most screens.
+/* Tokenomics layout hard-lock (GRID)
+   Goal: Always keep the 3 main blocks horizontal:
    [ Message Box + Mascot ]  [ Ring ]  [ Rules ]
+   This avoids flex wrap/column overrides from any other responsive rules.
 */
-
 #tokenomics{
   --tok-left:  clamp(200px, 22vw, 240px);
   --tok-stage: clamp(220px, 26vw, 280px);
-  --tok-right: clamp(260px, 32vw, 320px);
+  --tok-right: clamp(280px, 34vw, 420px);
 }
 
+/* 3-column grid: LEFT / RING / RULES */
 #tokenomics .tokenomics-wrap{
-  display:flex !important;
-  flex-direction:row !important;
-  flex-wrap:nowrap !important;
-  align-items:flex-end !important;
-  justify-content:space-between !important;
-  gap:12px !important;
-
-  /* Important: do NOT auto-stack and do NOT force scroll.
-     Instead, allow children to shrink responsibly. */
-  overflow:visible !important;
+  display:grid !important;
+  grid-template-columns: var(--tok-left) var(--tok-stage) minmax(var(--tok-right), 1fr);
+  column-gap: 14px !important;
+  align-items: end !important;
 }
 
-/* Ensure the LEFT (message box) and RING stay side-by-side */
+/* 2-column grid inside the ring block: NOTES / STAGE */
 #tokenomics .tokenomics-ringrow{
-  display:flex !important;
-  flex-direction:row !important;
-  flex-wrap:nowrap !important;
-  align-items:flex-end !important;
-  justify-content:flex-start !important;
-  gap:10px !important;
+  display:grid !important;
+  grid-template-columns: var(--tok-left) var(--tok-stage);
+  column-gap: 10px !important;
+  align-items: end !important;
 }
 
-/* Responsive fixed-ish columns (approved targets, but shrinkable) */
+/* Column sizing */
 #tokenomics .tokenomics-notes-stack{
-  flex: 0 1 var(--tok-left) !important;
   width: var(--tok-left) !important;
   max-width: var(--tok-left) !important;
 }
 #tokenomics .tokenomics-stage{
-  flex: 0 1 var(--tok-stage) !important;
   width: var(--tok-stage) !important;
   max-width: var(--tok-stage) !important;
 }
-#tokenomics .tokenomics-ring{ flex: 0 1 auto !important; min-width: 0 !important; }
 #tokenomics .tokenomics-rules{
-  flex: 0 1 var(--tok-right) !important;
-  min-width: 0 !important;
-  width: var(--tok-right) !important;
-  max-width: var(--tok-right) !important;
+  min-width: var(--tok-right) !important;
+  width: 100% !important;
 }
 
-/* Make sure nested grids can shrink */
-#tokenomics .tokenomics-rules{ grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
-
-/* Keep children shrink-safe */
+/* Ensure nested grids can shrink safely */
+#tokenomics .tokenomics-rules{
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+}
 #tokenomics .tokenomics-wrap > *{ min-width:0 !important; }
 
-
+/* Small screens: keep horizontal via gentle downscale; allow scroll only when truly necessary */
+@media (max-width: 560px){
+  #tokenomics{ --tok-left: 200px; --tok-stage: 220px; --tok-right: 280px; }
+  #tokenomics .tokenomics-wrap{ overflow-x:auto; padding-bottom: 6px; }
+}
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
 .tokenomics-supplybar{
   display:flex;
@@ -2201,7 +2192,6 @@ html, body{
   .tokenomics-rules{ min-width: 300px; }
 }
 
-}
 
 
 /* Tokenomics micro-tune V35: bring left whispers 2px closer to ring */
@@ -3037,4 +3027,3 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   .tokenomics-rule__top{ font-size: 14px; }
   .tokenomics-rules .small{ font-size: 12px; }
 }
-
