@@ -8,6 +8,7 @@
   const clock = document.getElementById("navClock");
 
   const REFRESH_MS = 60000;
+  const COIN_LIMIT = 5;
 
   const coins = [
     { id: "bitcoin", symbol: "BTC" },
@@ -28,19 +29,24 @@
   }
 
   async function fetchTop() {
-    const ids = coins.map((c) => c.id).join(",");
+    const ids = coins.slice(0, COIN_LIMIT).map((c) => c.id).join(",");
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
     const r = await fetch(url, { cache: "no-store" });
     const j = await r.json();
-    return coins.map((c) => ({ symbol: c.symbol, price: j?.[c.id]?.usd ?? null }));
+    return coins.slice(0, COIN_LIMIT).map((c) => ({ symbol: c.symbol, price: j?.[c.id]?.usd ?? null }));
   }
 
   function build(items) {
     const frag = document.createDocumentFragment();
     items.forEach((it, idx) => {
       const span = document.createElement("span");
-      span.className = idx % 2 === 0 ? "ticker__item" : "ticker__item ticker__item--alt";
-      span.textContent = `${it.symbol} = ${fmt(it.price)}`;
+      const isCapi = (it.symbol || '').toUpperCase() === 'CAPI';
+      span.className = isCapi
+        ? 'ticker__item ticker__item--capi'
+        : (idx % 2 === 0 ? 'ticker__item' : 'ticker__item ticker__item--alt');
+      span.textContent = isCapi
+        ? `★ ${it.symbol} = ${fmt(it.price)}`
+        : `${it.symbol} = ${fmt(it.price)}`;
       frag.appendChild(span);
 
       if (idx < items.length - 1) {
