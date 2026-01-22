@@ -1912,11 +1912,18 @@ html, body{
 }
 
 /* Messages live inside the same box; only active one slides in */
-.tok-msg{ position: absolute; inset: 14px; display: grid; align-content: start; }
+.tok-msg{ position: absolute; inset: 18px; display: grid; align-content: start; }
 .tok-msg__text{
   display:block;
-  font-size: 14px;
-  line-height: 1.35;
+  /* Make the left message box feel like a primary panel (not a tooltip) */
+  font-size: clamp(16px, 1.05vw, 20px);
+  line-height: 1.55;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.30);
+  max-width: 100%;
+  white-space: normal;
+  word-break: normal;
   color: rgba(242,245,244,0.92);
   transform: translateX(-420px);
   transition: transform .28s ease;
