@@ -1789,6 +1789,18 @@ html, body{
    Additive only.
    ===================================================== */
 
+
+/* Tokenomics layout hard-lock (prevent accidental stacking from other rules) */
+#tokenomics .tokenomics-wrap{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:flex-end !important;
+  gap:12px !important;
+}
+#tokenomics .tokenomics-ring{ flex:0 0 auto !important; }
+#tokenomics .tokenomics-rules{ flex:0 0 auto !important; }
+
 .tokenomics-wrap{
   display: flex;
   flex-direction: row;
