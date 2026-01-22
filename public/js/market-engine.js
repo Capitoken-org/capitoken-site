@@ -185,3 +185,235 @@ export async function getRecentSwaps(limit = 10) {
 
   return out;
 }
+
+/* =========================================================
+   CAPI Pulse (DexScreener)
+   - Fills #mPrice #mMcap #mLiq #mVol #pulseBS #pulseAge
+   - Safe: never throws, never breaks layout, keeps TBA/— on failure.
+   ========================================================= */
+
+function pickPairFromRegistry(reg) {
+  // Supported schemas (keep backward compatibility):
+  // 1) reg.dex.pair
+  // 2) reg.pair.address
+  // 3) reg.links.market (parse pair from URL)
+  try {
+    if (reg?.dex?.pair) return String(reg.dex.pair);
+    if (reg?.pair?.address) return String(reg.pair.address);
+    const m = reg?.links?.market ? String(reg.links.market) : '';
+    const mm = m.match(/dexscreener\.com\/ethereum\/(0x[a-fA-F0-9]{40})/);
+    if (mm) return mm[1];
+  } catch {}
+  return '';
+}
+
+function fmtCompactUsd(n) {
+  const num = Number(n);
+  if (!Number.isFinite(num) || num <= 0) return 'TBA';
+  const abs = Math.abs(num);
+  const units = [
+    { v: 1e12, s: 'T' },
+    { v: 1e9,  s: 'B' },
+    { v: 1e6,  s: 'M' },
+    { v: 1e3,  s: 'K' },
+  ];
+  for (const u of units) {
+    if (abs >= u.v) return '$' + (num / u.v).toFixed(2).replace(/\.00$/, '') + u.s;
+  }
+  return '$' + num.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+function fmtPriceUsd(n) {
+  const num = Number(n);
+  if (!Number.isFinite(num) || num <= 0) return 'TBA';
+  if (num >= 1) return '$' + num.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+  // keep small prices readable
+  return '$' + num.toFixed(10).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+function fmtPlain(n) {
+  const num = Number(n);
+  if (!Number.isFinite(num) || num <= 0) return 'TBA';
+  return '$' + num.toFixed(2).replace(/\.00$/, '');
+}
+
+function fmtAge(msOrIsoOrSec) {
+  try {
+    let createdMs = 0;
+    if (typeof msOrIsoOrSec === 'number') {
+      createdMs = msOrIsoOrSec > 1e12 ? msOrIsoOrSec : (msOrIsoOrSec * 1000);
+    } else {
+      const s = String(msOrIsoOrSec || '').trim();
+      if (!s) return '—';
+      const asNum = Number(s);
+      if (Number.isFinite(asNum) && asNum > 0) createdMs = asNum > 1e12 ? asNum : asNum * 1000;
+      else createdMs = Date.parse(s);
+    }
+    if (!createdMs || !Number.isFinite(createdMs)) return '—';
+    const delta = Math.max(0, Date.now() - createdMs);
+    const mins = Math.floor(delta / 60000);
+    const hrs = Math.floor(mins / 60);
+    const days = Math.floor(hrs / 24);
+    if (days >= 1) return `${days}d`;
+    if (hrs >= 1) return `${hrs}h`;
+    if (mins >= 1) return `${mins}m`;
+    return 'just now';
+  } catch {
+    return '—';
+  }
+}
+
+function setText(id, v) {
+  try {
+    const el = document.getElementById(id);
+    if (el) el.textContent = v;
+  } catch {}
+}
+
+function setHref(id, url) {
+  try {
+    const el = document.getElementById(id);
+    if (el && url) el.setAttribute('href', url);
+  } catch {}
+}
+
+// Discreet status line for the Pulse card (cosmetic only).
+// We inject it dynamically to avoid touching Astro/HTML.
+function ensurePulseStatusEl() {
+  try {
+    if (typeof document === 'undefined') return null;
+    let el = document.getElementById('pulseStatus');
+    if (el) return el;
+
+    // Find a safe anchor inside the CAPI Pulse card
+    const priceEl = document.getElementById('mPrice');
+    const card = priceEl?.closest?.('.card');
+    if (!card) return null;
+
+    const stats = card.querySelector('.stats');
+    if (!stats) return null;
+
+    el = document.createElement('div');
+    el.id = 'pulseStatus';
+    el.className = 'small';
+    el.setAttribute('aria-live', 'polite');
+    el.style.marginTop = '10px';
+    el.style.opacity = '0.72';
+
+    // Insert right after the stats list (clean + discreet)
+    stats.insertAdjacentElement('afterend', el);
+    return el;
+  } catch {
+    return null;
+  }
+}
+
+function setPulseStatus(text) {
+  try {
+    const el = ensurePulseStatusEl();
+    if (!el) return;
+    el.textContent = text || '';
+  } catch {}
+}
+
+async function fetchDexScreenerPair({ apiBase, chain, pair, timeoutMs }) {
+  const url = `${String(apiBase).replace(/\/$/, '')}/${encodeURIComponent(chain)}/${encodeURIComponent(pair)}`;
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const t = setTimeout(() => { try { ctrl?.abort(); } catch {} }, Math.max(1000, Number(timeoutMs) || 6500));
+  try {
+    const res = await fetch(url, { cache: 'no-store', signal: ctrl?.signal });
+    if (!res.ok) throw new Error('dexscreener fetch failed');
+    const j = await res.json();
+    const p = (j && Array.isArray(j.pairs) && j.pairs[0]) ? j.pairs[0] : null;
+    if (!p) throw new Error('dexscreener no pair');
+    return p;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function updatePulseFromPair(pairObj) {
+  try {
+    const priceUsd = pairObj?.priceUsd;
+    const liqUsd = pairObj?.liquidity?.usd;
+    const vol24 = pairObj?.volume?.h24;
+    const buys = pairObj?.txns?.h24?.buys;
+    const sells = pairObj?.txns?.h24?.sells;
+    const mcap = pairObj?.marketCap ?? pairObj?.fdv;
+
+    setText('mPrice', fmtPriceUsd(priceUsd));
+    setText('mLiq', fmtCompactUsd(liqUsd));
+    setText('mVol', fmtCompactUsd(vol24));
+    setText('mMcap', fmtCompactUsd(mcap));
+    if (Number.isFinite(Number(buys)) || Number.isFinite(Number(sells))) {
+      setText('pulseBS', `${Number(buys) || 0} / ${Number(sells) || 0}`);
+    }
+
+    // age fields vary depending on DexScreener response
+    const ageRaw = pairObj?.pairCreatedAt ?? pairObj?.createdAt ?? pairObj?.createdAtMs ?? pairObj?.createdAtTimestamp;
+    setText('pulseAge', fmtAge(ageRaw));
+
+    // Cosmetic status: show "Indexing / Low Activity" while data is missing or near-zero.
+    const b = Number(buys) || 0;
+    const s = Number(sells) || 0;
+    const v = Number(vol24) || 0;
+    const l = Number(liqUsd) || 0;
+    const p = Number(priceUsd) || 0;
+    const low = (!p || !Number.isFinite(p)) || ((b + s) === 0 && v === 0) || (l === 0);
+    setPulseStatus(low ? 'Indexing / Low Activity' : '');
+  } catch {}
+}
+
+async function bootPulse() {
+  try {
+    if (typeof document === 'undefined') return;
+
+    // Only run if the Pulse panel exists
+    const hasPulse = document.getElementById('mPrice') || document.getElementById('mLiq') || document.getElementById('mVol');
+    if (!hasPulse) return;
+
+    // Prefer official registry (single source of truth)
+    const reg = await getRegistry(STATE.baseUrl).catch(() => null);
+
+    const runtime = (typeof window !== 'undefined' && window.CAPI_CONFIG) ? window.CAPI_CONFIG : {};
+    const dsCfg = runtime?.DEXSCREENER || {};
+
+    const apiBase = dsCfg.apiBase || reg?.dex?.dexscreener?.apiBase || 'https://api.dexscreener.com/latest/dex/pairs';
+    const chain = dsCfg.chain || reg?.dex?.dexscreener?.chain || 'ethereum';
+    const pair = dsCfg.pair || pickPairFromRegistry(reg) || runtime?.DEX_PAIR_ADDRESS || '';
+    const pollMs = Math.max(15000, Number(dsCfg.pollMs) || 30000);
+    const timeoutMs = Math.max(1500, Number(dsCfg.timeoutMs) || 6500);
+
+    // Wire the Live Market button to the official URL
+    const marketUrl = reg?.links?.market || `https://dexscreener.com/${chain}/${pair}`;
+    setHref('openDexScreener', marketUrl);
+
+    if (!pair) return;
+
+    // First run immediately, then poll
+    const tick = async () => {
+      try {
+        // Default cosmetic state until we successfully parse live numbers.
+        setPulseStatus('Indexing / Low Activity');
+        const p = await fetchDexScreenerPair({ apiBase, chain, pair, timeoutMs });
+        updatePulseFromPair(p);
+      } catch {
+        // keep placeholders (TBA/—)
+        setPulseStatus('Indexing / Low Activity');
+      }
+    };
+
+    await tick();
+    setInterval(tick, pollMs);
+  } catch {
+    // never throw
+  }
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootPulse, { once: true });
+  } else {
+    bootPulse();
+  }
+}

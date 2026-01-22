@@ -27,6 +27,16 @@
     "dex": "Uniswap V2",
     "chain": "ethereum"
   },
+  "dex": {
+    "pair": "0xb96808b1270A89eA8A237d52df389619f347AeA2",
+    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "router": "https://app.uniswap.org/#/swap",
+    "dexscreener": {
+      "chain": "ethereum",
+      "pair": "0xb96808b1270A89eA8A237d52df389619f347AeA2",
+      "apiBase": "https://api.dexscreener.com/latest/dex/pairs"
+    }
+  },
   "links": {
     "site": "https://www.capitoken.org",
     "verify": "https://www.capitoken.org/verify",

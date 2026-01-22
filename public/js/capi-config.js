@@ -17,6 +17,15 @@
     // This is NOT Etherscan; it is the PAIR address (the pool contract).
     DEX_PAIR_ADDRESS: '0xb96808b1270A89eA8A237d52df389619f347AeA2',
 
+    // DexScreener (live stats for "CAPI Pulse")
+    DEXSCREENER: {
+      apiBase: 'https://api.dexscreener.com/latest/dex/pairs',
+      chain: 'ethereum',
+      pair: '0xb96808b1270A89eA8A237d52df389619f347AeA2',
+      pollMs: 30000,   // refresh interval (30s)
+      timeoutMs: 6500, // network timeout for fetch
+    },
+
     // Optional sanity checks
     TOKEN_SYMBOL_EXPECTED: 'CAPI',
     TOKEN_DECIMALS_EXPECTED: 18,
