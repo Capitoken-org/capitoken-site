@@ -2134,7 +2134,7 @@ html, body{
 .tokenomics-split__row span{ flex: 1; }
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
-@media (max-width: 560px){
+@media (max-width: 420px){
   .tokenomics-wrap{ grid-template-columns: 1fr; }
   .tokenomics-ring{ min-height: auto; }
   .tokenomics-stage{ width: 320px; max-width: 320px; }
