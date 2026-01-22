@@ -65,8 +65,8 @@
 
   function setMarquee() {
     if (!track || !viewport) return;
-    // start exactly at the right edge of the marquee viewport
-    const start = viewport.clientWidth;
+    // seamless loop: start at 0 so the clone can take over without a visible reset
+    const start = 0;
     const gap = 28;
 
     // width of a single run (el + separators)
@@ -109,9 +109,9 @@
   // Local clock
   if (clock) {
     const pad2 = (n) => String(n).padStart(2, "0");
-    const tzFmt = new Intl.DateTimeFormat(undefined, { timeZoneName: "short" });
-    const dowFmt = new Intl.DateTimeFormat(undefined, { weekday: "short" });
-    const monFmt = new Intl.DateTimeFormat(undefined, { month: "short" });
+    const tzFmt = new Intl.DateTimeFormat("en-US", { timeZoneName: "short" });
+    const dowFmt = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+    const monFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
 
     const paint = () => {
       const d = new Date();
