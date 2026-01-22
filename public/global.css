@@ -2385,6 +2385,66 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 .social__svg svg{width:15px;height:15px;fill:rgba(255,255,255,0.9);display:block;}
 .social__img{width:18px;height:18px;border-radius:4px;display:block;}
 .social__icon.is-disabled{opacity:.35;pointer-events:none;}
+
+/* Renounce countdown (Navbar) */
+.nav__renounce{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+  white-space:nowrap;
+}
+.renounce__label{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color: rgba(242,201,76,0.95); /* brand amber */
+}
+.renounce__timer{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.renounce__box{
+  width:54px;
+  padding:6px 8px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  line-height:1.05;
+}
+.renounce__num{
+  font-size:16px;
+  font-weight:900;
+  color: rgba(74, 222, 128, 0.95); /* mint/green like counters */
+}
+.renounce__unit{
+  margin-top:3px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.08em;
+  opacity:.75;
+}
+
+/* Responsive: collapse label + tighten boxes */
+@media (max-width: 980px){
+  .nav__renounce{gap:8px; padding:6px 8px;}
+  .renounce__box{width:50px;}
+  .renounce__label{display:none;}
+}
+@media (max-width: 720px){
+  .nav__renounce{display:none;} /* keep mobile nav clean */
+}
+
 .nav__clock{
   white-space:nowrap;
   padding:6px 12px;

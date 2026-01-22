@@ -35,7 +35,8 @@
       "chain": "ethereum",
       "pair": "0xb96808b1270A89eA8A237d52df389619f347AeA2",
       "apiBase": "https://api.dexscreener.com/latest/dex/pairs"
-    }
+    },
+    "pairAddress": "0xb96808b1270a89ea8a237d52df389619f347aea2"
   },
   "links": {
     "site": "https://www.capitoken.org",
@@ -53,5 +54,8 @@
       "Always verify the contract on /verify before buying.",
       "This site never asks you to 'verify' by signing a transaction."
     ]
+  },
+  "renounce": {
+    "targetUtcIso": "2026-04-17T19:17:00Z"
   }
 }

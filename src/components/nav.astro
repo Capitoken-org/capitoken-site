@@ -36,12 +36,12 @@ const svgDataUri = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURICompone
 const socials = [
   { key: "x",  label: "X",        href: "https://x.com/Capitokenorg", enabled: true,  icon: localSocialIcon("x") },
   { key: "tg", label: "Telegram", href: "https://t.me/capitoken_official", enabled: true, icon: localSocialIcon("tg") },
-  { key: "dc", label: "Discord",  href: "#", enabled: true, icon: localSocialIcon("dc") },
-  { key: "rd", label: "Reddit",   href: "#", enabled: true, icon: localSocialIcon("rd") },
+  { key: "dc", label: "Discord",  href: "#", enabled: false, icon: localSocialIcon("dc") },
+  { key: "rd", label: "Reddit",   href: "#", enabled: false, icon: localSocialIcon("rd") },
   { key: "yt", label: "YouTube",  href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true, icon: localSocialIcon("yt") },
   { key: "md", label: "Medium",   href: "https://medium.com/@info_43649/capitoken-capi-official-contract-verification-launch-overview-02d8f4bbc8b9", enabled: true, icon: localSocialIcon("md") },
-  { key: "ig", label: "Instagram",href: "#", enabled: true, icon: localSocialIcon("ig") },
-  { key: "fb", label: "Facebook", href: "#", enabled: true, icon: localSocialIcon("fb") },
+  { key: "ig", label: "Instagram",href: "#", enabled: false, icon: localSocialIcon("ig") },
+  { key: "fb", label: "Facebook", href: "#", enabled: false, icon: localSocialIcon("fb") },
 ];
 
 
@@ -109,7 +109,18 @@ const domainFromHref = (href) => {
         ))}
       </div>
 
-      <div id="navClock" class="nav__clock" aria-label="Local time"></div>
+      
+      <div id="navRenounce" class="nav__renounce" aria-label="Ownership renounce countdown">
+        <div class="renounce__label" id="renounceLabel">RENUNCIA EN:</div>
+        <div class="renounce__timer" aria-hidden="false">
+          <div class="renounce__box"><div class="renounce__num" id="renDays">00</div><div class="renounce__unit">DÍAS</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renHours">00</div><div class="renounce__unit">HORAS</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renMins">00</div><div class="renounce__unit">MIN</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renSecs">00</div><div class="renounce__unit">SEG</div></div>
+        </div>
+      </div>
+
+<div id="navClock" class="nav__clock" aria-label="Local time"></div>
     </div>
   </div>
 
