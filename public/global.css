@@ -1790,46 +1790,43 @@ html, body{
    ===================================================== */
 
 
-/* Tokenomics layout hard-lock (prevent accidental stacking from other rules) */
+/* Tokenomics layout hard-lock (prevent accidental stacking from other rules)
+   Goal: Always keep the 3 main blocks side-by-side:
+   [ Message Box + Mascot ]  [ Ring ]  [ Rules ]
+*/
 #tokenomics .tokenomics-wrap{
   display:flex !important;
   flex-direction:row !important;
   flex-wrap:nowrap !important;
   align-items:flex-end !important;
+  justify-content:space-between !important;
   gap:12px !important;
+
+  /* If a viewport is too narrow, allow horizontal scroll rather than stacking. */
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
 }
+
+/* Ensure the LEFT (message box) and RING never jump above/below each other */
+#tokenomics .tokenomics-ringrow{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+  gap:10px !important;
+}
+
+/* Fixed columns (tuned to your approved sizes) */
+#tokenomics .tokenomics-notes-stack{ flex:0 0 240px !important; width:240px !important; max-width:240px !important; }
+#tokenomics .tokenomics-stage{ flex:0 0 280px !important; width:280px !important; max-width:280px !important; }
 #tokenomics .tokenomics-ring{ flex:0 0 auto !important; }
-#tokenomics .tokenomics-rules{ flex:0 0 auto !important; }
+#tokenomics .tokenomics-rules{ flex:0 0 320px !important; min-width:320px !important; }
 
-.tokenomics-wrap{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 12px;
-  align-items: end;
-  /* Keep the three blocks always horizontal.
-     On narrow screens, allow horizontal scroll instead of stacking. */
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-}
+/* Keep children shrink-safe without overriding the fixed bases above */
+.tokenomics-wrap > *{ min-width:0; }
 
-
-/* Tokenomics: force 3-column horizontal layout (notes | ring | rules) */
-.tokenomics-notes-stack{ flex: 0 0 240px; }
-.tokenomics-ring{ flex: 0 1 320px; min-width: 0; }
-.tokenomics-rules{ flex: 1 1 0; min-width: 320px; }
-
-/* Let the rules grid shrink gracefully */
-.tokenomics-rules{
-  grid-template-columns: repeat(2, minmax(150px, 1fr));
-}
-.tokenomics-wrap > *{
-  /* Allow shrink so the 3-column layout can fit without stacking */
-  flex: 1 1 auto;
-  min-width: 0;
-}
 
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
 .tokenomics-supplybar{
