@@ -1,11 +1,10 @@
 /**
  * renounce-countdown.js
  * Shows a live countdown in the navbar to the planned ownership renounce moment.
- * Target: 2026-04-17 19:17 (UTC)  — keeps consistent regardless of viewer timezone.
+ * Target: 2026-04-17 19:17 (GMT-4) => 2026-04-17T23:17:00Z  — keeps consistent regardless of viewer timezone.
  */
-import { CAPI } from "./capi-config.js";
-
-const TARGET_ISO_UTC = (CAPI?.renounce?.targetUtcIso) || "2026-04-17T19:17:00Z";
+const CFG = (window && window.CAPI_CONFIG) ? window.CAPI_CONFIG : {};
+const TARGET_ISO_UTC = (CFG?.renounce?.targetUtcIso) || "2026-04-17T23:17:00Z";
 const targetMs = Date.parse(TARGET_ISO_UTC);
 
 const $ = (id) => document.getElementById(id);
@@ -33,13 +32,13 @@ function tick(){
 
   // If target missing/invalid, keep discreet placeholders
   if (!Number.isFinite(targetMs)){
-    setText(el.label, "RENUNCIA:");
+    setText(el.label, (CFG?.renounce?.label || "RENOUNCE IN:"));
     setText(el.d, "—"); setText(el.h, "—"); setText(el.m, "—"); setText(el.s, "—");
     return;
   }
 
   if (diff <= 0){
-    setText(el.label, "RENUNCIADO ✅");
+    setText(el.label, (CFG?.renounce?.labelDone || "RENOUNCED ✅"));
     setText(el.d, "00"); setText(el.h, "00"); setText(el.m, "00"); setText(el.s, "00");
     return;
   }
@@ -50,7 +49,7 @@ function tick(){
   const mins = Math.floor((sec % 3600) / 60);
   const secs = sec % 60;
 
-  setText(el.label, "RENUNCIA EN:");
+  setText(el.label, (CFG?.renounce?.label || "RENOUNCE IN:"));
   setText(el.d, pad2(days));
   setText(el.h, pad2(hours));
   setText(el.m, pad2(mins));

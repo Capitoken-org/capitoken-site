@@ -20,6 +20,10 @@ const links = [
   { href: "#community", label: "Community" },
   { href: "#faq", label: "FAQ" },
   { href: withBase("/verify/"), label: "Verify" },
+  { href: withBase("/whitepaper/"), label: "Whitepaper", cta: true },
+];
+
+{ href: withBase("/whitepaper/"), label: "Whitepaper", cta: true },
 ];
 
 const localSocialIcon = (key) => withBase(`/social/${key}.svg`);
@@ -73,7 +77,7 @@ const domainFromHref = (href) => {
 
     <nav class="nav__links" aria-label="Primary navigation">
       {links.map((l) => (
-        <a href={l.href}>{l.label}</a>
+        <a class={l.cta ? "btn btn--mini btn--primary nav__cta" : "nav__link"} href={l.href}>{l.label}</a>
       ))}
     </nav>
   </div>
@@ -111,12 +115,12 @@ const domainFromHref = (href) => {
 
       
       <div id="navRenounce" class="nav__renounce" aria-label="Ownership renounce countdown">
-        <div class="renounce__label" id="renounceLabel">RENUNCIA EN:</div>
+        <div class="renounce__label" id="renounceLabel">RENOUNCE IN:</div>
         <div class="renounce__timer" aria-hidden="false">
-          <div class="renounce__box"><div class="renounce__num" id="renDays">00</div><div class="renounce__unit">DÍAS</div></div>
-          <div class="renounce__box"><div class="renounce__num" id="renHours">00</div><div class="renounce__unit">HORAS</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renDays">00</div><div class="renounce__unit">DAYS</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renHours">00</div><div class="renounce__unit">HOURS</div></div>
           <div class="renounce__box"><div class="renounce__num" id="renMins">00</div><div class="renounce__unit">MIN</div></div>
-          <div class="renounce__box"><div class="renounce__num" id="renSecs">00</div><div class="renounce__unit">SEG</div></div>
+          <div class="renounce__box"><div class="renounce__num" id="renSecs">00</div><div class="renounce__unit">SEC</div></div>
         </div>
       </div>
 

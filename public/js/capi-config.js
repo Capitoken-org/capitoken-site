@@ -30,6 +30,14 @@
     TOKEN_SYMBOL_EXPECTED: 'CAPI',
     TOKEN_DECIMALS_EXPECTED: 18,
 
+    // Ownership renounce countdown (fixed to GMT-4 moment)
+    // 17-Apr-2026 19:17 GMT-4 == 2026-04-17T23:17:00Z
+    renounce: {
+      targetUtcIso: '2026-04-17T23:17:00Z',
+      label: 'RENOUNCE IN:',
+      labelDone: 'RENOUNCED ✅',
+    },
+
     // Optional helper token addresses (mainnet)
     TOKENS: {
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
