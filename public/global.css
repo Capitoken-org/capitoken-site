@@ -2900,3 +2900,25 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   );
   border-radius: 10px;
 }
+/* Tokenomics mascot container (invisible) */
+.tokenomics-mascot-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* hacerlo invisible */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+
+  width: 100%;
+  min-height: 110px; /* mantiene el slot */
+}
+
+/* Mascot image */
+.tokenomics-mascot-img {
+  width: 96px;
+  height: auto;
+  display: block;
+}
