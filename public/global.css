@@ -1789,57 +1789,57 @@ html, body{
    Additive only.
    ===================================================== */
 
-
-/* Tokenomics layout hard-lock (2-col + internal 2-col)
-   Goal: keep the section ALWAYS horizontal like:
-   [ Message Box + Mascot | Ring ]  [ Rules ]
-   And inside the ring block keep:
-   [ Message Box ] [ Donut ]
-   This avoids any flex/column responsive overrides from other rules.
-*/
-#tokenomics{
-  --tok-left:  clamp(200px, 22vw, 240px);
-  --tok-stage: clamp(220px, 26vw, 280px);
-  --tok-right: clamp(280px, 34vw, 420px);
+.tokenomics-wrap{
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 12px;
+  /* Bottom-align both columns so we can create more air above the first bubble */
+  align-items: end;
 }
 
-/* Main: 2 columns -> (ring block) + (rules block) */
-#tokenomics .tokenomics-wrap{
-  display:grid !important;
-  grid-template-columns: minmax(calc(var(--tok-left) + var(--tok-stage) + 14px), 1fr) minmax(var(--tok-right), 420px);
-  column-gap: 14px !important;
-  align-items: end !important;
+/* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
+.tokenomics-supplybar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(0,0,0,0.22);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 14px 40px rgba(0,0,0,0.18);
+}
+.tokenomics-supplybar__label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:rgba(242,245,244,0.72);
+}
+.tokenomics-supplybar__value{
+  font-weight:800;
+  color:var(--accent);
+}
+.tokenomics-supplybar__sep{
+  color:rgba(233,144,44,0.75);
+}
+.tokenomics-supplybar__meta{
+  color:rgba(242,245,244,0.80);
 }
 
-/* Ring block: force 2 columns -> notes + donut */
-#tokenomics .tokenomics-ringrow{
-  display:grid !important;
-  grid-template-columns: var(--tok-left) var(--tok-stage);
-  column-gap: 14px !important;
-  align-items: end !important;
-}
-
-/* Notes stack and donut stage sizing */
-#tokenomics .tokenomics-notes-stack{ width: var(--tok-left) !important; min-width: var(--tok-left) !important; }
-#tokenomics .tokenomics-stage{ width: var(--tok-stage) !important; height: var(--tok-stage) !important; min-width: var(--tok-stage) !important; }
-#tokenomics .trust-ring{ width: var(--tok-stage) !important; height: var(--tok-stage) !important; }
-
-/* Rules: allow shrink but keep minimum */
-#tokenomics .tokenomics-rules{ min-width: var(--tok-right) !important; }
-
-/* If viewport is too narrow, keep horizontal but allow safe scroll (no stacking) */
-@media (max-width: 900px){
-  #tokenomics .tokenomics-wrap{
-    overflow-x:auto;
-    -webkit-overflow-scrolling: touch;
-  }
+.tokenomics-ring{
+  position: relative;
+  min-height: 420px;
+  display: grid;
+  /* Push the ring + notes down (more breathing room under the section title) */
+  place-items: end center;
+  padding-bottom: 6px;
 }
 
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
 .tokenomics-stage{
   position: relative;
-  width: 280px;
-  max-width: 280px;
+  width: 320px;
+  max-width: 320px;
   aspect-ratio: 1 / 1;
 }
 
@@ -1857,8 +1857,8 @@ html, body{
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 240px;
-  max-width: 240px;
+  width: 270px;
+  max-width: 270px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1867,8 +1867,8 @@ html, body{
 }
 
 .tokenomics-mascot-card{
-  width: 240px;
-  max-width: 240px;
+  width: 270px;
+  max-width: 270px;
   min-height: 92px;
   display: flex;
   align-items: center;
@@ -1897,8 +1897,8 @@ html, body{
 */
 .tokenomics-unibox{
   position: relative;
-  width: 240px;
-  max-width: 240px;
+  width: 270px;
+  max-width: 270px;
   border-radius: 16px;
 
   /* single visible big message box */
@@ -2014,7 +2014,7 @@ html, body{
   --p-growth: 1;
 
   position: relative;
-  width: 280px;
+  width: 340px;
   aspect-ratio: 1 / 1;
   border-radius: 999px;
   padding: 16px;
@@ -2098,7 +2098,6 @@ html, body{
 
 
 .tokenomics-rules{
-  min-width: 320px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -2135,18 +2134,48 @@ html, body{
 .tokenomics-split__row span{ flex: 1; }
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
-@media (max-width: 420px){
-  /* Keep Tokenomics horizontal. If it doesn't fit, user can scroll horizontally. */
-  .tokenomics-wrap{ overflow-x: auto; }
-  .tokenomics-ring{ min-height: auto; }
-  .tokenomics-stage{ width: 240px; max-width: 240px; }
-  .trust-ring{ width: 240px; max-width: 240px; }
-  .tokenomics-notes-stack{ width: 220px; max-width: 220px; margin-right: -10px; }
-  .tokenomics-mascot-card{ width: 220px; max-width: 220px; }
-  .tokenomics-unibox{ width: 220px; max-width: 220px; }
-  .tokenomics-rules{ min-width: 300px; }
+/* Tokenomics: keep the 3-part layout horizontal (Left message box + Ring + Right panel)
+   even on narrow viewports.
+   NOTE: Previously we collapsed to 1 column under 560px, which is exactly what the
+   user is reporting as "apilado". We keep it horizontal and let it compress.
+*/
+@media (max-width: 560px){
+  #tokenomics .tokenomics-wrap{
+    grid-template-columns: 1.05fr 0.95fr; /* keep 2 columns */
+    align-items: end;
+  }
+
+  #tokenomics .tokenomics-ring{ min-height: 380px; }
+
+  /* Keep message box and ring side-by-side (no column stacking) */
+  #tokenomics .tokenomics-ringrow{
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Gentle compression so the row still fits */
+  #tokenomics .tokenomics-notes-stack{ width: 240px; max-width: 240px; margin-right: -10px; }
+  #tokenomics .tokenomics-mascot-card{ width: 240px; max-width: 240px; }
+  #tokenomics .tokenomics-unibox{ width: 240px; max-width: 240px; min-height: 380px; }
+  #tokenomics .tokenomics-stage{ width: 280px; max-width: 280px; }
+  #tokenomics .trust-ring{ width: 280px; max-width: 280px; padding: 14px; }
+
+  /* Keep right panel in 2 columns (never collapse to 1) */
+  #tokenomics .tokenomics-rules{ grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 
+@media (max-width: 420px){
+  /* Extreme small: allow the whole tokenomics row to be scrollable instead of stacking */
+  #tokenomics .tokenomics-wrap{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  #tokenomics .tokenomics-wrap::-webkit-scrollbar{ height: 6px; }
+  #tokenomics .tokenomics-wrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.14); border-radius: 999px; }
+}
 
 
 /* Tokenomics micro-tune V35: bring left whispers 2px closer to ring */
@@ -2969,16 +2998,4 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
     rgba(255,255,255,0.02)
   );
   border-radius: 10px;
-}
-
-@media (max-width: 860px){
-  .tokenomics-notes-stack{ flex-basis: 220px; width: 220px; max-width: 220px; margin-right: -10px; }
-  .tokenomics-unibox{ width: 220px; max-width: 220px; }
-  .tokenomics-mascot-card{ width: 220px; max-width: 220px; }
-  .tokenomics-stage{ width: 240px; max-width: 240px; }
-  .trust-ring{ width: 240px; max-width: 240px; }
-  .tokenomics-rules{ min-width: 280px; gap: 10px; }
-  .tokenomics-rule{ padding: 10px 10px; }
-  .tokenomics-rule__top{ font-size: 14px; }
-  .tokenomics-rules .small{ font-size: 12px; }
 }
