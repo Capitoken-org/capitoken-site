@@ -1790,11 +1790,21 @@ html, body{
    ===================================================== */
 
 .tokenomics-wrap{
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 12px;
-  /* Bottom-align both columns so we can create more air above the first bubble */
   align-items: end;
+  /* Keep the three blocks always horizontal.
+     On narrow screens, allow horizontal scroll instead of stacking. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.tokenomics-wrap > *{
+  flex: 0 0 auto;
 }
 
 /* Tokenomics: supply quick facts bar (from Whitepaper Key Facts) */
@@ -2136,19 +2146,17 @@ html, body{
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
 @media (max-width: 420px){
-  .tokenomics-wrap{ grid-template-columns: 1fr; }
+  /* Keep Tokenomics horizontal. If it doesn't fit, user can scroll horizontally. */
+  .tokenomics-wrap{ overflow-x: auto; }
   .tokenomics-ring{ min-height: auto; }
-  .tokenomics-stage{ width: 280px; max-width: 280px; }
-  .trust-ring{ width: 280px; max-width: 100%; }
-  .tokenomics-ringrow{ flex-direction: column; align-items: center; margin-left: 0; }
-  .tokenomics-notes-stack{ width: 270px; max-width: 270px; }
-  .whisper--stack{ width: 100%; max-width: 100%; }
-  .whisper--stack .whisper__text{ transform: translateX(0); }
-  .whisper--stack::before{ opacity: 0.12; }
+  .tokenomics-stage{ width: 240px; max-width: 240px; }
+  .trust-ring{ width: 240px; max-width: 240px; }
+  .tokenomics-notes-stack{ width: 220px; max-width: 220px; margin-right: -10px; }
+  .tokenomics-mascot-card{ width: 220px; max-width: 220px; }
+  .tokenomics-unibox{ width: 220px; max-width: 220px; }
+  .tokenomics-rules{ min-width: 300px; }
 }
 
-@media (max-width: 520px){
-  .tokenomics-rules{ grid-template-columns: 1fr; }
 }
 
 
