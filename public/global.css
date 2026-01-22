@@ -213,7 +213,7 @@ section{padding:24px 0}
   transition:width .35s ease;
 }
 
-@media (max-width: 720px){
+@media (max-width: 980px){
   .hero-stats{grid-template-columns:repeat(2, minmax(0, 1fr));max-width:680px}
 }
 @media (max-width: 520px){
@@ -1838,8 +1838,8 @@ html, body{
 /* Stage keeps ring size stable and positions notes outside (crisp, no blur). */
 .tokenomics-stage{
   position: relative;
-  width: 320px;
-  max-width: 320px;
+  width: 360px;
+  max-width: 360px;
   aspect-ratio: 1 / 1;
 }
 
@@ -1857,8 +1857,8 @@ html, body{
    Active bubble "slides right" when the matching ring segment is hovered.
 */
 .tokenomics-notes-stack{
-  width: 270px;
-  max-width: 270px;
+  width: 290px;
+  max-width: 290px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1866,98 +1866,81 @@ html, body{
   margin-right: -12px;
 }
 
+/* Mascot + Single Message Box (unified) */
 .tokenomics-mascot-card{
-  width: 270px;
-  max-width: 270px;
-  min-height: 92px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-
-  /* invisible container (only the mascot should be visible) */
+  width: 290px;
+  max-width: 290px;
+  height: 110px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background: transparent;
-  border: none;
+  border: 0;
   box-shadow: none;
-  backdrop-filter: none;
+  padding: 0;
+  margin: 0;
 }
-
 .tokenomics-mascot-img{
-  width: 92px;
-  height: 92px;
+  width: 86px;
+  height: 86px;
   object-fit: contain;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,0.35));
 }
 
-
-/* === Tokenomics: Single unified message box (left) ===
-   Goal: Keep the original layout (mascot above + tall slot area),
-   but use ONE message box. Messages stay hidden and slide in based on
-   tokenomics-ringrow[data-active="..."] (same triggers as before).
-*/
+/* Big unified message box (replaces multiple visible boxes) */
 .tokenomics-unibox{
+  width: 290px;
+  max-width: 290px;
+  min-height: 420px; /* reach bottom beside the ring */
+  border-radius: 18px;
+  background: rgba(0,0,0,0.28);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 18px 55px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.06);
   position: relative;
-  width: 270px;
-  max-width: 270px;
-  border-radius: 16px;
-
-  /* single visible big message box */
-  background: rgba(0,0,0,.16);
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.14);
-
   overflow: hidden;
-
-  /* make it tall (reach the bottom of the left column) */
-  min-height: 420px;
-  display: flex;
-  align-items: flex-start;
+  padding: 14px 14px;
 }
 
-.tokenomics-unibox__slots{ display:none; }
-
-.tokenomics-unibox__slots .tok-slot{
-  height: 44px;
-  border-radius: 14px;
-  background: rgba(0,0,0,.16);
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.14);
-}
-
-/* Message overlay (only one visible at a time) */
-.tok-msg{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  padding: 22px 22px;
-
-  pointer-events: none;
-  opacity: 0;
-  transform: translateX(-420px);
-  transition: transform .28s ease, opacity .18s ease;
-}
-
+/* Messages live inside the same box; only active one slides in */
+.tok-msg{ position: absolute; inset: 14px; display: grid; align-content: start; }
 .tok-msg__text{
-  display: block;
-  font-size: 17.5px;
-  line-height: 1.4;
-  color: rgba(255,255,255,.92);
-  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+  display:block;
+  font-size: 14px;
+  line-height: 1.35;
+  color: rgba(242,245,244,0.92);
+  transform: translateX(-420px);
+  transition: transform .28s ease;
 }
 
-/* Hide everything when nothing is active */
-/* Reveal only the active message (same state machine as before) */
-.tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"],
-.tokenomics-ringrow[data-active="ops"] .tok-msg[data-whisper="ops"],
-.tokenomics-ringrow[data-active="growth"] .tok-msg[data-whisper="growth"],
-.tokenomics-ringrow[data-active="ambient"] .tok-msg[data-whisper="ambient"],
-.tokenomics-ringrow[data-active="fixed"] .tok-msg[data-whisper="fixed"],
-.tokenomics-ringrow[data-active="taxes"] .tok-msg[data-whisper="taxes"],
-.tokenomics-ringrow[data-active="renounce"] .tok-msg[data-whisper="renounce"] {
-  opacity: 1;
+/* Safety reset: hide all unless a state is active */
+.tokenomics-ringrow[data-active="none"] .tok-msg__text{
+  transform: translateX(-420px) !important;
+}
+
+/* Veil overlay to make "hidden" feel intentional */
+.tokenomics-unibox::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.40) 42%, rgba(0,0,0,0.0) 82%);
+  opacity: 0.65;
+  pointer-events:none;
+}
+
+/* Reveal only the active message */
+.tokenomics-ringrow[data-active="community"] .tok-msg[data-whisper="community"] .tok-msg__text,
+.tokenomics-ringrow[data-active="ops"] .tok-msg[data-whisper="ops"] .tok-msg__text,
+.tokenomics-ringrow[data-active="growth"] .tok-msg[data-whisper="growth"] .tok-msg__text,
+.tokenomics-ringrow[data-active="ambient"] .tok-msg[data-whisper="ambient"] .tok-msg__text,
+.tokenomics-ringrow[data-active="fixed"] .tok-msg[data-whisper="fixed"] .tok-msg__text,
+.tokenomics-ringrow[data-active="taxes"] .tok-msg[data-whisper="taxes"] .tok-msg__text,
+.tokenomics-ringrow[data-active="renounce"] .tok-msg[data-whisper="renounce"] .tok-msg__text{
   transform: translateX(0);
 }
+
 
 .whisper--stack{
   width: 290px;
@@ -2014,7 +1997,7 @@ html, body{
   --p-growth: 1;
 
   position: relative;
-  width: 340px;
+  width: 360px;
   aspect-ratio: 1 / 1;
   border-radius: 999px;
   padding: 16px;
@@ -2135,80 +2118,19 @@ html, body{
 .tokenomics-split__row strong{ width: 56px; text-align: right; }
 
 @media (max-width: 980px){
-  /* HARD RULE: keep Tokenomics horizontal (do NOT collapse to 1 column) */
-  #tokenomics .tokenomics-wrap{
-    grid-template-columns: 1.05fr 0.95fr;
-    align-items: end;
-  }
-
-  /* Allow grid children to actually shrink inside the row (critical for non-stacking) */
-  #tokenomics .tokenomics-ring,
-  #tokenomics .tokenomics-rules{
-    min-width: 0;
-  }
-
-  /* Keep message box left + ring right (no vertical stacking) */
-  #tokenomics .tokenomics-ringrow{
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  /* Fit widths (approved sizing baseline) */
-  #tokenomics .tokenomics-notes-stack{ width: 240px; max-width: 240px; margin-right: -10px; }
-  #tokenomics .tokenomics-mascot-card{ width: 240px; max-width: 240px; }
-  #tokenomics .tokenomics-unibox{ width: 240px; max-width: 240px; min-height: 380px; }
-  #tokenomics .tokenomics-stage{ width: 280px; max-width: 280px; }
-  #tokenomics .trust-ring{ width: 280px; max-width: 280px; padding: 14px; }
-
-  /* Right panel stays 2 columns and can shrink */
-  #tokenomics .tokenomics-rules{ grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
-  #tokenomics .tokenomics-rule,
-  #tokenomics .tokenomics-split{ min-width: 0; }
+  .tokenomics-wrap{ grid-template-columns: 1fr; }
+  .tokenomics-ring{ min-height: auto; }
+  .tokenomics-stage{ width: 340px; max-width: 100%; }
+  .trust-ring{ width: 340px; max-width: 100%; }
+  .tokenomics-ringrow{ flex-direction: column; align-items: center; margin-left: 0; }
+  .tokenomics-notes-stack{ width: 100%; max-width: 520px; }
+  .whisper--stack{ width: 100%; max-width: 100%; }
+  .whisper--stack .whisper__text{ transform: translateX(0); }
+  .whisper--stack::before{ opacity: 0.12; }
 }
 
-/* Tokenomics: keep the 3-part layout horizontal (Left message box + Ring + Right panel)
-   even on narrow viewports.
-   NOTE: Previously we collapsed to 1 column under 560px, which is exactly what the
-   user is reporting as "apilado". We keep it horizontal and let it compress.
-*/
-@media (max-width: 560px){
-  #tokenomics .tokenomics-wrap{
-    grid-template-columns: 1.05fr 0.95fr; /* keep 2 columns */
-    align-items: end;
-  }
-
-  #tokenomics .tokenomics-ring{ min-height: 380px; }
-
-  /* Keep message box and ring side-by-side (no column stacking) */
-  #tokenomics .tokenomics-ringrow{
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  /* Gentle compression so the row still fits */
-  #tokenomics .tokenomics-notes-stack{ width: 240px; max-width: 240px; margin-right: -10px; }
-  #tokenomics .tokenomics-mascot-card{ width: 240px; max-width: 240px; }
-  #tokenomics .tokenomics-unibox{ width: 240px; max-width: 240px; min-height: 380px; }
-  #tokenomics .tokenomics-stage{ width: 280px; max-width: 280px; }
-  #tokenomics .trust-ring{ width: 280px; max-width: 280px; padding: 14px; }
-
-  /* Keep right panel in 2 columns (never collapse to 1) */
-  #tokenomics .tokenomics-rules{ grid-template-columns: 1fr 1fr; gap: 10px; }
-}
-
-@media (max-width: 420px){
-  /* Extreme small: allow the whole tokenomics row to be scrollable instead of stacking */
-  #tokenomics .tokenomics-wrap{
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 6px;
-  }
-  #tokenomics .tokenomics-wrap::-webkit-scrollbar{ height: 6px; }
-  #tokenomics .tokenomics-wrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.14); border-radius: 999px; }
+@media (max-width: 520px){
+  .tokenomics-rules{ grid-template-columns: 1fr; }
 }
 
 
@@ -2415,7 +2337,7 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 .rm-obj{
   font-size:14px;
   color: rgba(255,255,255,0.78);
-  line-height: 1.4;
+  line-height:1.35;
 }
 .rm-obj-label{
   color: rgba(255,255,255,0.55);
@@ -2539,66 +2461,6 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 .social__svg svg{width:15px;height:15px;fill:rgba(255,255,255,0.9);display:block;}
 .social__img{width:18px;height:18px;border-radius:4px;display:block;}
 .social__icon.is-disabled{opacity:.35;pointer-events:none;}
-
-/* Renounce countdown (Navbar) */
-.nav__renounce{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:6px 10px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
-  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
-  white-space:nowrap;
-}
-.renounce__label{
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color: rgba(242,201,76,0.95); /* brand amber */
-}
-.renounce__timer{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.renounce__box{
-  width:54px;
-  padding:6px 8px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.22);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  line-height:1.05;
-}
-.renounce__num{
-  font-size:16px;
-  font-weight:900;
-  color: rgba(74, 222, 128, 0.95); /* mint/green like counters */
-}
-.renounce__unit{
-  margin-top:3px;
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:.08em;
-  opacity:.75;
-}
-
-/* Responsive: collapse label + tighten boxes */
-@media (max-width: 980px){
-  .nav__renounce{gap:8px; padding:6px 8px;}
-  .renounce__box{width:50px;}
-  .renounce__label{display:none;}
-}
-@media (max-width: 720px){
-  .nav__renounce{display:none;} /* keep mobile nav clean */
-}
-
 .nav__clock{
   white-space:nowrap;
   padding:6px 12px;

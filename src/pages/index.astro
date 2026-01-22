@@ -1,16 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const BASE = import.meta.env.BASE_URL || "/";
-const withBase = (p) => {
-  const clean = String(p || "");
-  return clean.startsWith("/") ? `${BASE}${clean.slice(1)}` : `${BASE}${clean}`;
-};
-
-
 const TITLE = "Capitoken (CAPI) — Official Website";
 const DESC =
   "Capitoken official website — verified links, live-ready launch panel, tokenomics, roadmap, and community updates.";
+
+const BASE_URL = import.meta.env.BASE_URL || "/";
+const withBase = (path) => (BASE_URL.endsWith("/") ? BASE_URL.slice(0, -1) : BASE_URL) + path;
 
 // >>> EDITA AQUÍ cuando tengas data real <<<
 const TOKEN_ADDRESS = "0xF2dA6C9B945c688A52D3B72340E622014920de6a"; // "0x..." (ETH mainnet)
@@ -542,7 +538,7 @@ function iconCandidates(it){
         <span class="tokenomics-supplybar__meta">ERC‑20</span>
       </div>
 
-      <div class="tokenomics-wrap">
+      <div class="tokenomics-wrap" style="margin-top:16px;">
         <!-- TRUST RING (narrative) -->
         <div class="tokenomics-ring" id="tokenomicsNarrative">
           <!-- Ring + narrative notes in one stage:
@@ -552,11 +548,11 @@ function iconCandidates(it){
           -->
           <div class="tokenomics-ringrow" id="tokenomicsRingRow" data-active="none">
             <div class="tokenomics-notes-stack" aria-hidden="true">
-              <div class="tokenomics-mascot-card" aria-label="Capitoken mascot">
+              <div class="tokenomics-mascot-card" aria-hidden="true">
                 <img class="tokenomics-mascot-img" src={withBase("/img/capi-cartoon.png")} alt="Capitoken mascot" loading="lazy" decoding="async" />
               </div>
-                            <div class="tokenomics-unibox" aria-hidden="true">
-                <!-- One message box (messages slide-in based on data-active) -->
+
+              <div class="tokenomics-unibox" aria-hidden="true">
                 <div class="tok-msg" data-whisper="community"><span class="tok-msg__text">🦫 No whales here. Just chill capis.</span></div>
                 <div class="tok-msg" data-whisper="ops"><span class="tok-msg__text">🦫 Yes, devs eat too. But just a snack.</span></div>
                 <div class="tok-msg" data-whisper="growth"><span class="tok-msg__text">🦫 Marketing = memes, not Lambos.</span></div>
@@ -565,7 +561,6 @@ function iconCandidates(it){
                 <div class="tok-msg" data-whisper="taxes"><span class="tok-msg__text">🦫 No hidden taxes. Clean swaps only.</span></div>
                 <div class="tok-msg" data-whisper="renounce"><span class="tok-msg__text">🦫 Token keys go to the river. Verifiable on-chain.</span></div>
               </div>
-</div>
             </div>
 
             <div class="tokenomics-stage">
