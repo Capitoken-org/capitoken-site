@@ -552,7 +552,7 @@ body::before{
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image: url("/capitoken-site/brand/bg-capy.webp");
+  background-image: url("/bg-capy.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
