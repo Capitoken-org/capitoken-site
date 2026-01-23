@@ -599,7 +599,12 @@ function iconCandidates(it){
             <div class="tokenomics-split__row"><span>🟢 Community</span><strong>97%</strong></div>
             <div class="tokenomics-split__row"><span>🟡 Ops / Dev</span><strong>2%</strong></div>
             <div class="tokenomics-split__row"><span>🟠 Growth / Marketing</span><strong>1%</strong></div>
-            <div class="small" style="margin-top:10px;">Tip: Treat this page as the truth source. If it’s not listed here, assume it’s not official.</div>
+            
+            <div class="tokenomics-split__actions" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+              <a class="btn btn--primary" id="btnDevWallet" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">View Dev Wallet</a>
+              <a class="btn btn--primary" id="btnMarketingWallet" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">View Marketing Wallet</a>
+            </div>
+<div class="small" style="margin-top:10px;">Tip: Treat this page as the truth source. If it’s not listed here, assume it’s not official.</div>
           </div>
         </div>
       </div>
@@ -712,7 +717,51 @@ function iconCandidates(it){
       if(row) row.dataset.active = 'none';
       setSeg('community');
     })();
-  </script>
+  
+    // Tokenomics: verify allocation wallets (Dev / Marketing) via official-registry.json
+    (function(){
+      const devBtn = document.getElementById('btnDevWallet');
+      const mktBtn = document.getElementById('btnMarketingWallet');
+      if (!devBtn || !mktBtn) return;
+
+      // Derive BASE from the global.css link (works on root domain + GitHub Pages subpath)
+      const cssLink = document.querySelector('link[href*="global.css"]');
+      const cssHref = cssLink ? (cssLink.getAttribute('href') || '') : '';
+      const base = cssHref && cssHref.includes('global.css')
+        ? cssHref.split('global.css')[0].replace(/\?.*$/, '')
+        : (document.querySelector('base')?.getAttribute('href') || '/');
+
+      const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+
+      fetch(cleanBase + '/official-registry.json', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(reg => {
+          const alloc = reg && reg.allocations ? reg.allocations : {};
+          const dev = (alloc.devWallet || '').trim();
+          const mkt = (alloc.marketingWallet || '').trim();
+
+          const setBtn = (btn, addr, label) => {
+            if (!addr || !addr.startsWith('0x') || addr.length < 10) {
+              btn.setAttribute('aria-disabled', 'true');
+              btn.removeAttribute('href');
+              btn.textContent = label + ' (TBA)';
+              return;
+            }
+            btn.setAttribute('href', 'https://etherscan.io/address/' + addr);
+            btn.setAttribute('aria-disabled', 'false');
+            btn.textContent = 'View ' + label;
+          };
+
+          setBtn(devBtn, dev, 'Dev Wallet');
+          setBtn(mktBtn, mkt, 'Marketing Wallet');
+        })
+        .catch(() => {
+          // Keep buttons disabled if registry can't be loaded
+          devBtn.setAttribute('aria-disabled', 'true');
+          mktBtn.setAttribute('aria-disabled', 'true');
+        });
+    })();
+</script>
   </section>
 
   <hr class="hr" />

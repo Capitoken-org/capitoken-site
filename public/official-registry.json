@@ -1,7 +1,7 @@
 {
   "project": "Capitoken",
   "version": "1.0.1",
-  "updatedAt": "2026-01-17",
+  "updatedAt": "2026-01-23T00:26:34Z",
   "officialDomain": "www.capitoken.org",
   "allowedDomains": [
     "www.capitoken.org",
@@ -57,5 +57,9 @@
   },
   "renounce": {
     "targetUtcIso": "2026-04-17T19:17:00Z"
+  },
+  "allocations": {
+    "devWallet": "0x0556050d95d3f2fe1e1e08e80525f5d6b722525a",
+    "marketingWallet": "0xfdfc202f706049222d65d0bb608825b23f9c510c"
   }
 }
