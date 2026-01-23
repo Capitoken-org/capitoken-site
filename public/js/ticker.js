@@ -8,9 +8,23 @@
   const clock = document.getElementById("navClock");
 
   const REFRESH_MS = 60000;
-  const COIN_LIMIT = 10;
 
-  const capi = { symbol: "CAPI", price: null };
+  // Fixed order (user-approved): BTC / ETH / BNB / XRP / SOL / TRX / ADA / BCH / XMR / LINK + CAPI
+  const FIXED = [
+    { id: "bitcoin", symbol: "BTC" },
+    { id: "ethereum", symbol: "ETH" },
+    { id: "binancecoin", symbol: "BNB" },
+    { id: "ripple", symbol: "XRP" },
+    { id: "solana", symbol: "SOL" },
+    { id: "tron", symbol: "TRX" },
+    { id: "cardano", symbol: "ADA" },
+    { id: "bitcoin-cash", symbol: "BCH" },
+    { id: "monero", symbol: "XMR" },
+    { id: "chainlink", symbol: "LINK" },
+  ];
+
+  // CAPI keeps its special styling (★) and can stay as placeholder until you wire live pricing
+  const capi = { symbol: "CAPI", price: null, change24h: null };
 
   function fmt(n) {
     if (n === null || n === undefined || isNaN(n)) return "USD —";
@@ -20,37 +34,49 @@
     })}`;
   }
 
-  async function fetchTop() {
-    // Pull top coins by market cap directly (keeps the list current without hardcoding IDs).
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${COIN_LIMIT}&page=1&sparkline=false&price_change_percentage=24h`;
+  async function fetchFixed() {
+    const ids = FIXED.map((c) => c.id).join(",");
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(
+      ids
+    )}&vs_currencies=usd&include_24hr_change=true`;
+
     const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error("coingecko markets failed");
+    if (!r.ok) throw new Error("coingecko simple price failed");
     const j = await r.json();
-    if (!Array.isArray(j)) throw new Error("coingecko markets shape invalid");
-    return j
-      .slice(0, COIN_LIMIT)
-      .map((c) => ({
-        symbol: String(c?.symbol || "").toUpperCase(),
-        price: c?.current_price ?? null,
-        change24h: c?.price_change_percentage_24h ?? null,
-      }));
+    if (!j || typeof j !== "object")
+      throw new Error("coingecko simple price shape invalid");
+
+    return FIXED.map((c) => {
+      const row = j[c.id] || {};
+      return {
+        symbol: c.symbol,
+        price: typeof row.usd === "number" ? row.usd : null,
+        change24h:
+          typeof row.usd_24h_change === "number" ? row.usd_24h_change : null,
+      };
+    });
   }
 
   function build(items) {
     const frag = document.createDocumentFragment();
     items.forEach((it, idx) => {
       const span = document.createElement("span");
-      const isCapi = (it.symbol || '').toUpperCase() === 'CAPI';
+      const isCapi = (it.symbol || "").toUpperCase() === "CAPI";
       span.className = isCapi
-        ? 'ticker__item ticker__item--capi'
-        : (idx % 2 === 0 ? 'ticker__item' : 'ticker__item ticker__item--alt');
-      const ch = (it && typeof it.change24h === "number" && isFinite(it.change24h))
-        ? `${it.change24h >= 0 ? "+" : ""}${it.change24h.toFixed(2)}%`
-        : null;
+        ? "ticker__item ticker__item--capi"
+        : idx % 2 === 0
+        ? "ticker__item"
+        : "ticker__item ticker__item--alt";
+
+      const ch =
+        it && typeof it.change24h === "number" && isFinite(it.change24h)
+          ? `${it.change24h >= 0 ? "+" : ""}${it.change24h.toFixed(2)}%`
+          : null;
 
       span.textContent = isCapi
         ? `★ ${it.symbol} = ${fmt(it.price)}`
         : `${it.symbol} = ${fmt(it.price)}${ch ? ` (${ch})` : ""}`;
+
       frag.appendChild(span);
 
       if (idx < items.length - 1) {
@@ -65,20 +91,16 @@
 
   function setMarquee() {
     if (!track || !viewport) return;
-    // seamless loop: start at 0 so the clone can take over without a visible reset
     const start = 0;
     const gap = 28;
 
-    // width of a single run (el + separators)
     const single = el.scrollWidth;
     const end = -(single + gap);
 
     track.style.setProperty("--marquee-start", `${start}px`);
     track.style.setProperty("--marquee-end", `${end}px`);
 
-    // restart animation reliably
     track.classList.remove("is-animating");
-    // force reflow
     void track.offsetWidth;
     track.classList.add("is-animating");
   }
@@ -98,44 +120,29 @@
 
   async function tick() {
     try {
-      const top = await fetchTop();
-      render([...top, capi]);
+      const fixed = await fetchFixed();
+      render([...fixed, capi]);
     } catch {
       // keep last values
       setMarquee();
     }
   }
 
-  // Local clock
+  // Local clock (kept as-is)
   if (clock) {
-    const pad2 = (n) => String(n).padStart(2, "0");
-    const tzFmt = new Intl.DateTimeFormat("en-US", { timeZoneName: "short" });
-    const dowFmt = new Intl.DateTimeFormat("en-US", { weekday: "short" });
-    const monFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
-
-    const paint = () => {
-      const d = new Date();
-      const h = pad2(d.getHours());
-      const m = pad2(d.getMinutes());
-      const s = pad2(d.getSeconds());
-
-      // Example: "Wed • Jan 21" and timezone suffix "GMT-6" (varies by user locale).
-      const dow = dowFmt.format(d);
-      const mon = monFmt.format(d);
-      const day = d.getDate();
-      const tz = (tzFmt.formatToParts(d).find((p) => p.type === "timeZoneName")?.value) || "";
-
-      clock.innerHTML = `
-        <div class="clock__time">${h}:${m}<span class="clock__sec">:${s}</span></div>
-        <div class="clock__date">${dow} • ${mon} ${day}<span class="clock__tz"> • ${tz}</span></div>
-      `.trim();
+    const fmtTime = () => {
+      try {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        clock.textContent = `${hh}:${mm}:${ss}`;
+      } catch {}
     };
-
-    paint();
-    setInterval(paint, 1000);
+    fmtTime();
+    setInterval(fmtTime, 1000);
   }
 
   tick();
   setInterval(tick, REFRESH_MS);
-  window.addEventListener("resize", () => setMarquee());
 })();
