@@ -27,6 +27,16 @@ const year = 2025;
     <meta name="description" content={description} />
     <title>{title}</title>
 
+    <!-- Google Analytics 4 (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KK8HRNV8ZZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // Privacy-friendly baseline (IP anonymization)
+      gtag('config', 'G-KK8HRNV8ZZ', { anonymize_ip: true });
+    </script>
+
     <link rel="icon" href={withBase("/favicon.ico")} />
     <link rel="stylesheet" href={withBase(`/global.css?v=${CSS_VERSION}`)} />
   </head>
@@ -40,10 +50,10 @@ const year = 2025;
     <footer class="footer">
       <div class="container">
         <div class="footer__disclaimer">
-  <p><strong>Disclaimer:</strong> Capitoken (CAPI) is an experimental crypto asset and community project. Capitoken.org is an informational website only. We are <strong>not</strong> a financial institution, bank, broker, exchange, custodian, money-services business, or investment adviser. Nothing on this website constitutes (or should be construed as) financial, legal, tax, or investment advice.</p>
-  <p>No content on this website is an offer, solicitation, recommendation, endorsement, or promise of returns. Crypto assets are highly volatile and involve significant risk — you may lose <strong>all</strong> funds. You are solely responsible for conducting your own research (DYOR) and for any decisions, transactions, or interactions with smart contracts and third-party services.</p>
-  <p>All information is provided “as is” without warranties of any kind. Third-party links (including explorers, DEXs, and social platforms) are provided for convenience; we do not control or guarantee their availability, accuracy, or security.</p>
-</div>
+          <p><strong>Disclaimer:</strong> Capitoken (CAPI) is an experimental crypto asset and community project. Capitoken.org is an informational website only. We are <strong>not</strong> a financial institution, bank, broker, exchange, custodian, money-services business, or investment adviser. Nothing on this website constitutes (or should be construed as) financial, legal, tax, or investment advice.</p>
+          <p>No content on this website is an offer, solicitation, recommendation, endorsement, or promise of returns. Crypto assets are highly volatile and involve significant risk — you may lose <strong>all</strong> funds. You are solely responsible for conducting your own research (DYOR) and for any decisions, transactions, or interactions with smart contracts and third-party services.</p>
+          <p>All information is provided “as is” without warranties of any kind. Third-party links (including explorers, DEXs, and social platforms) are provided for convenience; we do not control or guarantee their availability, accuracy, or security.</p>
+        </div>
         <div class="footer__copyright">© {year} Capitoken.org • All rights reserved</div>
       </div>
     </footer>
@@ -56,7 +66,7 @@ const year = 2025;
     <script type="module" src={withBase(`/js/capi-dex.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/capi-ui.js?v=${JS_VERSION}`)}></script>
     <script type="module" src={withBase(`/js/renounce-countdown.js?v=${JS_VERSION}`)}></script>
-      <script type="module" src={withBase(`/js/ticker.js?v=${JS_VERSION}`)}></script>
+    <script type="module" src={withBase(`/js/ticker.js?v=${JS_VERSION}`)}></script>
 
     <!--
       Anchor offset fix:
@@ -94,5 +104,5 @@ const year = 2025;
         });
       })();
     </script>
-</body>
+  </body>
 </html>
