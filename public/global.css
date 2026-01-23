@@ -2910,3 +2910,71 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   );
   border-radius: 10px;
 }
+
+
+/* --- NAV: Renounce Countdown (Token Contract) --- */
+#navRenounce{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 10px;
+  border-radius:14px;
+  background: rgba(0,0,0,0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+#navRenounce .renounce__title{
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .85;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
+#navRenounce .renounce__label{
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+#navRenounce .renounce__timer{
+  display:flex;
+  gap:6px;
+  align-items:stretch;
+}
+
+#navRenounce .renounce__box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:4px 8px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  min-width: 44px;
+}
+
+#navRenounce .renounce__num{
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+#navRenounce .renounce__unit{
+  font-size: 10px;
+  letter-spacing: .08em;
+  opacity: .85;
+  margin-top: 2px;
+}
+
+/* On smaller widths, keep it compact */
+@media (max-width: 720px){
+  #navRenounce .renounce__title{ display:none; }
+  #navRenounce{ padding:5px 8px; gap:8px; }
+  #navRenounce .renounce__box{ min-width: 40px; padding:4px 7px; }
+}
