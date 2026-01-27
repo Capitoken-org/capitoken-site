@@ -1,3 +1,4 @@
+// STAGING_SOCIALS_UPDATED 2026-01-27 21:16 UTC
 // Capitoken runtime config (public)
 // Load this in the browser BEFORE trust-engine/market-engine.
 // You only need to edit RPC_HTTP.
