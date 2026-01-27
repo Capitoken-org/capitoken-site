@@ -36,15 +36,15 @@ const faviconSrc = (href) => {
 const svgDataUri = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg || "")}`;
 
 const socials = [
-  { key: "x",  label: "X",         href: "https://x.com/Capitokenorg", enabled: true },
-  { key: "tg", label: "Telegram",  href: "https://t.me/CapitokenOfficial", enabled: true },
-	  { key: "dc", label: "Discord",   href: "https://discord.gg/XVHVaVWPq5", enabled: true },
-	  { key: "rd", label: "Reddit",    href: "https://www.reddit.com/user/CapiToken/", enabled: true },
-  { key: "yt", label: "YouTube",   href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true },
-  { key: "md", label: "Medium",    href: "https://medium.com/@info_43649", enabled: true },
-	  { key: "ig", label: "Instagram", href: "https://www.instagram.com/capitoken.official/", enabled: true },
-	  { key: "fb", label: "Facebook",  href: "https://www.facebook.com/Capitoken.official/", enabled: true },
-	  { key: "tt", label: "TikTok",    href: "https://www.tiktok.com/@capitoken.official/", enabled: true },
+  { key: "x",  label: "X",         href: "https://x.com/Capitokenorg", enabled: true, icon: localSocialIcon("x") },
+  { key: "tg", label: "Telegram",  href: "https://t.me/CapitokenOfficial", enabled: true, icon: localSocialIcon("tg") },
+  { key: "dc", label: "Discord",   href: "https://discord.gg/XVHVaVWPq5", enabled: true, icon: localSocialIcon("dc") },
+  { key: "rd", label: "Reddit",    href: "https://www.reddit.com/user/CapiToken/", enabled: true, icon: localSocialIcon("rd") },
+  { key: "yt", label: "YouTube",   href: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ", enabled: true, icon: localSocialIcon("yt") },
+  { key: "md", label: "Medium",    href: "https://medium.com/@info_43649", enabled: true, icon: localSocialIcon("md") },
+  { key: "ig", label: "Instagram", href: "https://www.instagram.com/capitoken.official/", enabled: true, icon: localSocialIcon("ig") },
+  { key: "fb", label: "Facebook",  href: "https://www.facebook.com/Capitoken.official/", enabled: true, icon: localSocialIcon("fb") },
+  { key: "tt", label: "TikTok",    href: "https://www.tiktok.com/@capitoken.official/", enabled: true, icon: localSocialIcon("tt") },
 ];
 
 
