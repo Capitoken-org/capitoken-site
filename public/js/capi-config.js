@@ -42,6 +42,18 @@
     TOKENS: {
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     },
+    // Official social links (leave empty string if not available yet)
+    SOCIALS: {
+  x: "https://x.com/Capitokenorg",
+  telegram: "https://t.me/CapitokenOfficial",
+  youtube: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ",
+  medium: "https://medium.com/@info_43649",
+  reddit: "https://www.reddit.com/user/CapiToken/",
+  tiktok: "https://www.tiktok.com/@capitoken.official",
+  facebook: "https://www.facebook.com/Capitoken.official/",
+  instagram: "https://www.instagram.com/capitoken.official/",
+	  discord: "https://discord.gg/XVHVaVWPq5"
+},
   };
 
   // Public config objects used by the engines
