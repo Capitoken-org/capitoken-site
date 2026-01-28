@@ -2993,3 +2993,71 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 .update-foot{margin-top:10px;display:flex;justify-content:flex-end}
 .update-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;text-decoration:none;font-weight:800;font-size:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.92)}
 .update-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.20)}
+
+/* ===== CAPI Pulse (Community Snapshot) ===== */
+.pulse-chart{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  border:1px dashed rgba(255,255,255,.18);
+  background: rgba(0,0,0,.18);
+}
+.pulse-chart svg{
+  width:100%;
+  height:60px;
+  display:block;
+}
+#pulseLiqArea{
+  fill: rgba(255,255,255,.08);
+}
+#pulseLiqLine{
+  fill:none;
+  stroke: rgba(255,255,255,.45);
+  stroke-width:2;
+}
+.pulse-chart__caption{
+  margin-top:8px;
+  opacity:.9;
+}
+.pulse-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px 14px;
+  margin-top:12px;
+}
+.pulse-item{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+.pulse-item .k{
+  font-size:12px;
+  letter-spacing:.02em;
+  opacity:.85;
+}
+.pulse-item .v{
+  margin-top:4px;
+  font-size:16px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.pulse-item--minor{
+  opacity:.92;
+}
+.delta{
+  font-size:12px;
+  font-weight:800;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.22);
+}
+.delta--up{ border-color: rgba(70, 200, 120, .35); }
+.delta--down{ border-color: rgba(240, 90, 90, .35); }
+.delta--flat{ opacity:.85; }
+@media (max-width: 860px){
+  .pulse-grid{ grid-template-columns: 1fr; }
+}
