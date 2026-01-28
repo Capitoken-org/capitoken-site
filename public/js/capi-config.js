@@ -6,7 +6,7 @@
 (function () {
   const CFG = {
   // Etherscan (optional) — used for holders count. Leave blank to disable holders.
-  ETHERSCAN_API_KEY: '',
+  ETHERSCAN_API_KEY: '1E9EJAEXRU9UPR6Z52DXUYP8JRIMA8MC5H',
   // UI label for Pulse Stage
   PULSE_STAGE_LABEL: 'Live (Early)',
 
