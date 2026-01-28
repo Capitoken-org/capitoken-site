@@ -58,7 +58,7 @@
     // Official Updates (first-party feed)
     // Point this to a GitHub Gist RAW URL containing announcements JSON.
     // If empty or blocked, the site falls back to /public/data/announcements.json.
-    ANNOUNCEMENTS_GIST_URL: "",
+    ANNOUNCEMENTS_GIST_URL: "https://gist.githubusercontent.com/Capitoken-org/fb30847eaea89c2c1861ebcca5f21f77/raw/fd6ee70e93095e4b54e30c63d637189da3cc6b9b/announcements.json",
 
     // Telegram embed (optional): channel username + pinned post ID
     // Example post URL: https://t.me/CapitokenOfficial/1234
