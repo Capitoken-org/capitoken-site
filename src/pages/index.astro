@@ -19,7 +19,7 @@ const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para m
 
 const stats = [
   { label: "Chain", value: "Ethereum Mainnet" },
-  { label: "Status", value: "Deployed (Early stage)" },
+  { label: "Status", value: "Building" },
   { label: "Focus", value: "Community-first" },
   { label: "Symbol", value: "CAPI" },
 ];
@@ -107,7 +107,7 @@ const roadmap = [
           </div>
           <div class="hero-stat">
             <div class="k">Status</div>
-            <div class="v">Deployed (Early stage)</div>
+            <div class="v">Building</div>
           </div>
           <div class="hero-stat">
             <div class="k">Focus</div>
@@ -1141,17 +1141,43 @@ function iconCandidates(it){
 
     function setDexLinks(){
       const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-      if(tokenAddr){
-        const buy = `https://app.uniswap.org/#/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
-        const sell = `https://app.uniswap.org/#/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
-        const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : `https://dexscreener.com/ethereum/${tokenAddr}`;
+      if(!tokenAddr) return;
 
-        const aBuy = $id("buyOnUniswap"); if(aBuy) aBuy.href = buy;
-        const aDex = $id("openDexScreener"); if(aDex) aDex.href = dex;
+      // Prefer the modern Uniswap route (no hash) to avoid some mobile WalletConnect edge-cases.
+      const buyWeb  = `https://app.uniswap.org/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
+      const sellWeb = `https://app.uniswap.org/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
 
-        const r1 = $id("dexWethToCapi"); if(r1) r1.href = buy;
-        const r2 = $id("dexCapiToWeth"); if(r2) r2.href = sell;
+      // Mobile MetaMask deep-link: opens Uniswap inside MetaMask's in-app browser (injected provider),
+      // avoiding the WalletConnect "blank sheet" issue seen on some Android setups.
+      const buyMM  = `https://metamask.app.link/dapp/app.uniswap.org/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
+      const sellMM = `https://metamask.app.link/dapp/app.uniswap.org/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
+
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+      const buy  = isMobile ? buyMM  : buyWeb;
+      const sell = isMobile ? sellMM : sellWeb;
+
+      const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : `https://dexscreener.com/ethereum/${tokenAddr}`;
+
+      const aBuy = $id("buyOnUniswap");
+      if(aBuy){
+        aBuy.href = buy;
+        // Fallback: if MetaMask deep-link doesn't open, user still can trade via regular Uniswap web/app.
+        aBuy.dataset.fallback = buyWeb;
+        aBuy.addEventListener("click", (e)=>{
+          if(!isMobile) return;
+          // If the deep link fails, the page stays visible; open the web route as a backup.
+          setTimeout(()=>{
+            if(document.visibilityState === "visible"){
+              try { window.open(buyWeb, "_blank", "noopener,noreferrer"); } catch {}
+            }
+          }, 1300);
+        }, { passive:true });
       }
+
+      const aDex = $id("openDexScreener"); if(aDex) aDex.href = dex;
+
+      const r1 = $id("dexWethToCapi"); if(r1) r1.href = buy;
+      const r2 = $id("dexCapiToWeth"); if(r2) r2.href = sell;
     }
 
     async function connectInjected(){
