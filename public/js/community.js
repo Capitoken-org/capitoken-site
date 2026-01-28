@@ -154,15 +154,36 @@
     safeSetHref('#updates-discord-btn', discordUrl || 'https://discord.gg/');
   }
 
-  function init() {
+  function waitForCfg(maxMs) {
+    const start = Date.now();
+    return new Promise((resolve) => {
+      (function tick() {
+        const cfg = getCfg();
+        if (cfg && Object.keys(cfg).length) return resolve(cfg);
+        if (Date.now() - start >= maxMs) return resolve(cfg || {});
+        setTimeout(tick, 50);
+      })();
+    });
+  }
+
+  async function init() {
+    // Try to render updates immediately (may fall back to local if config isn't ready yet)
+    loadUpdates();
+
+    // Config may load after this script depending on injection order.
+    const cfg = await waitForCfg(3000);
+
+    // Wire buttons once config is available (or timeout).
     wireButtons();
 
-    const cfg = getCfg();
     const tgChannel = (cfg.TELEGRAM_CHANNEL || '').toString().trim();
     const postId = (cfg.TELEGRAM_PINNED_POST_ID || '').toString().trim();
     injectTelegramEmbed(tgChannel, postId);
 
-    loadUpdates();
+    // If a remote feed exists, refresh updates once more so it can upgrade from fallback to Gist.
+    if ((cfg.ANNOUNCEMENTS_GIST_URL || '').toString().trim()) {
+      loadUpdates();
+    }
   }
 
   if (document.readyState === 'loading') {
