@@ -3,9 +3,11 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
-  const PULSE_VERSION = "snapshot-v1.3";
+  const PULSE_VERSION = "snapshot-v1.4";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
+
+  let lastHoldersErr = "";
 
   const el = (id) => document.getElementById(id);
 
@@ -222,15 +224,27 @@
   }
 
   async function fetchHoldersEtherscan(contract, apiKey) {
-    if (!contract || !apiKey) return null;
+    lastHoldersErr = "";
+    if (!contract) { lastHoldersErr = "missing contract"; return null; }
+    if (!apiKey) { lastHoldersErr = "missing API key"; return null; }
+
     const url = `https://api.etherscan.io/api?module=token&action=tokenholdercount&contractaddress=${encodeURIComponent(contract)}&apikey=${encodeURIComponent(apiKey)}`;
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
+    if (!res.ok) { lastHoldersErr = `http ${res.status}`; return null; }
     const data = await res.json();
+
+    // Etherscan returns { status: "1", message: "OK", result: "<number>" } on success
     if (data && (data.status === "1" || data.message === "OK") && data.result) {
       const n = Number(data.result);
-      return Number.isFinite(n) ? n : null;
+      if (Number.isFinite(n)) return n;
+      lastHoldersErr = "invalid result";
+      return null;
     }
+
+    // Common failure shapes
+    if (data && typeof data.result === "string") lastHoldersErr = data.result.slice(0, 80);
+    else if (data && data.message) lastHoldersErr = String(data.message).slice(0, 80);
+    else lastHoldersErr = "not ok";
     return null;
   }
 
@@ -270,7 +284,13 @@
     const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
     const age = el("pulseAge"); if (age) age.textContent = humanAge(createdAt);
 
-    const hEl = el("pulseHolders"); if (hEl) hEl.textContent = holders !== null ? fmtInt(holders) : "—";
+    const hEl = el("pulseHolders");
+    if (hEl) {
+      hEl.textContent = holders !== null ? fmtInt(holders) : "—";
+      // Helpful tooltip for debugging / transparency
+      if (holders === null && lastHoldersErr) hEl.title = `Holders unavailable (${lastHoldersErr})`;
+      else hEl.title = "";
+    }
     const aEl = el("pulseActive"); if (aEl) aEl.textContent = active !== null ? fmtInt(active) : "—";
 
     const sinceEl = el("pulseSince");
@@ -342,10 +362,12 @@
   }
 
   async function run(cfg) {
-    const chain = (cfg.DEXSCREENER_CHAIN || "ethereum").toLowerCase();
-    const pair = cfg.DEX_PAIR_ADDRESS || "";
-    const contract = cfg.CONTRACT_ADDRESS || "";
-    const apiKey = cfg.ETHERSCAN_API_KEY || "";
+    // Accept config from multiple shapes/keys (back-compat)
+    const ds = cfg.DEXSCREENER || {};
+    const chain = String(cfg.DEXSCREENER_CHAIN || ds.chain || "ethereum").toLowerCase();
+    const pair = cfg.DEX_PAIR_ADDRESS || ds.pair || cfg.DEX_PAIR || "";
+    const contract = cfg.CONTRACT_ADDRESS || cfg.TOKEN_CONTRACT || "";
+    const apiKey = cfg.ETHERSCAN_API_KEY || cfg.ETHERSCAN_KEY || "";
 
     if (!pair) return;
 
@@ -353,6 +375,13 @@
       const dexPair = await fetchDexPair(chain, pair);
       const holders = await fetchHoldersEtherscan(contract, apiKey);
       applyValues(dexPair, holders, cfg);
+      // Some pages have multiple engines that may overwrite Pulse fields; re-apply age + footnote shortly after.
+      setTimeout(() => {
+        try {
+          const age = el("pulseAge"); if (age) age.textContent = humanAge((dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null);
+          updatePulseNote({ chain, pair, contract });
+        } catch {}
+      }, 1200);
     } catch (e) {
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
@@ -366,7 +395,7 @@
   function waitForConfig() {
     const start = Date.now();
     const timer = setInterval(() => {
-      const cfg = window.CAPI_CONFIG || window.__CAPI_CONFIG__ || null;
+      const cfg = window.CAPI_CONFIG || window.__CAPI_CONFIG__ || window.CFG || null;
       if (cfg) {
         clearInterval(timer);
         run(cfg);
