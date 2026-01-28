@@ -19,8 +19,11 @@
     if (num >= 1e6) return `$${(num/1e6).toFixed(2)}M`;
     if (num >= 1e3) return `$${(num/1e3).toFixed(2)}K`;
     if (num >= 1) return `$${num.toFixed(2)}`;
-    // for very small prices/liquidity deltas
-    return `$${num.toPrecision(6)}`;
+    // Micro-prices: avoid scientific notation (e.g., 6.17e-7)
+    // Keep up to 10 decimals, then trim trailing zeros.
+    const fixed = num.toFixed(10);
+    const trimmed = fixed.replace(/0+$/,"").replace(/\.$/,"");
+    return `$${trimmed}`;
   }
 
   function fmtInt(n) {
@@ -361,6 +364,57 @@
     } catch {}
   }
 
+
+  // Lock critical Pulse fields against late overwrites by other scripts (race-condition safe).
+  function lockPulseFields({ chain, pair, contract, createdAt, priceUsd, cfg }) {
+    const ageEl = el("pulseAge");
+    const priceEl = el("mPrice");
+    const noteEl = document.querySelector("#pulseNote") || document.querySelector(".pulse-note") || null;
+
+    const desiredAge = humanAge(createdAt);
+    const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
+      ? (() => {
+          setBaseline(priceUsd);
+          const pct = pctSinceBaseline(priceUsd);
+          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
+        })()
+      : null;
+
+    let suppress = false;
+
+    const enforce = () => {
+      try {
+        suppress = true;
+        if (ageEl && desiredAge && ageEl.textContent !== desiredAge) ageEl.textContent = desiredAge;
+        if (priceEl && desiredPrice && priceEl.textContent !== desiredPrice) priceEl.textContent = desiredPrice;
+        // Ensure sources footnote stays present (some renderers reset innerHTML)
+        if (noteEl) updatePulseNote({ chain, pair, contract });
+      } finally {
+        suppress = false;
+      }
+    };
+
+    // Run a few times after load (most overwrites happen within first 2-3s)
+    const schedule = [250, 800, 1500, 2500, 4000];
+    for (const ms of schedule) setTimeout(enforce, ms);
+
+    // Also observe for any changes and revert immediately.
+    const targets = [ageEl, priceEl, noteEl].filter(Boolean);
+    if (!targets.length) return;
+
+    const obs = new MutationObserver(() => {
+      if (suppress) return;
+      enforce();
+    });
+
+    for (const t of targets) {
+      obs.observe(t, { childList: true, characterData: true, subtree: true });
+    }
+
+    // Safety: stop observing after 15s (page should be stable).
+    setTimeout(() => { try { obs.disconnect(); } catch {} }, 15000);
+  }
+
   async function run(cfg) {
     // Accept config from multiple shapes/keys (back-compat)
     const ds = cfg.DEXSCREENER || {};
@@ -375,13 +429,8 @@
       const dexPair = await fetchDexPair(chain, pair);
       const holders = await fetchHoldersEtherscan(contract, apiKey);
       applyValues(dexPair, holders, cfg);
-      // Some pages have multiple engines that may overwrite Pulse fields; re-apply age + footnote shortly after.
-      setTimeout(() => {
-        try {
-          const age = el("pulseAge"); if (age) age.textContent = humanAge((dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null);
-          updatePulseNote({ chain, pair, contract });
-        } catch {}
-      }, 1200);
+      // Prevent late overwrites (race with other site scripts)
+      lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
     } catch (e) {
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
