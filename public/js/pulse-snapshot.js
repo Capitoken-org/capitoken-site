@@ -3,8 +3,7 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
-  const PULSE_VERSION = "v1.2"; // cache-busting verification
-
+  const PULSE_VERSION = "snapshot-v1.3";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
@@ -29,6 +28,58 @@
     return Math.round(num).toString();
   }
 
+  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
+  const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
+
+  function getBaseline() {
+    try {
+      const raw = localStorage.getItem(BASELINE_KEY);
+      const n = raw ? Number(raw) : null;
+      return Number.isFinite(n) && n > 0 ? n : null;
+    } catch { return null; }
+  }
+
+  function setBaseline(priceUsd) {
+    try {
+      const n = Number(priceUsd);
+      if (!Number.isFinite(n) || n <= 0) return;
+      if (getBaseline() === null) localStorage.setItem(BASELINE_KEY, String(n));
+    } catch {}
+  }
+
+  function pctSinceBaseline(priceUsd) {
+    const base = getBaseline();
+    const p = Number(priceUsd);
+    if (!base || !Number.isFinite(p) || p <= 0) return null;
+    return ((p - base) / base) * 100;
+  }
+
+  function fmtPct(pct) {
+    if (pct === null || pct === undefined || Number.isNaN(pct)) return "—";
+    const p = Number(pct);
+    if (!Number.isFinite(p)) return "—";
+    const abs = Math.abs(p);
+    const txt = abs >= 10 ? abs.toFixed(0) : abs.toFixed(1);
+    return (p > 0 ? `+${txt}%` : p < 0 ? `-${txt}%` : `+0.0%`);
+  }
+
+  function setPctBadge(node, pct) {
+    if (!node) return;
+    if (pct === null || pct === undefined || Number.isNaN(pct)) {
+      node.textContent = "—";
+      node.classList.remove("delta--up","delta--down");
+      node.classList.add("delta--flat");
+      return;
+    }
+    const p = Number(pct);
+    node.classList.remove("delta--up","delta--down","delta--flat");
+    if (p > 0) node.classList.add("delta--up");
+    else if (p < 0) node.classList.add("delta--down");
+    else node.classList.add("delta--flat");
+    node.textContent = fmtPct(p);
+  }
+
+
   function setDeltaBadge(node, delta) {
     if (!node) return;
     if (delta === null || delta === undefined || Number.isNaN(delta)) {
@@ -51,23 +102,17 @@
     }
   }
 
-  function formatAge(tsMs) {
+  function humanAge(tsMs) {
     if (!tsMs) return "—";
     const days = (Date.now() - tsMs) / (1000 * 60 * 60 * 24);
     if (!Number.isFinite(days) || days < 0) return "—";
-
-    if (days < 30) {
-      const d = Math.max(0, Math.floor(days));
-      return `${d} ${d === 1 ? "Day" : "Days"}`;
-    }
-    if (days < 365) {
-      const mo = Math.max(1, Math.floor(days / 30));
-      return `${mo} ${mo === 1 ? "Month" : "Months"}`;
-    }
-    const yr = Math.max(1, Math.floor(days / 365));
-    return `${yr} ${yr === 1 ? "Year" : "Years"}`;
+    const d = Math.floor(days);
+    if (d < 30) return `${d} ${d === 1 ? "Day" : "Days"}`;
+    const months = Math.floor(d / 30);
+    if (d < 365) return `${months} ${months === 1 ? "Month" : "Months"}`;
+    const years = Math.floor(d / 365);
+    return `${years} ${years === 1 ? "Year" : "Years"}`;
   }
-
 
   function readSnapshots() {
     try {
@@ -90,42 +135,28 @@
     const cutoff = Date.now() - weekMs;
     return arr.filter(p => p && typeof p.t === "number" && p.t >= cutoff).slice(-120);
   }
-  // Baseline ("since launch" per-browser): first valid price we ever observe.
-  // This is local to each visitor (localStorage) to avoid maintaining a global baseline.
-  const BASELINE_KEY = "capi_pulse_baseline_price_v1";
-  const BASELINE_TS_KEY = "capi_pulse_baseline_ts_v1";
 
-  function getBaseline() {
-    try {
-      const p = Number(localStorage.getItem(BASELINE_KEY));
-      const t = Number(localStorage.getItem(BASELINE_TS_KEY));
-      return (Number.isFinite(p) && p > 0) ? { p, t: Number.isFinite(t) ? t : null } : null;
-    } catch {
-      return null;
+  function updatePulseNote({ chain, pair, contract }) {
+    const selectors = ["#pulseNote", "#capiPulseNote", ".pulse-note", "[data-pulse-note]"];
+    let node = null;
+    for (const sel of selectors) {
+      const n = document.querySelector(sel);
+      if (n) { node = n; break; }
     }
-  }
+    if (!node) return;
 
-  function setBaseline(price) {
-    try {
-      localStorage.setItem(BASELINE_KEY, String(price));
-      localStorage.setItem(BASELINE_TS_KEY, String(Date.now()));
-    } catch {}
-  }
+    const safe = (u) => { try { return new URL(u).toString(); } catch { return ""; } };
 
-  function pctChange(now, base) {
-    if (!Number.isFinite(now) || !Number.isFinite(base) || base <= 0) return null;
-    return ((now - base) / base) * 100;
-  }
+    const dexUrl = pair ? safe(`https://dexscreener.com/${chain}/${pair}`) : safe(`https://dexscreener.com/${chain}`);
+    const ethUrl = contract ? safe(`https://etherscan.io/token/${contract}`) : safe("https://etherscan.io/");
 
-  function fmtPct(p) {
-    if (p === null || p === undefined || !Number.isFinite(p)) return "—";
-    const sign = p > 0 ? "+" : "";
-    const abs = Math.abs(p);
-    if (abs >= 100) return `${sign}${p.toFixed(0)}%`;
-    if (abs >= 10) return `${sign}${p.toFixed(1)}%`;
-    return `${sign}${p.toFixed(2)}%`;
+    node.innerHTML =
+      `Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.` +
+      `<br><span class="muted">Sources:</span> ` +
+      `<a href="${dexUrl}" target="_blank" rel="noreferrer noopener">DexScreener</a>` +
+      ` <span class="muted">and</span> ` +
+      `<a href="${ethUrl}" target="_blank" rel="noreferrer noopener">Etherscan</a>.`;
   }
-
 
 
   function findSnapshotNear(arr, targetMs, windowMs) {
@@ -223,28 +254,34 @@
     const mcap = pair && (pair.marketCap || pair.fdv) ? Number(pair.marketCap || pair.fdv) : null;
 
     // Update DOM
-    const mPrice = el("mPrice"); if (mPrice) mPrice.textContent = (priceUsd !== null ? fmtUSD(priceUsd) : "TBA");
-
-    // Since-launch % (per-browser baseline). If there is an extra tile (#pulseSince) we fill it,
-    // otherwise we append the percent next to the price to avoid changing HTML.
-    if (priceUsd !== null && Number.isFinite(priceUsd)) {
-      const base = getBaseline();
-      if (!base) setBaseline(priceUsd);
-      const base2 = base || { p: priceUsd };
-      const pchg = pctChange(priceUsd, base2.p);
-      const sinceEl = el("pulseSince");
-      if (sinceEl) sinceEl.textContent = fmtPct(pchg);
-      if (!sinceEl && mPrice && pchg !== null) mPrice.textContent = `${fmtUSD(priceUsd)} (${fmtPct(pchg)})`;
+    const mPrice = el("mPrice");
+    if (mPrice) {
+      if (priceUsd !== null) {
+        setBaseline(priceUsd);
+        const pct = pctSinceBaseline(priceUsd);
+        mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
+      } else {
+        mPrice.textContent = "TBA";
+      }
     }
-
     const mLiq = el("mLiq"); if (mLiq) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
     const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
     const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
     const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
-    const age = el("pulseAge"); if (age) age.textContent = formatAge(createdAt);
+    const age = el("pulseAge"); if (age) age.textContent = humanAge(createdAt);
 
     const hEl = el("pulseHolders"); if (hEl) hEl.textContent = holders !== null ? fmtInt(holders) : "—";
     const aEl = el("pulseActive"); if (aEl) aEl.textContent = active !== null ? fmtInt(active) : "—";
+
+    const sinceEl = el("pulseSince");
+    if (sinceEl) {
+      if (priceUsd !== null) {
+        const pct = pctSinceBaseline(priceUsd);
+        setPctBadge(sinceEl, pct);
+      } else {
+        sinceEl.textContent = "—";
+      }
+    }
 
     // Snapshots + deltas + chart
     let snaps = readSnapshots();
@@ -297,27 +334,14 @@
     // Render sparkline from liquidity history
     const liqSeries = snaps.map(p => p && Number.isFinite(p.liq) ? p.liq : null).filter(v => v !== null);
     renderSparkline(liqSeries);
+
+    // Footnote sources (DexScreener + Etherscan)
+    try {
+      updatePulseNote({ chain: cfg.chain || 'ethereum', pair: cfg.pair || '', contract: cfg.contract || '' });
+    } catch {}
   }
 
-  async 
-  function updatePulseNote({ chain, pair, contract }) {
-    const selectors = ["#pulseNote", "#capiPulseNote", ".pulse-note", "[data-pulse-note]"];
-    let node = null;
-    for (const sel of selectors) {
-      const n = document.querySelector(sel);
-      if (n) { node = n; break; }
-    }
-    if (!node) return;
-
-    const dexUrl = pair ? `https://dexscreener.com/${encodeURIComponent(chain)}/${encodeURIComponent(pair)}` : `https://dexscreener.com/${encodeURIComponent(chain)}`;
-    const esUrl = contract ? `https://etherscan.io/token/${encodeURIComponent(contract)}` : "https://etherscan.io/";
-
-    node.innerHTML = `Early community stage. Low activity can be normal. If it’s not listed here, it’s not official. ` +
-      `<span class="pulse-sources">Sources: <a href="${dexUrl}" target="_blank" rel="noopener noreferrer">DexScreener</a> &amp; ` +
-      `<a href="${esUrl}" target="_blank" rel="noopener noreferrer">Etherscan</a>.</span>`;
-  }
-
-async function run(cfg) {
+  async function run(cfg) {
     const chain = (cfg.DEXSCREENER_CHAIN || "ethereum").toLowerCase();
     const pair = cfg.DEX_PAIR_ADDRESS || "";
     const contract = cfg.CONTRACT_ADDRESS || "";
@@ -329,9 +353,7 @@ async function run(cfg) {
       const dexPair = await fetchDexPair(chain, pair);
       const holders = await fetchHoldersEtherscan(contract, apiKey);
       applyValues(dexPair, holders, cfg);
-      updatePulseNote({ chain, pair, contract });
     } catch (e) {
-      updatePulseNote({ chain, pair, contract });
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
       // Still try to draw chart from existing snapshots, if any
