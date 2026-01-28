@@ -307,7 +307,7 @@ const roadmap = [
     </div>
   </section>
 
-  <script type="module">
+  <script type="module" define:vars={{ BASE_URL }}>
     // Phase 9: Trading venues data (editable via /public/venues.json)
     const makeEl = (tag, attrs = {}, children = []) => {
       const el = document.createElement(tag);
@@ -849,7 +849,7 @@ function iconCandidates(it){
 
           <div class="actions" style="margin-top:10px;">
             <a class="btn btn--primary" id="tgJoinBtn" href="https://t.me/CapitokenOfficial" target="_blank" rel="noreferrer noopener">
-              Join @CapitokenOfficial
+              Join Telegram
             </a>
             <a class="btn" id="tgOpenBtn" href="https://t.me/CapitokenOfficial" target="_blank" rel="noreferrer noopener">
               Open in Telegram
@@ -899,8 +899,35 @@ function iconCandidates(it){
       </div>
     </div>
 
-    <script type="module">
+    <script type="module" define:vars={{ BASE_URL }}>
       const cfg = window.CAPI_CONFIG || {};
+      // ---- Telegram embed (single pinned post) ----
+      const tgBox = document.getElementById("telegramEmbed");
+      const tgChannel = (cfg.TELEGRAM_CHANNEL || "").trim();
+      const tgPostId = (cfg.TELEGRAM_PINNED_POST_ID || "").trim();
+      const tgLink = (cfg.SOCIALS && cfg.SOCIALS.telegram) ? cfg.SOCIALS.telegram : (tgChannel ? `https://t.me/${tgChannel}` : "");
+
+      // Update buttons if present
+      const tgJoinBtn = document.getElementById("tgJoinBtn");
+      const tgOpenBtn = document.getElementById("tgOpenBtn");
+      if (tgJoinBtn && tgLink) tgJoinBtn.href = tgLink;
+      if (tgOpenBtn && tgLink) tgOpenBtn.href = tgLink;
+
+      if (tgBox) {
+        tgBox.innerHTML = "";
+        if (tgChannel && tgPostId) {
+          const s = document.createElement("script");
+          s.async = true;
+          s.src = "https://telegram.org/js/telegram-widget.js?22";
+          s.setAttribute("data-telegram-post", `${tgChannel}/${tgPostId}`);
+          s.setAttribute("data-width", "100%");
+          s.setAttribute("data-userpic", "false");
+          tgBox.appendChild(s);
+        } else {
+          tgBox.innerHTML = `<div class="small">Set <b>TELEGRAM_CHANNEL</b> and <b>TELEGRAM_PINNED_POST_ID</b> in <code>public/js/capi-config.js</code> using a public post URL like <code>https://t.me/capitoken_official/13</code>.</div>`;
+        }
+      }
+
       const socials = cfg.SOCIALS || {};
 
       // ---- Telegram wiring (Channel + pinned post embed) ----
@@ -939,11 +966,12 @@ function iconCandidates(it){
       }
 
       // ---- Official Updates feed (Gist RAW -> fallback local) ----
-      const BASE = import.meta.env.BASE_URL || "/";
+      const BASE = BASE_URL || "/";
       const updatesList = document.getElementById("updatesList");
 
       const remoteUrl = (cfg.ANNOUNCEMENTS_GIST_URL || "").trim();
-      const fallbackUrl = `${BASE}data/announcements.json`;
+      const baseNorm = (BASE.endsWith("/") ? BASE : BASE + "/");
+      const fallbackUrl = `${baseNorm}data/announcements.json`;
 
       async function fetchJson(url) {
         const res = await fetch(url, { cache: "no-store" });

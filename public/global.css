@@ -3058,3 +3058,17 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   padding: 8px 12px;
   font-size: 12px;
 }
+
+
+/* --- Community: Telegram embed --- */
+.telegram-embed {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.16);
+  min-height: 120px;
+}
+.telegram-embed > script {
+  display: block;
+}
