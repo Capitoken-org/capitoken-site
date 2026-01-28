@@ -63,7 +63,7 @@
     // Telegram embed (optional): channel username + pinned post ID
     // Example post URL: https://t.me/CapitokenOfficial/1234
     TELEGRAM_CHANNEL: "CapitokenOfficial",
-    TELEGRAM_PINNED_POST_ID: "",
+    TELEGRAM_PINNED_POST_ID: "13",
 
   };
 
