@@ -46,7 +46,7 @@
     // Official social links (leave empty string if not available yet)
     SOCIALS: {
   x: "https://x.com/Capitokenorg",
-  telegram: "https://t.me/CapitokenOfficial",
+  telegram: "https://t.me/capitoken_official",
   youtube: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ",
   medium: "https://medium.com/@info_43649",
   reddit: "https://www.reddit.com/user/CapiToken/",
