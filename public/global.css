@@ -3061,3 +3061,13 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 @media (max-width: 860px){
   .pulse-grid{ grid-template-columns: 1fr; }
 }
+
+/* CAPI Pulse footnote links */
+.pulse-note a{
+  color: var(--accent, #f59e0b);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pulse-note a:hover{
+  filter: brightness(1.1);
+}
