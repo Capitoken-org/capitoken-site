@@ -3,6 +3,8 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
+  const PULSE_VERSION = "v1.2"; // cache-busting verification
+
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
@@ -49,27 +51,23 @@
     }
   }
 
-  function fmtAge(tsMs) {
+  function formatAge(tsMs) {
     if (!tsMs) return "—";
-    const ms = Date.now() - Number(tsMs);
-    if (!Number.isFinite(ms) || ms < 0) return "—";
+    const days = (Date.now() - tsMs) / (1000 * 60 * 60 * 24);
+    if (!Number.isFinite(days) || days < 0) return "—";
 
-    const days = ms / (1000 * 60 * 60 * 24);
-
-    // Keep it readable long-term: Days → Months → Years
     if (days < 30) {
       const d = Math.max(0, Math.floor(days));
       return `${d} ${d === 1 ? "Day" : "Days"}`;
     }
-
     if (days < 365) {
-      const m = Math.max(1, Math.floor(days / 30));
-      return `${m} ${m === 1 ? "Month" : "Months"}`;
+      const mo = Math.max(1, Math.floor(days / 30));
+      return `${mo} ${mo === 1 ? "Month" : "Months"}`;
     }
-
-    const y = Math.max(1, Math.floor(days / 365));
-    return `${y} ${y === 1 ? "Year" : "Years"}`;
+    const yr = Math.max(1, Math.floor(days / 365));
+    return `${yr} ${yr === 1 ? "Year" : "Years"}`;
   }
+
 
   function readSnapshots() {
     try {
@@ -92,100 +90,43 @@
     const cutoff = Date.now() - weekMs;
     return arr.filter(p => p && typeof p.t === "number" && p.t >= cutoff).slice(-120);
   }
+  // Baseline ("since launch" per-browser): first valid price we ever observe.
+  // This is local to each visitor (localStorage) to avoid maintaining a global baseline.
+  const BASELINE_KEY = "capi_pulse_baseline_price_v1";
+  const BASELINE_TS_KEY = "capi_pulse_baseline_ts_v1";
 
-  // Baseline for "since first seen" % change (stored locally per visitor)
-  function readBaseline() {
+  function getBaseline() {
     try {
-      const raw = localStorage.getItem("capi_pulse_baseline_v1");
-      return raw ? JSON.parse(raw) : null;
+      const p = Number(localStorage.getItem(BASELINE_KEY));
+      const t = Number(localStorage.getItem(BASELINE_TS_KEY));
+      return (Number.isFinite(p) && p > 0) ? { p, t: Number.isFinite(t) ? t : null } : null;
     } catch {
       return null;
     }
   }
 
-  function writeBaseline(b) {
+  function setBaseline(price) {
     try {
-      localStorage.setItem("capi_pulse_baseline_v1", JSON.stringify(b));
+      localStorage.setItem(BASELINE_KEY, String(price));
+      localStorage.setItem(BASELINE_TS_KEY, String(Date.now()));
     } catch {}
   }
 
-  function setPctBadge(node, pct) {
-    if (!node) return;
-    if (pct === null || pct === undefined || Number.isNaN(pct) || !Number.isFinite(Number(pct))) {
-      node.textContent = "—";
-      node.classList.remove("delta--up","delta--down");
-      node.classList.add("delta--flat");
-      return;
-    }
-    const p = Number(pct);
-    node.classList.remove("delta--up","delta--down","delta--flat");
-    if (p > 0) node.classList.add("delta--up");
-    else if (p < 0) node.classList.add("delta--down");
-    else node.classList.add("delta--flat");
+  function pctChange(now, base) {
+    if (!Number.isFinite(now) || !Number.isFinite(base) || base <= 0) return null;
+    return ((now - base) / base) * 100;
+  }
 
+  function fmtPct(p) {
+    if (p === null || p === undefined || !Number.isFinite(p)) return "—";
     const sign = p > 0 ? "+" : "";
-    node.textContent = `${sign}${p.toFixed(1)}%`;
+    const abs = Math.abs(p);
+    if (abs >= 100) return `${sign}${p.toFixed(0)}%`;
+    if (abs >= 10) return `${sign}${p.toFixed(1)}%`;
+    return `${sign}${p.toFixed(2)}%`;
   }
 
-  // Create the extra metric tile if it does not exist (keeps HTML stable)
-  function ensureSinceTile() {
-    const existing = document.getElementById("pulseSince");
-    if (existing) return;
 
-    const grid = document.querySelector(".pulse-grid");
-    if (!grid) return;
-
-    const wrap = document.createElement("div");
-    wrap.className = "pulse-item pulse-item--minor";
-    wrap.id = "pulseSince";
-
-    const k = document.createElement("div");
-    k.className = "k";
-    k.textContent = "Since launch";
-
-    const v = document.createElement("div");
-    v.className = "v";
-
-    const val = document.createElement("span");
-    val.id = "pulseSinceVal";
-    val.textContent = "—";
-
-    const badge = document.createElement("span");
-    badge.className = "delta delta--flat";
-    badge.id = "pulseSincePct";
-    badge.textContent = "—";
-
-    v.appendChild(val);
-    v.appendChild(badge);
-
-    wrap.appendChild(k);
-    wrap.appendChild(v);
-
-    grid.appendChild(wrap);
-  }
-
-  function enhanceFootnote(cfg) {
-    // Try common selectors without depending on a specific HTML id
-    const note =
-      document.getElementById("pulseNote") ||
-      document.getElementById("capiPulseNote") ||
-      document.querySelector(".pulse-note") ||
-      document.querySelector("[data-pulse-note]") ||
-      null;
-
-    if (!note) return;
-
-    const pair = cfg && (cfg.DEX_PAIR_ADDRESS || (cfg.DEXSCREENER && cfg.DEXSCREENER.pair)) ? (cfg.DEX_PAIR_ADDRESS || cfg.DEXSCREENER.pair) : "";
-    const contract = cfg && cfg.CONTRACT_ADDRESS ? cfg.CONTRACT_ADDRESS : "";
-
-    const dexUrl = pair ? `https://dexscreener.com/ethereum/${pair}` : "https://dexscreener.com";
-    const ethUrl = contract ? `https://etherscan.io/token/${contract}` : "https://etherscan.io";
-
-    note.innerHTML =
-      `Early community stage. Low activity can be normal. If it\u2019s not listed here, it\u2019s not official. ` +
-      `Sources: <a href="${dexUrl}" target="_blank" rel="noopener noreferrer">DexScreener</a> ` +
-      `& <a href="${ethUrl}" target="_blank" rel="noopener noreferrer">Etherscan</a>.`;
-  }
 
   function findSnapshotNear(arr, targetMs, windowMs) {
     // Find latest snapshot with time within [target-window, target+window]
@@ -283,34 +224,27 @@
 
     // Update DOM
     const mPrice = el("mPrice"); if (mPrice) mPrice.textContent = (priceUsd !== null ? fmtUSD(priceUsd) : "TBA");
+
+    // Since-launch % (per-browser baseline). If there is an extra tile (#pulseSince) we fill it,
+    // otherwise we append the percent next to the price to avoid changing HTML.
+    if (priceUsd !== null && Number.isFinite(priceUsd)) {
+      const base = getBaseline();
+      if (!base) setBaseline(priceUsd);
+      const base2 = base || { p: priceUsd };
+      const pchg = pctChange(priceUsd, base2.p);
+      const sinceEl = el("pulseSince");
+      if (sinceEl) sinceEl.textContent = fmtPct(pchg);
+      if (!sinceEl && mPrice && pchg !== null) mPrice.textContent = `${fmtUSD(priceUsd)} (${fmtPct(pchg)})`;
+    }
+
     const mLiq = el("mLiq"); if (mLiq) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
     const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
     const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
     const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
-    const age = el("pulseAge"); if (age) age.textContent = fmtAge(createdAt);
+    const age = el("pulseAge"); if (age) age.textContent = formatAge(createdAt);
 
     const hEl = el("pulseHolders"); if (hEl) hEl.textContent = holders !== null ? fmtInt(holders) : "—";
     const aEl = el("pulseActive"); if (aEl) aEl.textContent = active !== null ? fmtInt(active) : "—";
-
-
-    // "Since launch" (local baseline from first time this browser saw valid price) — creates the 8th tile for balanced grid
-    ensureSinceTile();
-    const sinceVal = document.getElementById("pulseSinceVal");
-    const sincePct = document.getElementById("pulseSincePct");
-
-    if (Number.isFinite(priceUsd) && priceUsd > 0) {
-      let base = readBaseline();
-      if (!base || !Number.isFinite(Number(base.price)) || Number(base.price) <= 0) {
-        base = { t: Date.now(), price: priceUsd };
-        writeBaseline(base);
-      }
-      const pct = ((priceUsd - Number(base.price)) / Number(base.price)) * 100;
-      if (sinceVal) sinceVal.textContent = `${fmtUSD(Number(base.price))} → ${fmtUSD(priceUsd)}`;
-      setPctBadge(sincePct, pct);
-    } else {
-      if (sinceVal) sinceVal.textContent = "—";
-      setPctBadge(sincePct, null);
-    }
 
     // Snapshots + deltas + chart
     let snaps = readSnapshots();
@@ -365,7 +299,25 @@
     renderSparkline(liqSeries);
   }
 
-  async function run(cfg) {
+  async 
+  function updatePulseNote({ chain, pair, contract }) {
+    const selectors = ["#pulseNote", "#capiPulseNote", ".pulse-note", "[data-pulse-note]"];
+    let node = null;
+    for (const sel of selectors) {
+      const n = document.querySelector(sel);
+      if (n) { node = n; break; }
+    }
+    if (!node) return;
+
+    const dexUrl = pair ? `https://dexscreener.com/${encodeURIComponent(chain)}/${encodeURIComponent(pair)}` : `https://dexscreener.com/${encodeURIComponent(chain)}`;
+    const esUrl = contract ? `https://etherscan.io/token/${encodeURIComponent(contract)}` : "https://etherscan.io/";
+
+    node.innerHTML = `Early community stage. Low activity can be normal. If it’s not listed here, it’s not official. ` +
+      `<span class="pulse-sources">Sources: <a href="${dexUrl}" target="_blank" rel="noopener noreferrer">DexScreener</a> &amp; ` +
+      `<a href="${esUrl}" target="_blank" rel="noopener noreferrer">Etherscan</a>.</span>`;
+  }
+
+async function run(cfg) {
     const chain = (cfg.DEXSCREENER_CHAIN || "ethereum").toLowerCase();
     const pair = cfg.DEX_PAIR_ADDRESS || "";
     const contract = cfg.CONTRACT_ADDRESS || "";
@@ -377,7 +329,9 @@
       const dexPair = await fetchDexPair(chain, pair);
       const holders = await fetchHoldersEtherscan(contract, apiKey);
       applyValues(dexPair, holders, cfg);
+      updatePulseNote({ chain, pair, contract });
     } catch (e) {
+      updatePulseNote({ chain, pair, contract });
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
       // Still try to draw chart from existing snapshots, if any
@@ -393,8 +347,6 @@
       const cfg = window.CAPI_CONFIG || window.__CAPI_CONFIG__ || null;
       if (cfg) {
         clearInterval(timer);
-        ensureSinceTile();
-        enhanceFootnote(cfg);
         run(cfg);
       } else if (Date.now() - start > CFG_WAIT_MS) {
         clearInterval(timer);
