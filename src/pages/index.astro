@@ -15,6 +15,11 @@ const X_HANDLE = "Capitokenorg"; // sin @ (ej: "Capitokenorg")
 const YT_CHANNEL_ID = "UCY5xCVzo-k6hGdR4xhUhTNQ"; // YouTube Channel ID
 const YT_HANDLE = "CapiToken"; // sin @ (ej: "CapiToken")
 const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para mostrar solo botón al canal
+
+// Community (definitive): Telegram + Official Updates (first-party)
+const TG_CHANNEL = "CapitokenOfficial"; // Telegram channel username (sin @)
+const TG_PINNED_POST_ID = ""; // opcional: ID de un post público (ej: "1234" de https://t.me/CapitokenOfficial/1234)
+const ANNOUNCEMENTS_JSON = withBase("/data/announcements.json");
 // >>> ------------------------------ <<<
 
 const stats = [
@@ -839,29 +844,37 @@ function iconCandidates(it){
   <section class="section" id="community">
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Official socials — X and YouTube.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Official Telegram + Official Updates.</span></h2>
 
       <div class="grid community-grid" style="margin-top:14px;">
-        <!-- X (Twitter) -->
+        <!-- Telegram -->
         <div class="card col-6 community-card">
-          <div class="card__title">Official X</div>
-          <p class="small">If the embed is blank, your browser/extensions may block it. The official link still works.</p>
+          <div class="card__title">Official Telegram</div>
+          <p class="small">Real-time community updates and announcements. Always verify official links on this website first.</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer noopener">
-              Open @${X_HANDLE}
+            <a class="btn btn--primary" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
+              Join @${TG_CHANNEL}
+            </a>
+            <a class="btn" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
+              Open in Telegram
             </a>
           </div>
 
-          <div class="community-embed community-embed--x" style="margin-top:14px;">
-            <a class="twitter-timeline"
-               data-theme="dark"
-               data-show-replies="true"
-               data-tweet-limit="5"
-               data-chrome="noheader nofooter noborders transparent"
-               href={`https://twitter.com/${X_HANDLE}`}>
-               Tweets by {X_HANDLE}
-            </a>
+          <div class="community-embed community-embed--tg" style="margin-top:14px;">
+            {TG_PINNED_POST_ID ? (
+              <div class="tg-widget">
+                <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-post={`${TG_CHANNEL}/${TG_PINNED_POST_ID}`} data-width="100%"></script>
+              </div>
+            ) : (
+              <div class="embed-placeholder">
+                <div class="embed-placeholder__title">Pinned update preview (optional)</div>
+                <div class="embed-placeholder__text">
+                  To show a live embedded Telegram post here, set <span class="mono">TG_PINNED_POST_ID</span> in <span class="mono">index.astro</span> using any public post URL like:
+                  <span class="mono">https://t.me/{TG_CHANNEL}/1234</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <p class="small note" style="margin-top:12px;">
@@ -869,48 +882,30 @@ function iconCandidates(it){
           </p>
         </div>
 
-        <!-- YouTube (Fixed video) -->
+        <!-- Official Updates (first‑party) -->
         <div class="card col-6 community-card">
-          <div class="card__title">Official YouTube</div>
-          <p class="small">Pinned video for announcements, explainers, and community updates.</p>
+          <div class="card__title">Official Updates</div>
+          <p class="small">A first-party updates feed served by Capitoken (stable across browsers — no third-party embeds).</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://www.youtube.com/@${YT_HANDLE}`} target="_blank" rel="noreferrer noopener">
-              Open @${YT_HANDLE}
+            <a class="btn btn--primary" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
+              Official Links Only
             </a>
-            <a class="btn" href={`https://www.youtube.com/channel/${YT_CHANNEL_ID}`} target="_blank" rel="noreferrer noopener">
-              Channel ID
+            <a class="btn" href="https://discord.gg/XVHVaVWPq5" target="_blank" rel="noreferrer noopener">
+              Discord (optional)
             </a>
           </div>
 
-          <div class="community-embed community-embed--yt" style="margin-top:14px;">
-            {YT_VIDEO_ID ? (
-              <div class="yt-embed">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${YT_VIDEO_ID}`}
-                  title="Capitoken — Official YouTube Video"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                ></iframe>
-              </div>
-            ) : (
-              <div class="yt-placeholder">
-                <div class="small">
-                  <b>Video fijo pendiente:</b> edita <span class="mono">YT_VIDEO_ID</span> en <span class="mono">index.astro</span>.
-                </div>
-                <div class="small" style="margin-top:8px; opacity:.85;">
-                  Mientras tanto, usa el botón “Open @CapiToken” para ver el canal oficial.
-                </div>
-              </div>
-            )}
+          <div class="community-embed community-embed--updates" style="margin-top:14px;">
+            <div id="capiUpdates" class="updates-list" aria-live="polite">
+              <div class="updates-loading">Loading official updates…</div>
+            </div>
           </div>
 
           <p class="small note" style="margin-top:12px;">
-            Anti-scam: This is the only official YouTube referenced by Capitoken.
+            Anti-scam: this feed is served from this website (first-party).
           </p>
         </div>
-      </div>
       </div>
     </div>
   </section>
@@ -991,10 +986,66 @@ function iconCandidates(it){
   <!-- Toast -->
   <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
 
-  <!-- X widget loader -->
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <!-- Updates loader (first-party) -->
+  <script is:inline type="module" define:vars={{ ANNOUNCEMENTS_JSON }}>
+    const el = document.getElementById('capiUpdates');
+    if (el) {
+      const escapeHtml = (s) => String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
 
-  <!-- Live + Wallet script -->
+      const fmtDate = (iso) => {
+        try {
+          const d = new Date(iso);
+          if (Number.isNaN(d.getTime())) return '';
+          return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'2-digit' });
+        } catch {
+          return '';
+        }
+      };
+
+      const render = (items) => {
+        if (!Array.isArray(items) || items.length === 0) {
+          el.innerHTML = '<div class="updates-empty">No updates yet. Check back soon.</div>';
+          return;
+        }
+        const rows = items.slice(0, 6).map((it) => {
+          const title = escapeHtml(it.title || 'Update');
+          const date = fmtDate(it.date || '');
+          const tag = escapeHtml(it.tag || '');
+          const href = it.url ? String(it.url) : '';
+          const text = escapeHtml(it.text || '');
+          const link = href ? `<a class="updates-item__link" href="${escapeHtml(href)}" target="_blank" rel="noreferrer noopener">Open</a>` : '';
+          return `
+            <div class="updates-item">
+              <div class="updates-item__top">
+                <div class="updates-item__title">${title}</div>
+                <div class="updates-item__meta">
+                  ${date ? `<span class="updates-item__date">${date}</span>` : ''}
+                  ${tag ? `<span class="updates-item__tag">${tag}</span>` : ''}
+                </div>
+              </div>
+              ${text ? `<div class="updates-item__text">${text}</div>` : ''}
+              ${href ? `<div class="updates-item__actions">${link}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+        el.innerHTML = rows;
+      };
+
+      fetch(ANNOUNCEMENTS_JSON, { cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+        .then((data) => render(data?.items || data))
+        .catch(() => {
+          el.innerHTML = '<div class="updates-empty">Unable to load updates (network/cache). Official links still work.</div>';
+        });
+    }
+  </script>
+
+<!-- Live + Wallet script -->
   <script is:inline type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const ENGINE_V = new URL(window.location.href).searchParams.get("v") || "PHASE9PULSE_R1";
 
