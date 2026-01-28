@@ -2980,95 +2980,16 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
 }
 
 
-/* ============================
-   Community: Telegram + Updates
-   ============================ */
-.community-embed--tg .tg-embed-shell {
-  border: 1px dashed rgba(255,255,255,0.18);
-  background: rgba(0,0,0,0.22);
-  border-radius: 14px;
-  padding: 14px;
-  min-height: 220px;
-}
-
-.community-embed--tg .tg-iframe {
-  width: 100%;
-  height: 260px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-}
-
-.updates-list {
-  display: grid;
-  gap: 10px;
-}
-
-.updates-loading {
-  padding: 14px;
-  border: 1px dashed rgba(255,255,255,0.16);
-  border-radius: 14px;
-  background: rgba(0,0,0,0.18);
-}
-
-.update-item {
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.20);
-  padding: 14px;
-}
-
-.update-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.update-title {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-.update-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.update-date {
-  opacity: 0.75;
-  font-size: 12px;
-}
-
-.update-tag {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.06);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.btn--mini {
-  margin-top: 10px;
-  padding: 8px 12px;
-  font-size: 12px;
-}
-
-
-/* --- Community: Telegram embed --- */
-.telegram-embed {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px dashed rgba(255,255,255,0.16);
-  background: rgba(0,0,0,0.16);
-  min-height: 120px;
-}
-.telegram-embed > script {
-  display: block;
-}
+/* ===== Community: Telegram + Official Updates (first-party) ===== */
+.telegram-embed{min-height:240px;border:1px dashed rgba(255,255,255,0.18);border-radius:14px;padding:14px;background:rgba(0,0,0,0.20)}
+.community-embed--updates{min-height:240px;border:1px dashed rgba(255,255,255,0.18);border-radius:14px;padding:12px;background:rgba(0,0,0,0.20);display:flex;flex-direction:column;gap:10px;overflow:auto}
+.update-card{border:1px solid rgba(255,255,255,0.10);background:rgba(0,0,0,0.18);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.25)}
+.update-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.update-title{font-weight:800;letter-spacing:0.01em}
+.update-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.update-date{font-size:12px;opacity:0.75}
+.update-tag{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid rgba(25,230,211,0.28);background:rgba(25,230,211,0.10);color:rgba(255,255,255,0.92)}
+.update-body{font-size:13px;line-height:1.55;opacity:0.85}
+.update-foot{margin-top:10px;display:flex;justify-content:flex-end}
+.update-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;text-decoration:none;font-weight:800;font-size:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.92)}
+.update-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.20)}

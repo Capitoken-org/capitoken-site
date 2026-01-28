@@ -44,9 +44,14 @@
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     },
     // Official social links (leave empty string if not available yet)
+    // Community panel (Telegram + first-party updates)
+    TELEGRAM_CHANNEL: 'capitoken_official',
+    TELEGRAM_PINNED_POST_ID: '13',
+    ANNOUNCEMENTS_GIST_URL: 'https://gist.githubusercontent.com/Capitoken-org/fb30847eaea89c2c1861ebcca5f21f77/raw/fd6ee70e93095e4b54e30c63d637189da3cc6b9b/announcements.json',
+
     SOCIALS: {
   x: "https://x.com/Capitokenorg",
-  telegram: "https://t.me/capitoken_official",
+  telegram: "https://t.me/CapitokenOfficial",
   youtube: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ",
   medium: "https://medium.com/@info_43649",
   reddit: "https://www.reddit.com/user/CapiToken/",
@@ -55,16 +60,6 @@
   instagram: "https://www.instagram.com/capitoken.official/",
 	  discord: "https://discord.gg/XVHVaVWPq5"
 },
-    // Official Updates (first-party feed)
-    // Point this to a GitHub Gist RAW URL containing announcements JSON.
-    // If empty or blocked, the site falls back to /public/data/announcements.json.
-    ANNOUNCEMENTS_GIST_URL: "https://gist.githubusercontent.com/Capitoken-org/fb30847eaea89c2c1861ebcca5f21f77/raw/fd6ee70e93095e4b54e30c63d637189da3cc6b9b/announcements.json",
-
-    // Telegram embed (optional): channel username + pinned post ID
-    // Example post URL: https://t.me/CapitokenOfficial/1234
-    TELEGRAM_CHANNEL: "capitoken_official",
-    TELEGRAM_PINNED_POST_ID: "13",
-
   };
 
   // Public config objects used by the engines
