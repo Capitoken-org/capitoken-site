@@ -55,6 +55,16 @@
   instagram: "https://www.instagram.com/capitoken.official/",
 	  discord: "https://discord.gg/XVHVaVWPq5"
 },
+    // Official Updates (first-party feed)
+    // Point this to a GitHub Gist RAW URL containing announcements JSON.
+    // If empty or blocked, the site falls back to /public/data/announcements.json.
+    ANNOUNCEMENTS_GIST_URL: "",
+
+    // Telegram embed (optional): channel username + pinned post ID
+    // Example post URL: https://t.me/CapitokenOfficial/1234
+    TELEGRAM_CHANNEL: "CapitokenOfficial",
+    TELEGRAM_PINNED_POST_ID: "",
+
   };
 
   // Public config objects used by the engines

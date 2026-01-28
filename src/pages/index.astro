@@ -15,11 +15,6 @@ const X_HANDLE = "Capitokenorg"; // sin @ (ej: "Capitokenorg")
 const YT_CHANNEL_ID = "UCY5xCVzo-k6hGdR4xhUhTNQ"; // YouTube Channel ID
 const YT_HANDLE = "CapiToken"; // sin @ (ej: "CapiToken")
 const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para mostrar solo botón al canal
-
-// Community (definitive): Telegram + Official Updates (first-party)
-const TG_CHANNEL = "CapitokenOfficial"; // Telegram channel username (sin @)
-const TG_PINNED_POST_ID = ""; // opcional: ID de un post público (ej: "1234" de https://t.me/CapitokenOfficial/1234)
-const ANNOUNCEMENTS_JSON = withBase("/data/announcements.json");
 // >>> ------------------------------ <<<
 
 const stats = [
@@ -840,7 +835,7 @@ function iconCandidates(it){
 
   <hr class="hr" />
 
-  <!-- COMMUNITY -->
+    <!-- COMMUNITY -->
   <section class="section" id="community">
     <div class="container reveal">
       <div class="section-block">
@@ -853,28 +848,24 @@ function iconCandidates(it){
           <p class="small">Real-time community updates and announcements. Always verify official links on this website first.</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
-              Join @${TG_CHANNEL}
+            <a class="btn btn--primary" id="tgJoinBtn" href="https://t.me/CapitokenOfficial" target="_blank" rel="noreferrer noopener">
+              Join @CapitokenOfficial
             </a>
-            <a class="btn" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
+            <a class="btn" id="tgOpenBtn" href="https://t.me/CapitokenOfficial" target="_blank" rel="noreferrer noopener">
               Open in Telegram
             </a>
           </div>
 
           <div class="community-embed community-embed--tg" style="margin-top:14px;">
-            {TG_PINNED_POST_ID ? (
-              <div class="tg-widget">
-                <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-post={`${TG_CHANNEL}/${TG_PINNED_POST_ID}`} data-width="100%"></script>
+            <div class="tg-embed-shell" id="tgEmbedShell">
+              <div class="small" style="opacity:.9;">
+                <b>Pinned update preview</b> (from Telegram)
               </div>
-            ) : (
-              <div class="embed-placeholder">
-                <div class="embed-placeholder__title">Pinned update preview (optional)</div>
-                <div class="embed-placeholder__text">
-                  To show a live embedded Telegram post here, set <span class="mono">TG_PINNED_POST_ID</span> in <span class="mono">index.astro</span> using any public post URL like:
-                  <span class="mono">https://t.me/{TG_CHANNEL}/1234</span>
-                </div>
+              <div class="small" style="margin-top:8px; opacity:.8;">
+                Set <span class="mono">TELEGRAM_PINNED_POST_ID</span> in <span class="mono">public/js/capi-config.js</span>
+                using any public post URL like: <span class="mono">https://t.me/CapitokenOfficial/1234</span>
               </div>
-            )}
+            </div>
           </div>
 
           <p class="small note" style="margin-top:12px;">
@@ -882,24 +873,22 @@ function iconCandidates(it){
           </p>
         </div>
 
-        <!-- Official Updates (first‑party) -->
+        <!-- Official Updates (first-party) -->
         <div class="card col-6 community-card">
           <div class="card__title">Official Updates</div>
-          <p class="small">A first-party updates feed served by Capitoken (stable across browsers — no third-party embeds).</p>
+          <p class="small">A first-party updates feed served by Capitoken (stable across browsers — no third‑party embeds).</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://t.me/${TG_CHANNEL}`} target="_blank" rel="noreferrer noopener">
+            <a class="btn btn--primary" href="#verify" onclick="document.getElementById('verify')?.scrollIntoView({behavior:'smooth'}); return false;">
               Official Links Only
             </a>
-            <a class="btn" href="https://discord.gg/XVHVaVWPq5" target="_blank" rel="noreferrer noopener">
+            <a class="btn" id="discordBtn" href="#" target="_blank" rel="noreferrer noopener">
               Discord (optional)
             </a>
           </div>
 
-          <div class="community-embed community-embed--updates" style="margin-top:14px;">
-            <div id="capiUpdates" class="updates-list" aria-live="polite">
-              <div class="updates-loading">Loading official updates…</div>
-            </div>
+          <div class="updates-list" id="updatesList" style="margin-top:14px;">
+            <div class="updates-loading small">Loading updates…</div>
           </div>
 
           <p class="small note" style="margin-top:12px;">
@@ -907,12 +896,130 @@ function iconCandidates(it){
           </p>
         </div>
       </div>
+      </div>
     </div>
+
+    <script type="module">
+      const cfg = window.CAPI_CONFIG || {};
+      const socials = cfg.SOCIALS || {};
+
+      // ---- Telegram wiring (Channel + pinned post embed) ----
+      const tgChannel = (cfg.TELEGRAM_CHANNEL || "CapitokenOfficial").replace(/^@/, "");
+      const tgPinned = (cfg.TELEGRAM_PINNED_POST_ID || "").toString().trim();
+      const tgUrl = socials.telegram || `https://t.me/${tgChannel}`;
+
+      const tgJoinBtn = document.getElementById("tgJoinBtn");
+      const tgOpenBtn = document.getElementById("tgOpenBtn");
+      if (tgJoinBtn) { tgJoinBtn.href = tgUrl; tgJoinBtn.textContent = `Join @${tgChannel}`; }
+      if (tgOpenBtn) { tgOpenBtn.href = tgUrl; }
+
+      const tgShell = document.getElementById("tgEmbedShell");
+      if (tgShell && tgPinned) {
+        // Telegram supports embedding a specific public post via ?embed=1
+        const iframe = document.createElement("iframe");
+        iframe.className = "tg-iframe";
+        iframe.loading = "lazy";
+        iframe.referrerPolicy = "no-referrer";
+        iframe.allow = "encrypted-media; fullscreen";
+        iframe.src = `https://t.me/${tgChannel}/${tgPinned}?embed=1&single=1`;
+        iframe.title = "Capitoken — Telegram pinned update";
+        tgShell.innerHTML = "";
+        tgShell.appendChild(iframe);
+      }
+
+      // ---- Discord button (optional) ----
+      const discordBtn = document.getElementById("discordBtn");
+      if (discordBtn) {
+        if (socials.discord) {
+          discordBtn.href = socials.discord;
+        } else {
+          discordBtn.style.opacity = "0.55";
+          discordBtn.style.pointerEvents = "none";
+        }
+      }
+
+      // ---- Official Updates feed (Gist RAW -> fallback local) ----
+      const BASE = import.meta.env.BASE_URL || "/";
+      const updatesList = document.getElementById("updatesList");
+
+      const remoteUrl = (cfg.ANNOUNCEMENTS_GIST_URL || "").trim();
+      const fallbackUrl = `${BASE}data/announcements.json`;
+
+      async function fetchJson(url) {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      }
+
+      function esc(s) {
+        return String(s ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function render(items) {
+        if (!updatesList) return;
+        updatesList.innerHTML = "";
+
+        const list = Array.isArray(items) ? items.slice(0, 6) : [];
+        if (!list.length) {
+          updatesList.innerHTML = `<div class="updates-loading small">No updates yet.</div>`;
+          return;
+        }
+
+        for (const it of list) {
+          const title = esc(it.title);
+          const body = esc(it.body);
+          const date = esc(it.date || "");
+          const tag = esc(it.tag || "");
+          const url = (it.url || "").toString();
+
+          const row = document.createElement("div");
+          row.className = "update-item";
+
+          row.innerHTML = `
+            <div class="update-head">
+              <div class="update-title">${title}</div>
+              <div class="update-meta">
+                ${date ? `<span class="update-date">${date}</span>` : ""}
+                ${tag ? `<span class="update-tag">${tag}</span>` : ""}
+              </div>
+            </div>
+            <div class="update-body small">${body}</div>
+            ${url ? `<a class="btn btn--mini" href="${esc(url)}" target="_blank" rel="noreferrer noopener">Open</a>` : ""}
+          `;
+          updatesList.appendChild(row);
+        }
+      }
+
+      (async () => {
+        try {
+          if (remoteUrl) {
+            const data = await fetchJson(remoteUrl);
+            render(data);
+            return;
+          }
+          throw new Error("No remote URL");
+        } catch (e) {
+          try {
+            const data = await fetchJson(fallbackUrl);
+            render(data);
+          } catch (e2) {
+            if (updatesList) {
+              updatesList.innerHTML = `<div class="updates-loading small">Updates feed unavailable.</div>`;
+            }
+          }
+        }
+      })();
+    </script>
   </section>
 
   <hr class="hr" />
 
-  <!-- FAQ -->
+<!-- FAQ -->
   <section class="section" id="faq">
     <div class="container reveal">
       <div class="section-block">
@@ -985,67 +1092,7 @@ function iconCandidates(it){
 
   <!-- Toast -->
   <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
-
-  <!-- Updates loader (first-party) -->
-  <script is:inline type="module" define:vars={{ ANNOUNCEMENTS_JSON }}>
-    const el = document.getElementById('capiUpdates');
-    if (el) {
-      const escapeHtml = (s) => String(s)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
-
-      const fmtDate = (iso) => {
-        try {
-          const d = new Date(iso);
-          if (Number.isNaN(d.getTime())) return '';
-          return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'2-digit' });
-        } catch {
-          return '';
-        }
-      };
-
-      const render = (items) => {
-        if (!Array.isArray(items) || items.length === 0) {
-          el.innerHTML = '<div class="updates-empty">No updates yet. Check back soon.</div>';
-          return;
-        }
-        const rows = items.slice(0, 6).map((it) => {
-          const title = escapeHtml(it.title || 'Update');
-          const date = fmtDate(it.date || '');
-          const tag = escapeHtml(it.tag || '');
-          const href = it.url ? String(it.url) : '';
-          const text = escapeHtml(it.text || '');
-          const link = href ? `<a class="updates-item__link" href="${escapeHtml(href)}" target="_blank" rel="noreferrer noopener">Open</a>` : '';
-          return `
-            <div class="updates-item">
-              <div class="updates-item__top">
-                <div class="updates-item__title">${title}</div>
-                <div class="updates-item__meta">
-                  ${date ? `<span class="updates-item__date">${date}</span>` : ''}
-                  ${tag ? `<span class="updates-item__tag">${tag}</span>` : ''}
-                </div>
-              </div>
-              ${text ? `<div class="updates-item__text">${text}</div>` : ''}
-              ${href ? `<div class="updates-item__actions">${link}</div>` : ''}
-            </div>
-          `;
-        }).join('');
-        el.innerHTML = rows;
-      };
-
-      fetch(ANNOUNCEMENTS_JSON, { cache: 'no-store' })
-        .then((r) => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-        .then((data) => render(data?.items || data))
-        .catch(() => {
-          el.innerHTML = '<div class="updates-empty">Unable to load updates (network/cache). Official links still work.</div>';
-        });
-    }
-  </script>
-
-<!-- Live + Wallet script -->
+  <!-- Live + Wallet script -->
   <script is:inline type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const ENGINE_V = new URL(window.location.href).searchParams.get("v") || "PHASE9PULSE_R1";
 
