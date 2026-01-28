@@ -310,9 +310,14 @@ const roadmap = [
       <div class="k">Volume (24h)</div>
       <div class="v"><span id="mVol">TBA</span></div>
     </div>
-  </div>
+  <div class="pulse-item pulse-item--minor">
+      <div class="k">Since launch</div>
+      <div class="v"><span id="pulseSince">—</span></div>
+    </div>
 
-  <p class="small" style="margin-top:12px;">
+</div>
+
+  <p id="pulseNote" class="small pulse-note" style="margin-top:12px;">
     Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.
   </p>
 </div>
@@ -1078,6 +1083,31 @@ function iconCandidates(it){
       return Number(n).toLocaleString(undefined, { style:"currency", currency:"USD", maximumFractionDigits:d });
     }
 
+    function fmtPct(p){
+      if(p === null || p === undefined || !Number.isFinite(Number(p))) return "—";
+      const n = Number(p);
+      const abs = Math.abs(n);
+      const digits = abs >= 10 ? 0 : 1;
+      const s = n >= 0 ? "+" : "−";
+      // Use a unicode minus for nicer typography, but keep parseable.
+      const val = Math.abs(n).toFixed(digits);
+      return `${s}${val}%`;
+    }
+
+    function computeSinceLaunch(priceUsd){
+      const n = Number(priceUsd);
+      if(!Number.isFinite(n) || n <= 0) return null;
+      const key = "capi_launch_price_usd_v1";
+      let base = null;
+      try { base = Number(localStorage.getItem(key)); } catch {}
+      if(!Number.isFinite(base) || base <= 0){
+        try { localStorage.setItem(key, String(n)); } catch {}
+        base = n;
+      }
+      const pct = ((n - base) / base) * 100;
+      return { base, pct };
+    }
+
     function setTxt(id, v){
       const el = $id(id);
       if(el) el.textContent = v;
@@ -1250,13 +1280,15 @@ function iconCandidates(it){
       if(!ts) return "—";
       const t = Number(ts);
       if(!Number.isFinite(t)) return "—";
-      const diff = Date.now() - t;
-      const mins = Math.max(0, Math.floor(diff/60000));
-      if(mins < 60) return `${mins}m`;
-      const hrs = Math.floor(mins/60);
-      if(hrs < 48) return `${hrs}h`;
-      const days = Math.floor(hrs/24);
-      return `${days}d`;
+      const diffMs = Date.now() - t;
+      const days = Math.max(0, Math.floor(diffMs / 86400000));
+
+      // Human-friendly: "14 Days", "3 Months", "2 Years"
+      if(days < 60) return `${days} ${days === 1 ? "Day" : "Days"}`;
+      const months = Math.floor(days / 30);
+      if(months < 24) return `${months} ${months === 1 ? "Month" : "Months"}`;
+      const years = Math.floor(days / 365);
+      return `${years} ${years === 1 ? "Year" : "Years"}`;
     }
 
     async function loadDexScreener(){
@@ -1276,7 +1308,13 @@ function iconCandidates(it){
 
         setMarketBadge("Market: Live");
 
-        $id("mPrice").textContent = fmtUSD(p.priceUsd, 8);
+        {
+        const priceStr = fmtUSD(p.priceUsd, 8);
+        const since = computeSinceLaunch(p.priceUsd);
+        const sinceStr = since ? fmtPct(since.pct) : "—";
+        $id("mPrice").textContent = since ? `${priceStr} (${sinceStr})` : priceStr;
+        setTxt("pulseSince", sinceStr);
+      }
         $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
         $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
 
@@ -1291,6 +1329,7 @@ function iconCandidates(it){
         setTxt("pulseAge", created ? humanAge(created) : "—");
       }catch(e){
         setMarketBadge("Market: Blocked");
+        setTxt("pulseSince","—");
         console.warn("DexScreener fetch failed", e);
       }
     }
