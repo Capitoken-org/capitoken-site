@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  DEPLOY_ENV: staging
+  BASE_PATH: "/capitoken-site-staging/"
+  SITE_URL: "https://capitoken-org.github.io"
+
 permissions:
   contents: read
   pages: write
