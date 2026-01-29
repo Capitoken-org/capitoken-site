@@ -37,17 +37,8 @@
     return Math.round(num).toString();
   }
 
-  // Baseline ("since launch")
-  // - Preferred: GLOBAL baseline from /public/data/pulse-extras.json (Baseline A)
-  // - Fallback: per-browser localStorage (kept for compatibility)
-  //
-  // NOTE: Older debug commands may remove different keys. We read those too.
+  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
   const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
-  const BASELINE_COMPAT_KEYS = [
-    BASELINE_KEY,
-    "capi_pulse_baseline_price_usd",
-    "capi_pulse_baseline_usd",
-  ];
   // Global baseline (preferred). When available, it comes from /public/data/pulse-extras.json (Baseline A).
   // Local baseline is a fallback only (stored in localStorage).
   let GLOBAL_BASELINE_USD = null;
@@ -58,12 +49,9 @@
       return GLOBAL_BASELINE_USD;
     }
     try {
-      for (const k of BASELINE_COMPAT_KEYS) {
-        const raw = localStorage.getItem(k);
-        const v = raw ? Number(raw) : null;
-        if (Number.isFinite(v) && v > 0) return v;
-      }
-      return null;
+      const raw = localStorage.getItem(BASELINE_KEY);
+      const v = raw ? Number(raw) : null;
+      return Number.isFinite(v) && v > 0 ? v : null;
     } catch {
       return null;
     }
@@ -87,12 +75,17 @@
   }
 
   // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
+  // IMPORTANT: GitHub Pages project sites are served from a subpath
+  // (e.g. /capitoken-site-staging/), so absolute URLs like "/data/..." 404.
+  // Always resolve from document.baseURI.
+  function extrasUrl() {
+    return new URL('data/pulse-extras.json', document.baseURI).toString();
+  }
+
   async function loadPulseExtras(){
     try {
       if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      // Use RELATIVE path (no leading slash) so it works on GitHub Pages project sites
-      // under /<repo>/... (e.g. /capitoken-site-staging/data/pulse-extras.json).
-      const res = await fetch(`data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
+      const res = await fetch(`${extrasUrl()}?ts=${Date.now()}`, { cache: `no-store` });
       if (!res.ok) throw new Error(`extras ${res.status}`);
       const j = await res.json();
       window.__capiPulseExtras = j;
@@ -485,7 +478,7 @@
     const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
     let extras = null;
     try {
-      const r = await fetch("/data/pulse-extras.json?ts=" + Date.now(), { cache: "no-store" });
+      const r = await fetch(extrasUrl(), { cache: "no-store" });
       if (r.ok) extras = await r.json();
     } catch (_) {}
 
