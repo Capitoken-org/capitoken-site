@@ -155,12 +155,14 @@
     const dexUrl = pair ? safe(`https://dexscreener.com/${chain}/${pair}`) : safe(`https://dexscreener.com/${chain}`);
     const ethUrl = contract ? safe(`https://etherscan.io/token/${contract}`) : safe("https://etherscan.io/");
 
-    node.innerHTML =
+    const html = 
       `Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.` +
       `<br><span class="muted">Sources:</span> ` +
       `<a href="${dexUrl}" target="_blank" rel="noreferrer noopener">DexScreener</a>` +
       ` <span class="muted">and</span> ` +
       `<a href="${ethUrl}" target="_blank" rel="noreferrer noopener">Etherscan</a>.`;
+
+    if (node.innerHTML !== html) node.innerHTML = html
   }
 
 
@@ -399,7 +401,8 @@
     for (const ms of schedule) setTimeout(enforce, ms);
 
     // Also observe for any changes and revert immediately.
-    const targets = [ageEl, priceEl, noteEl].filter(Boolean);
+    const targets = [ageEl, priceEl].filter(Boolean);
+    // Note is updated via schedule + "only-if-changed" guard to avoid MutationObserver loops.
     if (!targets.length) return;
 
     const obs = new MutationObserver(() => {
