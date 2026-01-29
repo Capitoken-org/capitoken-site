@@ -1,8 +1,3 @@
-
-
-  // Global baseline (from /public/data/pulse-extras.json) + localStorage fallback
-  let BASELINE_USD = null;
-  let BASELINE_CAPTURED_AT = null;
 /* Capitoken — Pulse Snapshot (DexScreener + optional Etherscan) 
    - Renders a compact "Community Snapshot" inside the CAPI Pulse card
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
@@ -44,69 +39,57 @@
 
   // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
   const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
+  // Global baseline (preferred). When available, it comes from /public/data/pulse-extras.json (Baseline A).
+  // Local baseline is a fallback only (stored in localStorage).
+  let GLOBAL_BASELINE_USD = null;
 
   function getBaseline() {
-    if (Number.isFinite(BASELINE_USD) && BASELINE_USD > 0) return BASELINE_USD;
+    // Prefer global baseline if present.
+    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
+      return GLOBAL_BASELINE_USD;
+    }
     try {
-      const v = Number(localStorage.getItem(KEY_BASELINE));
+      const raw = localStorage.getItem(BASELINE_KEY);
+      const v = raw ? Number(raw) : null;
       return Number.isFinite(v) && v > 0 ? v : null;
     } catch {
       return null;
     }
   }
 
-  function setBaselineOnce(priceUsd) {
-    const p = Number(priceUsd);
-    if (!Number.isFinite(p) || p <= 0) return;
-    if (Number.isFinite(BASELINE_USD) && BASELINE_USD > 0) return; // already set
-    BASELINE_USD = p;
-    BASELINE_CAPTURED_AT = BASELINE_CAPTURED_AT || new Date().toISOString();
+  // Set local baseline (fallback). If force=true, overwrite.
+  function setBaseline(priceUsd, force = false) {
+    const v = Number(priceUsd);
+    if (!Number.isFinite(v) || v <= 0) return;
+    // If we already have a global baseline, keep it authoritative.
+    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
+      return;
+    }
     try {
-      localStorage.setItem(KEY_BASELINE, String(p));
+      if (!force) {
+        const existing = getBaseline();
+        if (existing) return;
+      }
+      localStorage.setItem(BASELINE_KEY, String(v));
     } catch {}
   }
 
-  function applyBaselineFromExtras(extras) {
-    if (!extras) return;
-    const p = Number(extras.launchPriceUsd);
-    if (Number.isFinite(p) && p > 0) {
-      BASELINE_USD = p;
-      BASELINE_CAPTURED_AT = extras.launchCapturedAt || BASELINE_CAPTURED_AT;
-      try {
-        localStorage.setItem(KEY_BASELINE, String(p));
-      } catch {}
-    }
-  }
-
   // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
-  async function loadPulseExtras() {
-    const urls = [
-      "/data/pulse-extras.json",
-      "/capitoken-site-staging/data/pulse-extras.json",
-    ];
-    for (const url of urls) {
-      try {
-        const r = await fetch(url, { cache: "no-store" });
-        if (!r.ok) continue;
-        const j = await r.json();
-        if (!j || typeof j !== "object") continue;
-        return {
-          schema: j.schema || null,
-          updatedAt: j.updatedAt || null,
-          chain: j.chain || null,
-          contract: j.contract || null,
-          pair: j.pair || null,
-          holders: j.holders ?? null,
-          launchPriceUsd: j.launchPriceUsd ?? null,
-          launchCapturedAt: j.launchCapturedAt ?? null,
-          sources: j.sources || null,
-        };
-      } catch {
-        // try next url
+  async function loadPulseExtras(){
+    try {
+      if (window.__capiPulseExtras) return window.__capiPulseExtras;
+      const res = await fetch(`/data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
+      if (!res.ok) throw new Error(`extras ${res.status}`);
+      const j = await res.json();
+      window.__capiPulseExtras = j;
+      // Baseline A (global): use launchPriceUsd when present.
+      if (j && typeof j.launchPriceUsd === 'number' && Number.isFinite(j.launchPriceUsd) && j.launchPriceUsd > 0) {
+        GLOBAL_BASELINE_USD = j.launchPriceUsd;
       }
+      return j;
+    } catch (_) {
+      return null;
     }
-    return null;
-  }
   }
 
 
@@ -334,7 +317,7 @@
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
-        setBaselineOnce(priceUsd);
+        setBaseline(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
         mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
       } else {
@@ -434,7 +417,7 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
-          setBaselineOnce(priceUsd);
+          setBaseline(priceUsd);
           const pct = pctSinceBaseline(priceUsd);
           return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
         })()
@@ -495,7 +478,7 @@
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
     const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
     if (staticLaunch && !getBaseline().priceUsd) {
-      setBaselineOnce(staticLaunch);
+      setBaseline(staticLaunch);
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
@@ -504,7 +487,19 @@
 
     try {
       const dexPair = await fetchDexPair(chain, pair);
-      const holders = await fetchHoldersEtherscan(contract, apiKey);
+
+      // Holders: prefer static holders from /data/pulse-extras.json (Baseline A) to avoid API limits.
+      // Fallback to Etherscan API only when a key is configured.
+      let holders = (typeof staticHolders === "number" && Number.isFinite(staticHolders) && staticHolders > 0) ? staticHolders : null;
+      if (!holders && contract && apiKey) {
+        holders = await fetchHoldersEtherscan(contract, apiKey);
+      }
+
+      // If we know the token contract, point the holders "button" to Etherscan balances (trust-first).
+      if (holdersLinkEl && contract) {
+        holdersLinkEl.href = `https://etherscan.io/token/${contract}#balances`;
+      }
+
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
       lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
