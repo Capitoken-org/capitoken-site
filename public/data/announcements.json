@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Official links only",
+    "date": "2026-01-27",
+    "tag": "ANTI-SCAM",
+    "body": "Only trust contract/pair links published on capitoken.org.",
+    "url": "https://www.capitoken.org/verify/"
+  },
+  {
+    "title": "Renounce countdown is live",
+    "date": "2026-01-27",
+    "tag": "STATUS",
+    "body": "The contract renounce countdown is visible on the website. Verify dates only on this site.",
+    "url": "https://www.capitoken.org/"
+  },
+  {
+    "title": "Market data may be indexing",
+    "date": "2026-01-27",
+    "tag": "MARKET",
+    "body": "If market stats look delayed, indexing can take minutes-hours. Use official pair/contract from Launch Panel.",
+    "url": "https://www.capitoken.org/markets/"
+  }
+]

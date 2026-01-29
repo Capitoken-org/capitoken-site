@@ -1,9 +1,17 @@
+// STAGING_SOCIALS_UPDATED 2026-01-27 21:16 UTC
 // Capitoken runtime config (public)
 // Load this in the browser BEFORE trust-engine/market-engine.
 // You only need to edit RPC_HTTP.
 
 (function () {
   const CFG = {
+  // Etherscan (optional) — used for holders count. Leave blank to disable holders.
+  // IMPORTANT: never expose API keys in client-side JS.
+  // Pulse runs in free mode; Etherscan is used only as an external link.
+  ETHERSCAN_API_KEY: '',
+  // UI label for Pulse Stage
+  PULSE_STAGE_LABEL: 'Live (Early)',
+
     // Ethereum mainnet
     CHAIN_ID_HEX: '0x1',
 
@@ -16,6 +24,11 @@
     // Uniswap V2 pair (CAPI/WETH)
     // This is NOT Etherscan; it is the PAIR address (the pool contract).
     DEX_PAIR_ADDRESS: '0xb96808b1270A89eA8A237d52df389619f347AeA2',
+
+    // Pulse Baseline (Global)
+    // Launch price observed on DexScreener at initial activity (used as a fixed baseline).
+    PULSE_BASELINE_USD: 0.000000006676,
+    PULSE_BASELINE_CAPTURED_AT: '2026-01-14T00:00:00Z',
 
     // DexScreener (live stats for "CAPI Pulse")
     DEXSCREENER: {
@@ -42,6 +55,23 @@
     TOKENS: {
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     },
+    // Official social links (leave empty string if not available yet)
+    // Community panel (Telegram + first-party updates)
+    TELEGRAM_CHANNEL: 'capitoken_official',
+    TELEGRAM_PINNED_POST_ID: '13',
+    ANNOUNCEMENTS_GIST_URL: 'https://gist.githubusercontent.com/Capitoken-org/fb30847eaea89c2c1861ebcca5f21f77/raw/fd6ee70e93095e4b54e30c63d637189da3cc6b9b/announcements.json',
+
+    SOCIALS: {
+  x: "https://x.com/Capitokenorg",
+  telegram: "https://t.me/CapitokenOfficial",
+  youtube: "https://www.youtube.com/channel/UCY5xCVzo-k6hGdR4xhUhTNQ",
+  medium: "https://medium.com/@info_43649",
+  reddit: "https://www.reddit.com/user/CapiToken/",
+  tiktok: "https://www.tiktok.com/@capitoken.official",
+  facebook: "https://www.facebook.com/Capitoken.official/",
+  instagram: "https://www.instagram.com/capitoken.official/",
+	  discord: "https://discord.gg/XVHVaVWPq5"
+},
   };
 
   // Public config objects used by the engines
