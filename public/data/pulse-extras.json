@@ -1,0 +1,19 @@
+{
+  "version": "pulse-extras-v1",
+  "updatedAt": null,
+  "chain": "ethereum",
+  "pair": "",
+  "contract": "",
+  "dex": {
+    "priceUsd": null,
+    "pairCreatedAt": null
+  },
+  "etherscan": {
+    "holders": null,
+    "error": ""
+  },
+  "launch": {
+    "priceUsd": null,
+    "at": null
+  }
+}

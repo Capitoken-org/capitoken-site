@@ -3,8 +3,6 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
-  try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
-
   const PULSE_VERSION = "snapshot-v1.4";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
@@ -223,6 +221,17 @@
     area.setAttribute("d", dArea);
   }
 
+  async function fetchPulseExtras() {
+    try {
+      const r = await fetch('/data/pulse-extras.json', { cache: 'no-store' });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return (j && typeof j === 'object') ? j : null;
+    } catch {
+      return null;
+    }
+  }
+
   async function fetchDexPair(chain, pairAddress) {
     const url = `https://api.dexscreener.com/latest/dex/pairs/${encodeURIComponent(chain)}/${encodeURIComponent(pairAddress)}`;
     const res = await fetch(url, { cache: "no-store" });
@@ -278,7 +287,7 @@
 
     // Update DOM
     const mPrice = el("mPrice");
-    if (mPrice && !isOwnedByIndex(mPrice)) {
+    if (mPrice) {
       if (priceUsd !== null) {
         setBaseline(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
@@ -287,10 +296,10 @@
         mPrice.textContent = "TBA";
       }
     }
-    const mLiq = el("mLiq"); if (mLiq && !isOwnedByIndex(mLiq)) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
-    const mVol = el("mVol"); if (mVol && !isOwnedByIndex(mVol)) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
-    const mMcap = el("mMcap"); if (mMcap && !isOwnedByIndex(mMcap)) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
-    const bs = el("pulseBS"); if (bs && !isOwnedByIndex(bs)) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
+    const mLiq = el("mLiq"); if (mLiq) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
+    const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
+    const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
+    const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
     const age = el("pulseAge"); if (age && !isOwnedByIndex(age)) age.textContent = humanAge(createdAt);
 
     const hEl = el("pulseHolders");
@@ -433,8 +442,20 @@
     if (!pair) return;
 
     try {
+      const extras = await fetchPulseExtras();
       const dexPair = await fetchDexPair(chain, pair);
-      const holders = await fetchHoldersEtherscan(contract, apiKey);
+
+      // Prefer server-generated extras (GitHub Action) so browsers don't hit Etherscan directly
+      lastHoldersErr = (extras && extras.etherscan && typeof extras.etherscan.error === 'string') ? extras.etherscan.error : '';
+      const holders = (extras && extras.etherscan && Number.isFinite(Number(extras.etherscan.holders)))
+        ? Number(extras.etherscan.holders)
+        : null;
+
+      // If the Action set a baseline launch price, persist it for stable % since launch
+      if (extras && extras.launch && Number.isFinite(Number(extras.launch.priceUsd))) {
+        setBaseline(Number(extras.launch.priceUsd));
+      }
+
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
       lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
