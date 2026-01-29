@@ -1,113 +1,127 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
 const REG_PATH = path.join(ROOT, 'public', 'official-registry.json');
 const OUT_PATH = path.join(ROOT, 'public', 'data', 'pulse-extras.json');
 
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
-
-function nowIso() {
-  return new Date().toISOString();
+function readJson(p) {
+  try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; }
 }
 
-async function readJson(p) {
-  const txt = await fs.readFile(p, 'utf8');
-  return JSON.parse(txt);
+function writeJson(p, obj) {
+  fs.mkdirSync(path.dirname(p), { recursive: true });
+  fs.writeFileSync(p, JSON.stringify(obj, null, 2) + '\n', 'utf8');
 }
 
-async function writeJson(p, obj) {
-  await fs.mkdir(path.dirname(p), { recursive: true });
-  await fs.writeFile(p, JSON.stringify(obj, null, 2) + '\n', 'utf8');
+function pick(reg) {
+  const contract = reg?.contract?.address || reg?.contractAddress || '';
+  const pair = reg?.dex?.pair || reg?.pair?.address || '';
+  const chain = (reg?.chain || reg?.dex?.chain || 'ethereum').toLowerCase();
+  return { contract, pair, chain };
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: 'no-store' });
+async function fetchText(url, init) {
+  const res = await fetch(url, init);
+  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+  return await res.text();
+}
+
+async function fetchJson(url, init) {
+  const res = await fetch(url, init);
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
   return await res.json();
 }
 
-async function fetchDexPair(chain, pair) {
-  const url = `https://api.dexscreener.com/latest/dex/pairs/${encodeURIComponent(chain)}/${encodeURIComponent(pair)}`;
-  const data = await fetchJson(url);
-  return data.pair || (Array.isArray(data.pairs) ? data.pairs[0] : null);
+function parseHoldersFromHtml(html) {
+  // Try multiple patterns, Etherscan changes markup over time.
+  // We only need the integer count.
+  const patterns = [
+    /Holders\s*:\s*<[^>]*>\s*([0-9,]+)/i,
+    /Holders\s*<[^>]*>\s*([0-9,]+)/i,
+    /"holders"\s*:\s*"?([0-9,]+)"?/i,
+  ];
+  for (const re of patterns) {
+    const m = html.match(re);
+    if (m && m[1]) {
+      const n = Number(String(m[1]).replace(/,/g, ''));
+      if (Number.isFinite(n) && n > 0) return n;
+    }
+  }
+  return null;
 }
 
-async function fetchHoldersEtherscan(contract) {
-  if (!ETHERSCAN_API_KEY) return { holders: null, error: 'missing ETHERSCAN_API_KEY' };
-  if (!contract) return { holders: null, error: 'missing contract' };
+async function getHoldersCount(contract) {
+  if (!contract) return null;
+  const url = `https://etherscan.io/token/${contract}`;
+  const html = await fetchText(url, {
+    headers: {
+      // Avoid bot blocks / simplified markup differences
+      'user-agent': 'Mozilla/5.0 (GitHub Actions) CapitokenPulse/1.0'
+    }
+  });
+  return parseHoldersFromHtml(html);
+}
 
-  const url = `https://api.etherscan.io/api?module=token&action=tokenholdercount&contractaddress=${encodeURIComponent(contract)}&apikey=${encodeURIComponent(ETHERSCAN_API_KEY)}`;
-  const data = await fetchJson(url);
-
-  if ((data?.status === '1' || data?.message === 'OK') && data?.result) {
-    const n = Number(data.result);
-    if (Number.isFinite(n)) return { holders: n, error: '' };
-    return { holders: null, error: 'invalid result' };
-  }
-
-  const msg = typeof data?.result === 'string' ? data.result : (data?.message ? String(data.message) : 'not ok');
-  return { holders: null, error: msg.slice(0, 120) };
+async function getDexPrice(pair) {
+  if (!pair) return null;
+  const url = `https://api.dexscreener.com/latest/dex/pairs/ethereum/${pair}`;
+  const j = await fetchJson(url, { headers: { 'user-agent': 'CapitokenPulse/1.0' } });
+  const p = j?.pair || j?.pairs?.[0];
+  const price = p?.priceUsd ? Number(p.priceUsd) : null;
+  return Number.isFinite(price) ? price : null;
 }
 
 async function main() {
-  const reg = await readJson(REG_PATH);
+  const reg = readJson(REG_PATH);
+  if (!reg) throw new Error('public/official-registry.json not found or invalid JSON');
 
-  const chain = String(reg?.pair?.chain || reg?.dex?.dexscreener?.chain || 'ethereum').toLowerCase();
-  const pair = reg?.pair?.address || reg?.dex?.pair || '';
-  const contract = reg?.contract?.address || '';
+  const { contract, pair, chain } = pick(reg);
+  if (!contract) throw new Error('Contract address not found in official-registry.json');
 
-  if (!pair) throw new Error('Pair address missing in official-registry.json');
-  if (!contract) throw new Error('Contract address missing in official-registry.json');
+  const prev = readJson(OUT_PATH) || {};
 
-  // Read previous output if it exists (to preserve launch baseline).
-  let prev = null;
+  // Holders (scraped, free)
+  let holders = null;
   try {
-    prev = await readJson(OUT_PATH);
-  } catch {}
+    holders = await getHoldersCount(contract);
+  } catch (e) {
+    holders = null;
+  }
 
-  const dexPair = await fetchDexPair(chain, pair);
+  // Baseline launch price (sticky): set once, then keep.
+  let launchPriceUsd = Number.isFinite(prev?.launchPriceUsd) ? prev.launchPriceUsd : null;
+  let launchCapturedAt = prev?.launchCapturedAt || null;
 
-  const priceUsd = dexPair?.priceUsd ? Number(dexPair.priceUsd) : null;
-  const pairCreatedAt = dexPair?.pairCreatedAt ? Number(dexPair.pairCreatedAt) : null;
-
-  const { holders, error: holdersError } = await fetchHoldersEtherscan(contract);
-
-  const prevLaunchPrice = prev?.launch?.priceUsd ?? null;
-  const prevLaunchAt = prev?.launch?.at ?? null;
-
-  // If baseline not set yet, set it to the first valid observed price (server-side).
-  const launchPriceUsd =
-    (Number.isFinite(prevLaunchPrice) && prevLaunchPrice > 0) ? prevLaunchPrice :
-    (Number.isFinite(priceUsd) && priceUsd > 0) ? priceUsd :
-    null;
-
-  const launchAt =
-    prevLaunchAt ? prevLaunchAt :
-    (launchPriceUsd !== null ? nowIso() : null);
+  if (!launchPriceUsd) {
+    try {
+      const current = await getDexPrice(pair);
+      if (Number.isFinite(current) && current > 0) {
+        launchPriceUsd = current;
+        launchCapturedAt = new Date().toISOString();
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   const out = {
-    version: 'pulse-extras-v1',
-    updatedAt: nowIso(),
+    schema: 'capitoken-pulse-extras@1',
+    updatedAt: new Date().toISOString(),
     chain,
-    pair,
     contract,
-    dex: {
-      priceUsd: Number.isFinite(priceUsd) ? priceUsd : null,
-      pairCreatedAt: Number.isFinite(pairCreatedAt) ? pairCreatedAt : null
-    },
-    etherscan: {
-      holders: Number.isFinite(holders) ? holders : null,
-      error: holdersError || ''
-    },
-    launch: {
-      priceUsd: launchPriceUsd,
-      at: launchAt
+    pair,
+    holders: Number.isFinite(holders) ? holders : (prev?.holders ?? null),
+    launchPriceUsd: Number.isFinite(launchPriceUsd) ? launchPriceUsd : (prev?.launchPriceUsd ?? null),
+    launchCapturedAt,
+    sources: {
+      holders: 'https://etherscan.io',
+      baseline: 'https://api.dexscreener.com'
     }
   };
 
-  await writeJson(OUT_PATH, out);
-  console.log(`Wrote ${OUT_PATH}`);
+  writeJson(OUT_PATH, out);
+  console.log('Wrote', OUT_PATH);
 }
 
 main().catch((e) => {

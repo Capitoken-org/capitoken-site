@@ -334,6 +334,13 @@ async function fetchDexScreenerPair({ apiBase, chain, pair, timeoutMs }) {
 
 function updatePulseFromPair(pairObj) {
   try {
+    // Pulse Snapshot (public/js/pulse-snapshot.js) owns the CAPI Pulse UI.
+    // If it's active, do not overwrite its formatted values (prevents the 14d/14 Days flip-loop).
+    if (typeof document !== 'undefined') {
+      const d = document.documentElement;
+      if (d && d.dataset && d.dataset.capiPulseOwner === 'pulse-snapshot') return;
+    }
+
     const priceUsd = pairObj?.priceUsd;
     const liqUsd = pairObj?.liquidity?.usd;
     const vol24 = pairObj?.volume?.h24;
@@ -367,15 +374,6 @@ function updatePulseFromPair(pairObj) {
 async function bootPulse() {
   try {
     if (typeof document === 'undefined') return;
-
-    // If Pulse Snapshot mode is active (or the snapshot UI is present), do NOT run this poller.
-    // Reason: it conflicts with Pulse Snapshot and/or index.astro live loader, causing values to flip
-    // (e.g. "14 Days" <-> "14d").
-    try {
-      const w = (typeof window !== 'undefined') ? window : null;
-      if (w && w.__CAPI_PULSE_SNAPSHOT_ACTIVE__) return;
-      if (document.getElementById('pulseLiqChart') || document.getElementById('pulseSince')) return;
-    } catch (e) {}
 
     // Only run if the Pulse panel exists
     const hasPulse = document.getElementById('mPrice') || document.getElementById('mLiq') || document.getElementById('mVol');

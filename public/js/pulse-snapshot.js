@@ -8,6 +8,7 @@
   const CFG_POLL_MS = 80;
 
   let lastHoldersErr = "";
+  let pulseExtras = null; // loaded from /public/data/pulse-extras.json
 
   const el = (id) => document.getElementById(id);
 
@@ -35,23 +36,25 @@
     return Math.round(num).toString();
   }
 
-  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
-  const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
-
-  function getBaseline() {
+  async function loadPulseExtras() {
     try {
-      const raw = localStorage.getItem(BASELINE_KEY);
-      const n = raw ? Number(raw) : null;
-      return Number.isFinite(n) && n > 0 ? n : null;
-    } catch { return null; }
+      // Cache-bust to avoid stale GH Pages edge caches on first load
+      const url = `/data/pulse-extras.json?v=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (!json || typeof json !== "object") return null;
+      return json;
+    } catch {
+      return null;
+    }
   }
 
-  function setBaseline(priceUsd) {
-    try {
-      const n = Number(priceUsd);
-      if (!Number.isFinite(n) || n <= 0) return;
-      if (getBaseline() === null) localStorage.setItem(BASELINE_KEY, String(n));
-    } catch {}
+  // Baseline ("since launch") — first-party, maintained by GitHub Actions.
+  // If unavailable, we hide the percentage.
+  function getBaseline() {
+    const n = pulseExtras && Number(pulseExtras.launchPriceUsd);
+    return Number.isFinite(n) && n > 0 ? n : null;
   }
 
   function pctSinceBaseline(priceUsd) {
@@ -219,17 +222,6 @@
 
     const dArea = `${d} L ${(w-pad).toFixed(2)} ${(h-pad).toFixed(2)} L ${pad.toFixed(2)} ${(h-pad).toFixed(2)} Z`;
     area.setAttribute("d", dArea);
-  }
-
-  async function fetchPulseExtras() {
-    try {
-      const r = await fetch('/data/pulse-extras.json', { cache: 'no-store' });
-      if (!r.ok) return null;
-      const j = await r.json();
-      return (j && typeof j === 'object') ? j : null;
-    } catch {
-      return null;
-    }
   }
 
   async function fetchDexPair(chain, pairAddress) {
@@ -432,30 +424,25 @@
   }
 
   async function run(cfg) {
+    try {
+      if (typeof document !== 'undefined' && document.documentElement) {
+        document.documentElement.dataset.capiPulseOwner = 'pulse-snapshot';
+      }
+    } catch {}
     // Accept config from multiple shapes/keys (back-compat)
     const ds = cfg.DEXSCREENER || {};
     const chain = String(cfg.DEXSCREENER_CHAIN || ds.chain || "ethereum").toLowerCase();
     const pair = cfg.DEX_PAIR_ADDRESS || ds.pair || cfg.DEX_PAIR || "";
     const contract = cfg.CONTRACT_ADDRESS || cfg.TOKEN_CONTRACT || "";
-    const apiKey = cfg.ETHERSCAN_API_KEY || cfg.ETHERSCAN_KEY || "";
 
     if (!pair) return;
 
     try {
-      const extras = await fetchPulseExtras();
+      // Load first-party extras (holders + baseline) once per page load.
+      pulseExtras = pulseExtras || (await loadPulseExtras());
+
       const dexPair = await fetchDexPair(chain, pair);
-
-      // Prefer server-generated extras (GitHub Action) so browsers don't hit Etherscan directly
-      lastHoldersErr = (extras && extras.etherscan && typeof extras.etherscan.error === 'string') ? extras.etherscan.error : '';
-      const holders = (extras && extras.etherscan && Number.isFinite(Number(extras.etherscan.holders)))
-        ? Number(extras.etherscan.holders)
-        : null;
-
-      // If the Action set a baseline launch price, persist it for stable % since launch
-      if (extras && extras.launch && Number.isFinite(Number(extras.launch.priceUsd))) {
-        setBaseline(Number(extras.launch.priceUsd));
-      }
-
+      const holders = (pulseExtras && Number.isFinite(pulseExtras.holders)) ? Number(pulseExtras.holders) : null;
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
       lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
