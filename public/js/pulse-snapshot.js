@@ -11,6 +11,8 @@
 
   const el = (id) => document.getElementById(id);
 
+  const isOwnedByIndex = (node) => !!(node && node.getAttribute && node.getAttribute("data-pulse-owner") === "index");
+
   function fmtUSD(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     const num = Number(n);
@@ -287,7 +289,7 @@
     const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
     const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
     const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
-    const age = el("pulseAge"); if (age) age.textContent = humanAge(createdAt);
+    const age = el("pulseAge"); if (age && !isOwnedByIndex(age)) age.textContent = humanAge(createdAt);
 
     const hEl = el("pulseHolders");
     if (hEl) {
@@ -387,8 +389,8 @@
     const enforce = () => {
       try {
         suppress = true;
-        if (ageEl && desiredAge && ageEl.textContent !== desiredAge) ageEl.textContent = desiredAge;
-        if (priceEl && desiredPrice && priceEl.textContent !== desiredPrice) priceEl.textContent = desiredPrice;
+        if (ageEl && !isOwnedByIndex(ageEl) && desiredAge && ageEl.textContent !== desiredAge) ageEl.textContent = desiredAge;
+        if (priceEl && !isOwnedByIndex(priceEl) && desiredPrice && priceEl.textContent !== desiredPrice) priceEl.textContent = desiredPrice;
         // Ensure sources footnote stays present (some renderers reset innerHTML)
         if (noteEl) updatePulseNote({ chain, pair, contract });
       } finally {
