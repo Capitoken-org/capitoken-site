@@ -552,7 +552,7 @@ body::before{
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image: url("/bg-capy.webp");
+  background-image: url("bg-capy.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2977,4 +2977,97 @@ html{ scroll-padding-top: calc(var(--nav-h) + 18px); }
   #navRenounce .renounce__title{ display:none; }
   #navRenounce{ padding:5px 8px; gap:8px; }
   #navRenounce .renounce__box{ min-width: 40px; padding:4px 7px; }
+}
+
+
+/* ===== Community: Telegram + Official Updates (first-party) ===== */
+.telegram-embed{min-height:240px;border:1px dashed rgba(255,255,255,0.18);border-radius:14px;padding:14px;background:rgba(0,0,0,0.20)}
+.community-embed--updates{min-height:240px;border:1px dashed rgba(255,255,255,0.18);border-radius:14px;padding:12px;background:rgba(0,0,0,0.20);display:flex;flex-direction:column;gap:10px;overflow:auto}
+.update-card{border:1px solid rgba(255,255,255,0.10);background:rgba(0,0,0,0.18);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,0.25)}
+.update-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.update-title{font-weight:800;letter-spacing:0.01em}
+.update-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.update-date{font-size:12px;opacity:0.75}
+.update-tag{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid rgba(25,230,211,0.28);background:rgba(25,230,211,0.10);color:rgba(255,255,255,0.92)}
+.update-body{font-size:13px;line-height:1.55;opacity:0.85}
+.update-foot{margin-top:10px;display:flex;justify-content:flex-end}
+.update-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;text-decoration:none;font-weight:800;font-size:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.92)}
+.update-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.20)}
+
+/* ===== CAPI Pulse (Community Snapshot) ===== */
+.pulse-chart{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  border:1px dashed rgba(255,255,255,.18);
+  background: rgba(0,0,0,.18);
+}
+.pulse-chart svg{
+  width:100%;
+  height:60px;
+  display:block;
+}
+#pulseLiqArea{
+  fill: rgba(255,255,255,.08);
+}
+#pulseLiqLine{
+  fill:none;
+  stroke: rgba(255,255,255,.45);
+  stroke-width:2;
+}
+.pulse-chart__caption{
+  margin-top:8px;
+  opacity:.9;
+}
+.pulse-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px 14px;
+  margin-top:12px;
+}
+.pulse-item{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+.pulse-item .k{
+  font-size:12px;
+  letter-spacing:.02em;
+  opacity:.85;
+}
+.pulse-item .v{
+  margin-top:4px;
+  font-size:16px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.pulse-item--minor{
+  opacity:.92;
+}
+.delta{
+  font-size:12px;
+  font-weight:800;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.22);
+}
+.delta--up{ border-color: rgba(70, 200, 120, .35); }
+.delta--down{ border-color: rgba(240, 90, 90, .35); }
+.delta--flat{ opacity:.85; }
+@media (max-width: 860px){
+  .pulse-grid{ grid-template-columns: 1fr; }
+}
+
+/* CAPI Pulse footnote links */
+.pulse-note a{
+  color: var(--accent, #f59e0b);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pulse-note a:hover{
+  filter: brightness(1.1);
 }

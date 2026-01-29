@@ -19,7 +19,7 @@ const YT_VIDEO_ID = ""; // Video fijo (ej: "dQw4w9WgXcQ") — deja vacío para m
 
 const stats = [
   { label: "Chain", value: "Ethereum Mainnet" },
-  { label: "Status", value: "Building" },
+  { label: "Status", value: "Deployed [Early Stage]" },
   { label: "Focus", value: "Community-first" },
   { label: "Symbol", value: "CAPI" },
 ];
@@ -107,7 +107,7 @@ const roadmap = [
           </div>
           <div class="hero-stat">
             <div class="k">Status</div>
-            <div class="v">Building</div>
+            <div class="v">Deployed [Early Stage]</div>
           </div>
           <div class="hero-stat">
             <div class="k">Focus</div>
@@ -243,27 +243,88 @@ const roadmap = [
         <div class="launch-row">
           <!-- CAPI Pulse (Live) -->
           <div class="card">
-            <div class="card__title">CAPI Pulse</div>
-            <div class="small">Simple live stats via DexScreener. If blocked by extensions, you’ll see placeholders.</div>
+  <div class="card__title">CAPI Pulse</div>
+  <div class="small">Community Snapshot (stable + trust-first). If blocked by extensions, you’ll see placeholders.</div>
 
-            <div class="pill" style="margin-top:10px;">
-              <span class="pill-dot"></span>
-              <span id="pulseNetwork">Ethereum Mainnet</span>
-            </div>
+  <div class="pill" style="margin-top:10px;">
+    <span class="pill-dot"></span>
+    <span id="pulseNetwork">Ethereum Mainnet</span>
+    <span class="pill-sep">•</span>
+    <span class="pill-muted">Stage:</span>
+    <span id="pulseStage" class="pill-strong">Live (Early)</span>
+    <span class="pill-sep">•</span>
+    <span class="pill-muted">Pair age:</span>
+    <span id="pulseAge" class="pill-strong">—</span>
+  </div>
 
-            <div class="stats" style="margin-top:14px;">
-              <div class="stat"><div class="k">Price</div><div class="v" id="mPrice">TBA</div></div>
-              <div class="stat"><div class="k">Market Cap (est.)</div><div class="v" id="mMcap">TBA</div></div>
-              <div class="stat"><div class="k">Liquidity</div><div class="v" id="mLiq">TBA</div></div>
-              <div class="stat"><div class="k">24h Volume</div><div class="v" id="mVol">TBA</div></div>
-              <div class="stat"><div class="k">24h Buys / Sells</div><div class="v" id="pulseBS">—</div></div>
-              <div class="stat"><div class="k">Pair age</div><div class="v" id="pulseAge">—</div></div>
-            </div>
+  <!-- Mini chart (7d) -->
+  <div class="pulse-chart" aria-label="Liquidity trend chart (7d)">
+    <svg id="pulseLiqChart" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Liquidity trend">
+      <path id="pulseLiqArea" d="" />
+      <path id="pulseLiqLine" d="" />
+    </svg>
+    <div class="pulse-chart__caption small">
+      7d liquidity trend (local snapshot). <span class="muted">Built over time as visitors load the page.</span>
+    </div>
+  </div>
 
-            <p class="small" style="margin-top:12px;">
-              If it’s not listed here, it’s not official. Always cross-check the URL.
-            </p>
-          </div>
+  <!-- Key metrics -->
+  <div class="pulse-grid">
+    <div class="pulse-item">
+      <div class="k">Holders</div>
+      <div class="v">
+        <span id="pulseHolders">—</span>
+        <span id="pulseHoldersDelta" class="delta delta--flat" title="Change vs ~24h snapshot">—</span>
+      </div>
+    </div>
+
+    <div class="pulse-item">
+      <div class="k">Active (24h)</div>
+      <div class="v"><span id="pulseActive">—</span></div>
+    </div>
+
+    <div class="pulse-item">
+      <div class="k">Liquidity</div>
+      <div class="v">
+        <span id="mLiq">TBA</span>
+        <span id="pulseLiqDelta" class="delta delta--flat" title="Change vs ~24h snapshot">—</span>
+      </div>
+    </div>
+
+    <div class="pulse-item">
+      <div class="k">Buys / Sells (24h)</div>
+      <div class="v"><span id="pulseBS">—</span></div>
+    </div>
+
+    <div class="pulse-item pulse-item--minor">
+      <div class="k">Price</div>
+      <div class="v"><span id="mPrice">TBA</span></div>
+    </div>
+
+    <div class="pulse-item pulse-item--minor">
+      <div class="k">MCap (est.)</div>
+      <div class="v"><span id="mMcap">TBA</span></div>
+    </div>
+
+    <div class="pulse-item pulse-item--minor">
+      <div class="k">Volume (24h)</div>
+      <div class="v"><span id="mVol">TBA</span></div>
+    </div>
+  <div class="pulse-item pulse-item--minor">
+      <div class="k">Since launch</div>
+      <div class="v"><span id="pulseSince">—</span></div>
+    </div>
+
+</div>
+
+  <p id="pulseNote" class="small pulse-note" style="margin-top:12px;">
+      Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.
+    <br />
+    Data sources: <a href="https://dexscreener.com" target="_blank" rel="noopener noreferrer">DexScreener</a> (market stats)
+    and <a href="https://etherscan.io" target="_blank" rel="noopener noreferrer">Etherscan</a> (holders, optional).
+  
+  </p>
+</div>
 
           <!-- Wallet Hangar -->
           <div class="card">
@@ -836,32 +897,31 @@ function iconCandidates(it){
   <hr class="hr" />
 
   <!-- COMMUNITY -->
-  <section class="section" id="community">
+  <section class="section" id="community" data-base={BASE_URL}>
     <div class="container reveal">
       <div class="section-block">
-      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Official socials — X and YouTube.</span></h2>
+      <h2 class="section-title section-title--split"><span class="title-main">Community</span><span class="title-slash"> / </span><span class="title-kicker">Official Telegram + Official Updates.</span></h2>
 
       <div class="grid community-grid" style="margin-top:14px;">
-        <!-- X (Twitter) -->
+        <!-- Official Telegram -->
         <div class="card col-6 community-card">
-          <div class="card__title">Official X</div>
-          <p class="small">If the embed is blank, your browser/extensions may block it. The official link still works.</p>
+          <div class="card__title">Official Telegram</div>
+          <p class="small">Real-time community updates and announcements. Always verify official links on this website first.</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://twitter.com/${X_HANDLE}`} target="_blank" rel="noreferrer noopener">
-              Open @${X_HANDLE}
+            <a id="tg-join-btn" class="btn btn--primary" href="https://t.me/capitoken_official" target="_blank" rel="noreferrer noopener">
+              Join @capitoken_official
+            </a>
+            <a id="tg-open-btn" class="btn" href="https://t.me/capitoken_official" target="_blank" rel="noreferrer noopener">
+              Open in Telegram
             </a>
           </div>
 
-          <div class="community-embed community-embed--x" style="margin-top:14px;">
-            <a class="twitter-timeline"
-               data-theme="dark"
-               data-show-replies="true"
-               data-tweet-limit="5"
-               data-chrome="noheader nofooter noborders transparent"
-               href={`https://twitter.com/${X_HANDLE}`}>
-               Tweets by {X_HANDLE}
-            </a>
+          <div id="tg-embed" class="community-embed community-embed--tg telegram-embed" style="margin-top:14px;">
+            <div class="small note">
+              Pinned update preview (from Telegram)<br/>
+              If this is blank, your browser may be blocking Telegram embeds. The buttons above still work.
+            </div>
           </div>
 
           <p class="small note" style="margin-top:12px;">
@@ -869,45 +929,26 @@ function iconCandidates(it){
           </p>
         </div>
 
-        <!-- YouTube (Fixed video) -->
+        <!-- Official Updates (first-party feed) -->
         <div class="card col-6 community-card">
-          <div class="card__title">Official YouTube</div>
-          <p class="small">Pinned video for announcements, explainers, and community updates.</p>
+          <div class="card__title">Official Updates</div>
+          <p class="small">A first-party updates feed served by Capitoken (stable across browsers — no third-party embeds).</p>
 
           <div class="actions" style="margin-top:10px;">
-            <a class="btn btn--primary" href={`https://www.youtube.com/@${YT_HANDLE}`} target="_blank" rel="noreferrer noopener">
-              Open @${YT_HANDLE}
+            <a id="updates-official-links-btn" class="btn btn--primary" href="#" target="_blank" rel="noreferrer noopener">
+              Official Links Only
             </a>
-            <a class="btn" href={`https://www.youtube.com/channel/${YT_CHANNEL_ID}`} target="_blank" rel="noreferrer noopener">
-              Channel ID
+            <a id="updates-discord-btn" class="btn" href="#" target="_blank" rel="noreferrer noopener">
+              Discord (optional)
             </a>
           </div>
 
-          <div class="community-embed community-embed--yt" style="margin-top:14px;">
-            {YT_VIDEO_ID ? (
-              <div class="yt-embed">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${YT_VIDEO_ID}`}
-                  title="Capitoken — Official YouTube Video"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                ></iframe>
-              </div>
-            ) : (
-              <div class="yt-placeholder">
-                <div class="small">
-                  <b>Video fijo pendiente:</b> edita <span class="mono">YT_VIDEO_ID</span> en <span class="mono">index.astro</span>.
-                </div>
-                <div class="small" style="margin-top:8px; opacity:.85;">
-                  Mientras tanto, usa el botón “Open @CapiToken” para ver el canal oficial.
-                </div>
-              </div>
-            )}
+          <div id="updates-list" class="community-embed community-embed--updates" style="margin-top:14px;">
+            <div class="small note">Loading updates…</div>
           </div>
 
           <p class="small note" style="margin-top:12px;">
-            Anti-scam: This is the only official YouTube referenced by Capitoken.
+            Anti-scam: this feed is served from this website (first-party).
           </p>
         </div>
       </div>
@@ -992,9 +1033,7 @@ function iconCandidates(it){
   <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
 
   <!-- X widget loader -->
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-  <!-- Live + Wallet script -->
+<!-- Live + Wallet script -->
   <script is:inline type="module" define:vars={{ TOKEN_ADDRESS, DEX_PAIR_ADDRESS }}>
     const ENGINE_V = new URL(window.location.href).searchParams.get("v") || "PHASE9PULSE_R1";
 
@@ -1046,6 +1085,31 @@ function iconCandidates(it){
     function fmtUSD(n, d=2){
       if(n === null || n === undefined || Number.isNaN(Number(n))) return "TBA";
       return Number(n).toLocaleString(undefined, { style:"currency", currency:"USD", maximumFractionDigits:d });
+    }
+
+    function fmtPct(p){
+      if(p === null || p === undefined || !Number.isFinite(Number(p))) return "—";
+      const n = Number(p);
+      const abs = Math.abs(n);
+      const digits = abs >= 10 ? 0 : 1;
+      const s = n >= 0 ? "+" : "−";
+      // Use a unicode minus for nicer typography, but keep parseable.
+      const val = Math.abs(n).toFixed(digits);
+      return `${s}${val}%`;
+    }
+
+    function computeSinceLaunch(priceUsd){
+      const n = Number(priceUsd);
+      if(!Number.isFinite(n) || n <= 0) return null;
+      const key = "capi_launch_price_usd_v1";
+      let base = null;
+      try { base = Number(localStorage.getItem(key)); } catch {}
+      if(!Number.isFinite(base) || base <= 0){
+        try { localStorage.setItem(key, String(n)); } catch {}
+        base = n;
+      }
+      const pct = ((n - base) / base) * 100;
+      return { base, pct };
     }
 
     function setTxt(id, v){
@@ -1220,13 +1284,15 @@ function iconCandidates(it){
       if(!ts) return "—";
       const t = Number(ts);
       if(!Number.isFinite(t)) return "—";
-      const diff = Date.now() - t;
-      const mins = Math.max(0, Math.floor(diff/60000));
-      if(mins < 60) return `${mins}m`;
-      const hrs = Math.floor(mins/60);
-      if(hrs < 48) return `${hrs}h`;
-      const days = Math.floor(hrs/24);
-      return `${days}d`;
+      const diffMs = Date.now() - t;
+      const days = Math.max(0, Math.floor(diffMs / 86400000));
+
+      // Human-friendly: "14 Days", "3 Months", "2 Years"
+      if(days < 60) return `${days} ${days === 1 ? "Day" : "Days"}`;
+      const months = Math.floor(days / 30);
+      if(months < 24) return `${months} ${months === 1 ? "Month" : "Months"}`;
+      const years = Math.floor(days / 365);
+      return `${years} ${years === 1 ? "Year" : "Years"}`;
     }
 
     async function loadDexScreener(){
@@ -1246,7 +1312,13 @@ function iconCandidates(it){
 
         setMarketBadge("Market: Live");
 
-        $id("mPrice").textContent = fmtUSD(p.priceUsd, 8);
+        {
+        const priceStr = fmtUSD(p.priceUsd, 8);
+        const since = computeSinceLaunch(p.priceUsd);
+        const sinceStr = since ? fmtPct(since.pct) : "—";
+        $id("mPrice").textContent = since ? `${priceStr} (${sinceStr})` : priceStr;
+        setTxt("pulseSince", sinceStr);
+      }
         $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
         $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
 
@@ -1261,6 +1333,7 @@ function iconCandidates(it){
         setTxt("pulseAge", created ? humanAge(created) : "—");
       }catch(e){
         setMarketBadge("Market: Blocked");
+        setTxt("pulseSince","—");
         console.warn("DexScreener fetch failed", e);
       }
     }
@@ -1387,4 +1460,8 @@ function iconCandidates(it){
       }catch(e){}
     })();
   </script>
+
+  <script src={withBase("/js/community.js")} defer></script>
 </BaseLayout>
+
+  <script src={withBase("/js/pulse-snapshot.js")} defer></script>
