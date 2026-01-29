@@ -31,7 +31,10 @@ jobs:
         run: npm ci
 
       - name: Build with Astro
-        run: npm run build
+        run: npm run build  
+        env: DEPLOY_ENV: production
+        BASE_PATH: ""
+        SITE_URL: "https://www.capitoken.org"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
