@@ -78,7 +78,7 @@
   async function loadPulseExtras(){
     try {
       if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      const res = await fetch(new URL(`data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
+      const res = await fetch(new URL(`data/pulse-extras.json?ts=${Date.now()}`, document.baseURI).toString(), { cache: `no-store` });
       if (!res.ok) throw new Error(`extras ${res.status}`);
       const j = await res.json();
       window.__capiPulseExtras = j;
@@ -471,7 +471,7 @@
     const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
     let extras = null;
     try {
-      const r = await fetch("/data/pulse-extras.json?ts=" + Date.now(), { cache: "no-store" });
+      const r = await fetch(new URL("data/pulse-extras.json?ts=" + Date.now(), document.baseURI).toString(), { cache: "no-store" });
       if (r.ok) extras = await r.json();
     } catch (_) {}
 

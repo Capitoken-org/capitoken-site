@@ -6,7 +6,9 @@
 (function () {
   const CFG = {
   // Etherscan (optional) — used for holders count. Leave blank to disable holders.
-  ETHERSCAN_API_KEY: '1E9EJAEXRU9UPR6Z52DXUYP8JRIMA8MC5H',
+  // IMPORTANT: never expose API keys in client-side JS.
+  // Pulse runs in free mode; Etherscan is used only as an external link.
+  ETHERSCAN_API_KEY: '',
   // UI label for Pulse Stage
   PULSE_STAGE_LABEL: 'Live (Early)',
 
@@ -22,6 +24,11 @@
     // Uniswap V2 pair (CAPI/WETH)
     // This is NOT Etherscan; it is the PAIR address (the pool contract).
     DEX_PAIR_ADDRESS: '0xb96808b1270A89eA8A237d52df389619f347AeA2',
+
+    // Pulse Baseline (Global)
+    // Launch price observed on DexScreener at initial activity (used as a fixed baseline).
+    PULSE_BASELINE_USD: 0.000000006676,
+    PULSE_BASELINE_CAPTURED_AT: '2026-01-14T00:00:00Z',
 
     // DexScreener (live stats for "CAPI Pulse")
     DEXSCREENER: {
