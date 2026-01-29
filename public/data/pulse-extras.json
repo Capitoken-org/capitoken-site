@@ -1,19 +1,19 @@
 {
   "version": "pulse-extras-v1",
-  "updatedAt": null,
+  "updatedAt": "2026-01-29T02:30:22.076Z",
   "chain": "ethereum",
-  "pair": "",
-  "contract": "",
+  "pair": "0xb96808b1270A89eA8A237d52df389619f347AeA2",
+  "contract": "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
   "dex": {
-    "priceUsd": null,
-    "pairCreatedAt": null
+    "priceUsd": 6.179e-7,
+    "pairCreatedAt": 1768355771000
   },
   "etherscan": {
     "holders": null,
-    "error": ""
+    "error": "You are using a deprecated V1 endpoint, switch to Etherscan API V2 using https://docs.etherscan.io/v2-migration"
   },
   "launch": {
-    "priceUsd": null,
-    "at": null
+    "priceUsd": 6.179e-7,
+    "at": "2026-01-29T02:30:22.075Z"
   }
 }
