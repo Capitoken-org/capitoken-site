@@ -37,8 +37,17 @@
     return Math.round(num).toString();
   }
 
-  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
+  // Baseline ("since launch")
+  // - Preferred: GLOBAL baseline from /public/data/pulse-extras.json (Baseline A)
+  // - Fallback: per-browser localStorage (kept for compatibility)
+  //
+  // NOTE: Older debug commands may remove different keys. We read those too.
   const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
+  const BASELINE_COMPAT_KEYS = [
+    BASELINE_KEY,
+    "capi_pulse_baseline_price_usd",
+    "capi_pulse_baseline_usd",
+  ];
   // Global baseline (preferred). When available, it comes from /public/data/pulse-extras.json (Baseline A).
   // Local baseline is a fallback only (stored in localStorage).
   let GLOBAL_BASELINE_USD = null;
@@ -49,9 +58,12 @@
       return GLOBAL_BASELINE_USD;
     }
     try {
-      const raw = localStorage.getItem(BASELINE_KEY);
-      const v = raw ? Number(raw) : null;
-      return Number.isFinite(v) && v > 0 ? v : null;
+      for (const k of BASELINE_COMPAT_KEYS) {
+        const raw = localStorage.getItem(k);
+        const v = raw ? Number(raw) : null;
+        if (Number.isFinite(v) && v > 0) return v;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -78,7 +90,9 @@
   async function loadPulseExtras(){
     try {
       if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      const res = await fetch(`/data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
+      // Use RELATIVE path (no leading slash) so it works on GitHub Pages project sites
+      // under /<repo>/... (e.g. /capitoken-site-staging/data/pulse-extras.json).
+      const res = await fetch(`data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
       if (!res.ok) throw new Error(`extras ${res.status}`);
       const j = await res.json();
       window.__capiPulseExtras = j;
