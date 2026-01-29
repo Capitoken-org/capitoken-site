@@ -5,7 +5,7 @@
 (function () {
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
-  const PULSE_VERSION = "snapshot-v1.4";
+  const PULSE_VERSION = "snapshot-v1.4.1";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
@@ -477,7 +477,8 @@
 
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
     const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
-    if (staticLaunch && !getBaseline().priceUsd) {
+    // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
+    if (staticLaunch && !getBaseline()) {
       setBaseline(staticLaunch);
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
