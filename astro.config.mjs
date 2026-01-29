@@ -3,7 +3,7 @@ import { defineConfig } from "astro/config";
 /**
  * Env-driven deploy settings
  * - Production (default): www.capitoken.org at domain root (base = "")
- * - Staging (GitHub Pages): /capitoken-site-staging/ (base = "/capitoken-site-staging/")
+ * - Staging (GitHub Pages): /capitoken-site-staging/ (base = "")
  *
  * Set in GitHub Actions:
  *   DEPLOY_ENV=staging
