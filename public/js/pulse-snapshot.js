@@ -56,6 +56,21 @@
     } catch {}
   }
 
+  // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
+  async function loadPulseExtras(){
+    try {
+      if (window.__capiPulseExtras) return window.__capiPulseExtras;
+      const res = await fetch(`/data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
+      if (!res.ok) throw new Error(`extras ${res.status}`);
+      const j = await res.json();
+      window.__capiPulseExtras = j;
+      return j;
+    } catch (_) {
+      return null;
+    }
+  }
+
+
   function pctSinceBaseline(priceUsd) {
     const base = getBaseline();
     const p = Number(priceUsd);
@@ -429,6 +444,22 @@
     const pair = cfg.DEX_PAIR_ADDRESS || ds.pair || cfg.DEX_PAIR || "";
     const contract = cfg.CONTRACT_ADDRESS || cfg.TOKEN_CONTRACT || "";
     const apiKey = cfg.ETHERSCAN_API_KEY || cfg.ETHERSCAN_KEY || "";
+
+    // Global extras baseline (no Etherscan API required)
+    const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
+    let extras = null;
+    try {
+      const r = await fetch("/data/pulse-extras.json?ts=" + Date.now(), { cache: "no-store" });
+      if (r.ok) extras = await r.json();
+    } catch (_) {}
+
+    const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
+    const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
+    if (staticLaunch && !getBaseline().priceUsd) {
+      setBaseline(staticLaunch);
+    }
+    const holdersLinkEl = document.querySelector("#pulseHoldersLink");
+    if (holdersLinkEl) holdersLinkEl.href = dexUrl;
 
     if (!pair) return;
 

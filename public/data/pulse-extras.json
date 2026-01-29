@@ -1,14 +1,15 @@
 {
   "schema": "capitoken-pulse-extras@1",
-  "updatedAt": null,
+  "updatedAt": "2026-01-29T15:06:13Z",
   "chain": "ethereum",
-  "contract": null,
-  "pair": null,
-  "holders": null,
-  "launchPriceUsd": null,
-  "launchCapturedAt": null,
+  "contract": "0xF2dA6C9B945c688A52D3B72340E622014920de6a",
+  "pair": "0xb96808b1270A89eA8A237d52df389619f347AeA2",
+  "holders": 12,
+  "launchPriceUsd": 0.000000006676,
+  "launchCapturedAt": "2026-01-14T00:00:00Z",
   "sources": {
-    "holders": "https://etherscan.io",
-    "baseline": "https://api.dexscreener.com"
+    "baseline": "https://dexscreener.com/ethereum/0xb96808b1270a89ea8a237d52df389619f347aea2",
+    "holders": "https://dexscreener.com/ethereum/0xb96808b1270a89ea8a237d52df389619f347aea2",
+    "market": "https://api.dexscreener.com/latest/dex/pairs/ethereum/0xb96808b1270a89ea8a237d52df389619f347aea2"
   }
 }
