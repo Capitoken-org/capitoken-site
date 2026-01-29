@@ -3,6 +3,8 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
+  try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
+
   const PULSE_VERSION = "snapshot-v1.4";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
@@ -276,7 +278,7 @@
 
     // Update DOM
     const mPrice = el("mPrice");
-    if (mPrice) {
+    if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
         setBaseline(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
@@ -285,10 +287,10 @@
         mPrice.textContent = "TBA";
       }
     }
-    const mLiq = el("mLiq"); if (mLiq) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
-    const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
-    const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
-    const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
+    const mLiq = el("mLiq"); if (mLiq && !isOwnedByIndex(mLiq)) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
+    const mVol = el("mVol"); if (mVol && !isOwnedByIndex(mVol)) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
+    const mMcap = el("mMcap"); if (mMcap && !isOwnedByIndex(mMcap)) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
+    const bs = el("pulseBS"); if (bs && !isOwnedByIndex(bs)) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
     const age = el("pulseAge"); if (age && !isOwnedByIndex(age)) age.textContent = humanAge(createdAt);
 
     const hEl = el("pulseHolders");

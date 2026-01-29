@@ -368,6 +368,15 @@ async function bootPulse() {
   try {
     if (typeof document === 'undefined') return;
 
+    // If Pulse Snapshot mode is active (or the snapshot UI is present), do NOT run this poller.
+    // Reason: it conflicts with Pulse Snapshot and/or index.astro live loader, causing values to flip
+    // (e.g. "14 Days" <-> "14d").
+    try {
+      const w = (typeof window !== 'undefined') ? window : null;
+      if (w && w.__CAPI_PULSE_SNAPSHOT_ACTIVE__) return;
+      if (document.getElementById('pulseLiqChart') || document.getElementById('pulseSince')) return;
+    } catch (e) {}
+
     // Only run if the Pulse panel exists
     const hasPulse = document.getElementById('mPrice') || document.getElementById('mLiq') || document.getElementById('mVol');
     if (!hasPulse) return;
