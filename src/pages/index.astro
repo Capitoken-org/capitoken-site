@@ -254,7 +254,7 @@ const roadmap = [
     <span id="pulseStage" class="pill-strong">Live (Early)</span>
     <span class="pill-sep">•</span>
     <span class="pill-muted">Pair age:</span>
-    <span id="pulseAge" data-pulse-owner="index" class="pill-strong">—</span>
+    <span id="pulseAge" class="pill-strong">—</span>
   </div>
 
   <!-- Mini chart (7d) -->
@@ -298,7 +298,7 @@ const roadmap = [
 
     <div class="pulse-item pulse-item--minor">
       <div class="k">Price</div>
-      <div class="v"><span id="mPrice" data-pulse-owner="index">TBA</span></div>
+      <div class="v"><span id="mPrice">TBA</span></div>
     </div>
 
     <div class="pulse-item pulse-item--minor">
@@ -318,7 +318,11 @@ const roadmap = [
 </div>
 
   <p id="pulseNote" class="small pulse-note" style="margin-top:12px;">
-    Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.
+      Early community stage. Low activity can be normal. If it’s not listed here, it’s not official.
+    <br />
+    Data sources: <a href="https://dexscreener.com" target="_blank" rel="noopener noreferrer">DexScreener</a> (market stats)
+    and <a href="https://etherscan.io" target="_blank" rel="noopener noreferrer">Etherscan</a> (holders, optional).
+  
   </p>
 </div>
 
@@ -1460,4 +1464,4 @@ function iconCandidates(it){
   <script src={withBase("/js/community.js")} defer></script>
 </BaseLayout>
 
-  <script src="/js/pulse-snapshot.js" defer></script>
+  <script src={withBase("/js/pulse-snapshot.js")} defer></script>

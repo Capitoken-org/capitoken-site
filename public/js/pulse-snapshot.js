@@ -3,12 +3,13 @@
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
 */
 (function () {
+  try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
+
   const PULSE_VERSION = "snapshot-v1.4";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
   let lastHoldersErr = "";
-  let pulseExtras = null; // loaded from /public/data/pulse-extras.json
 
   const el = (id) => document.getElementById(id);
 
@@ -36,25 +37,23 @@
     return Math.round(num).toString();
   }
 
-  async function loadPulseExtras() {
+  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
+  const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
+
+  function getBaseline() {
     try {
-      // Cache-bust to avoid stale GH Pages edge caches on first load
-      const url = `/data/pulse-extras.json?v=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) return null;
-      const json = await res.json();
-      if (!json || typeof json !== "object") return null;
-      return json;
-    } catch {
-      return null;
-    }
+      const raw = localStorage.getItem(BASELINE_KEY);
+      const n = raw ? Number(raw) : null;
+      return Number.isFinite(n) && n > 0 ? n : null;
+    } catch { return null; }
   }
 
-  // Baseline ("since launch") — first-party, maintained by GitHub Actions.
-  // If unavailable, we hide the percentage.
-  function getBaseline() {
-    const n = pulseExtras && Number(pulseExtras.launchPriceUsd);
-    return Number.isFinite(n) && n > 0 ? n : null;
+  function setBaseline(priceUsd) {
+    try {
+      const n = Number(priceUsd);
+      if (!Number.isFinite(n) || n <= 0) return;
+      if (getBaseline() === null) localStorage.setItem(BASELINE_KEY, String(n));
+    } catch {}
   }
 
   function pctSinceBaseline(priceUsd) {
@@ -279,7 +278,7 @@
 
     // Update DOM
     const mPrice = el("mPrice");
-    if (mPrice) {
+    if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
         setBaseline(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
@@ -288,10 +287,10 @@
         mPrice.textContent = "TBA";
       }
     }
-    const mLiq = el("mLiq"); if (mLiq) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
-    const mVol = el("mVol"); if (mVol) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
-    const mMcap = el("mMcap"); if (mMcap) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
-    const bs = el("pulseBS"); if (bs) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
+    const mLiq = el("mLiq"); if (mLiq && !isOwnedByIndex(mLiq)) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
+    const mVol = el("mVol"); if (mVol && !isOwnedByIndex(mVol)) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
+    const mMcap = el("mMcap"); if (mMcap && !isOwnedByIndex(mMcap)) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
+    const bs = el("pulseBS"); if (bs && !isOwnedByIndex(bs)) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
     const age = el("pulseAge"); if (age && !isOwnedByIndex(age)) age.textContent = humanAge(createdAt);
 
     const hEl = el("pulseHolders");
@@ -424,25 +423,18 @@
   }
 
   async function run(cfg) {
-    try {
-      if (typeof document !== 'undefined' && document.documentElement) {
-        document.documentElement.dataset.capiPulseOwner = 'pulse-snapshot';
-      }
-    } catch {}
     // Accept config from multiple shapes/keys (back-compat)
     const ds = cfg.DEXSCREENER || {};
     const chain = String(cfg.DEXSCREENER_CHAIN || ds.chain || "ethereum").toLowerCase();
     const pair = cfg.DEX_PAIR_ADDRESS || ds.pair || cfg.DEX_PAIR || "";
     const contract = cfg.CONTRACT_ADDRESS || cfg.TOKEN_CONTRACT || "";
+    const apiKey = cfg.ETHERSCAN_API_KEY || cfg.ETHERSCAN_KEY || "";
 
     if (!pair) return;
 
     try {
-      // Load first-party extras (holders + baseline) once per page load.
-      pulseExtras = pulseExtras || (await loadPulseExtras());
-
       const dexPair = await fetchDexPair(chain, pair);
-      const holders = (pulseExtras && Number.isFinite(pulseExtras.holders)) ? Number(pulseExtras.holders) : null;
+      const holders = await fetchHoldersEtherscan(contract, apiKey);
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
       lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
