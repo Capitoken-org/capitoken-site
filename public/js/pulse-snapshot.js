@@ -75,17 +75,10 @@
   }
 
   // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
-  // IMPORTANT: GitHub Pages project sites are served from a subpath
-  // (e.g. /capitoken-site-staging/), so absolute URLs like "/data/..." 404.
-  // Always resolve from document.baseURI.
-  function extrasUrl() {
-    return new URL('data/pulse-extras.json', document.baseURI).toString();
-  }
-
   async function loadPulseExtras(){
     try {
       if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      const res = await fetch(`${extrasUrl()}?ts=${Date.now()}`, { cache: `no-store` });
+      const res = await fetch(new URL(`data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
       if (!res.ok) throw new Error(`extras ${res.status}`);
       const j = await res.json();
       window.__capiPulseExtras = j;
@@ -478,7 +471,7 @@
     const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
     let extras = null;
     try {
-      const r = await fetch(extrasUrl(), { cache: "no-store" });
+      const r = await fetch("/data/pulse-extras.json?ts=" + Date.now(), { cache: "no-store" });
       if (r.ok) extras = await r.json();
     } catch (_) {}
 
