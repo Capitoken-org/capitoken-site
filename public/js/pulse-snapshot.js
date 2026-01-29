@@ -1,3 +1,8 @@
+
+
+  // Global baseline (from /public/data/pulse-extras.json) + localStorage fallback
+  let BASELINE_USD = null;
+  let BASELINE_CAPTURED_AT = null;
 /* Capitoken — Pulse Snapshot (DexScreener + optional Etherscan) 
    - Renders a compact "Community Snapshot" inside the CAPI Pulse card
    - Uses localStorage snapshots to compute 24h deltas and draw a small 7d liquidity trend sparkline
@@ -41,33 +46,67 @@
   const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
 
   function getBaseline() {
+    if (Number.isFinite(BASELINE_USD) && BASELINE_USD > 0) return BASELINE_USD;
     try {
-      const raw = localStorage.getItem(BASELINE_KEY);
-      const n = raw ? Number(raw) : null;
-      return Number.isFinite(n) && n > 0 ? n : null;
-    } catch { return null; }
+      const v = Number(localStorage.getItem(KEY_BASELINE));
+      return Number.isFinite(v) && v > 0 ? v : null;
+    } catch {
+      return null;
+    }
   }
 
-  function setBaseline(priceUsd) {
+  function setBaselineOnce(priceUsd) {
+    const p = Number(priceUsd);
+    if (!Number.isFinite(p) || p <= 0) return;
+    if (Number.isFinite(BASELINE_USD) && BASELINE_USD > 0) return; // already set
+    BASELINE_USD = p;
+    BASELINE_CAPTURED_AT = BASELINE_CAPTURED_AT || new Date().toISOString();
     try {
-      const n = Number(priceUsd);
-      if (!Number.isFinite(n) || n <= 0) return;
-      if (getBaseline() === null) localStorage.setItem(BASELINE_KEY, String(n));
+      localStorage.setItem(KEY_BASELINE, String(p));
     } catch {}
   }
 
-  // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
-  async function loadPulseExtras(){
-    try {
-      if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      const res = await fetch(`/data/pulse-extras.json?ts=${Date.now()}`, { cache: `no-store` });
-      if (!res.ok) throw new Error(`extras ${res.status}`);
-      const j = await res.json();
-      window.__capiPulseExtras = j;
-      return j;
-    } catch (_) {
-      return null;
+  function applyBaselineFromExtras(extras) {
+    if (!extras) return;
+    const p = Number(extras.launchPriceUsd);
+    if (Number.isFinite(p) && p > 0) {
+      BASELINE_USD = p;
+      BASELINE_CAPTURED_AT = extras.launchCapturedAt || BASELINE_CAPTURED_AT;
+      try {
+        localStorage.setItem(KEY_BASELINE, String(p));
+      } catch {}
     }
+  }
+
+  // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
+  async function loadPulseExtras() {
+    const urls = [
+      "/data/pulse-extras.json",
+      "/capitoken-site-staging/data/pulse-extras.json",
+    ];
+    for (const url of urls) {
+      try {
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) continue;
+        const j = await r.json();
+        if (!j || typeof j !== "object") continue;
+        return {
+          schema: j.schema || null,
+          updatedAt: j.updatedAt || null,
+          chain: j.chain || null,
+          contract: j.contract || null,
+          pair: j.pair || null,
+          holders: j.holders ?? null,
+          launchPriceUsd: j.launchPriceUsd ?? null,
+          launchCapturedAt: j.launchCapturedAt ?? null,
+          sources: j.sources || null,
+        };
+      } catch {
+        // try next url
+      }
+    }
+    return null;
+  }
   }
 
 
@@ -295,7 +334,7 @@
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
-        setBaseline(priceUsd);
+        setBaselineOnce(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
         mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
       } else {
@@ -395,7 +434,7 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
-          setBaseline(priceUsd);
+          setBaselineOnce(priceUsd);
           const pct = pctSinceBaseline(priceUsd);
           return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
         })()
@@ -456,7 +495,7 @@
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
     const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
     if (staticLaunch && !getBaseline().priceUsd) {
-      setBaseline(staticLaunch);
+      setBaselineOnce(staticLaunch);
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
