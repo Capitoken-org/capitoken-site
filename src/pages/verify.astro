@@ -32,8 +32,9 @@ const FALLBACK = {
   links: {
     site: "https://www.capitoken.org",
     verify: "https://www.capitoken.org/verify",
-    // Canonical Uniswap swap link for WETH -> CAPI
-    buy: "https://app.uniswap.org/swap?inputCurrency=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&outputCurrency=0xF2dA6C9B945c688A52D3B72340E622014920de6a",
+    // Canonical Uniswap swap link (clean URL, no "#/swap").
+    // NOTE: On mobile we prefer a MetaMask deep-link at click-time to avoid WalletConnect handoff bugs.
+    buy: "https://app.uniswap.org/swap?chain=ethereum&outputCurrency=0xF2dA6C9B945c688A52D3B72340E622014920de6a",
     // Canonical Dexscreener pair page
     market: "https://dexscreener.com/ethereum/0xb96808b1270A89eA8A237d52df389619f347AeA2"
   },
@@ -437,7 +438,7 @@ const FALLBACK = {
         const pairExplorer = pairAddr ? `${explorer}/address/${pairAddr}` : "";
 
         const buyCanonical = addr
-          ? `https://app.uniswap.org/swap?inputCurrency=${IMMUTABLE.weth}&outputCurrency=${addr}`
+          ? `https://app.uniswap.org/swap?chain=ethereum&outputCurrency=${addr}`
           : "";
         const marketCanonical = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : "";
 
@@ -445,7 +446,7 @@ const FALLBACK = {
         const marketLinkFromRegistry = data.links?.market || "";
 
         const buyOk = buyLinkFromRegistry
-          ? (norm(buyLinkFromRegistry).includes(norm(addr)) && norm(buyLinkFromRegistry).includes(norm(IMMUTABLE.weth)))
+          ? (norm(buyLinkFromRegistry).includes("app.uniswap.org") && norm(buyLinkFromRegistry).includes(norm(addr)))
           : false;
         const marketOk = marketLinkFromRegistry
           ? (norm(marketLinkFromRegistry).includes(norm(pairAddr)) && norm(marketLinkFromRegistry).includes("dexscreener.com/ethereum"))
