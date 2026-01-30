@@ -5,7 +5,7 @@
 (function () {
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
-  const PULSE_VERSION = "snapshot-v1.4.2";
+  const PULSE_VERSION = "snapshot-v1.4.1";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
@@ -83,8 +83,11 @@
       const j = await res.json();
       window.__capiPulseExtras = j;
       // Baseline A (global): use launchPriceUsd when present.
-      if (j && typeof j.launchPriceUsd === 'number' && Number.isFinite(j.launchPriceUsd) && j.launchPriceUsd > 0) {
-        GLOBAL_BASELINE_USD = j.launchPriceUsd;
+      if (j && j.launchPriceUsd != null) {
+        const lp = Number(j.launchPriceUsd);
+        if (Number.isFinite(lp) && lp > 0) {
+          GLOBAL_BASELINE_USD = lp;
+        }
       }
       return j;
     } catch (_) {
@@ -317,6 +320,7 @@
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
+        setBaseline(priceUsd);
         const pct = pctSinceBaseline(priceUsd);
         mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
       } else {
@@ -416,6 +420,7 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
+          setBaseline(priceUsd);
           const pct = pctSinceBaseline(priceUsd);
           return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
         })()
@@ -476,8 +481,8 @@
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
     const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
     // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
-    if (staticLaunch && !(typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0)) {
-      GLOBAL_BASELINE_USD = Number(staticLaunch);
+    if (staticLaunch && !getBaseline()) {
+      setBaseline(staticLaunch);
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
