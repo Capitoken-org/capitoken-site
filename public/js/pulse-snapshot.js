@@ -30,6 +30,20 @@
     return `$${trimmed}`;
   }
 
+  // Token-price formatter (NO "$" and NO scientific notation).
+  // Intended for very small USD values (e.g. 0.00000006676).
+  function fmtTokenUsdPlain(n) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    const num = Number(n);
+    if (!Number.isFinite(num)) return "—";
+
+    // Always show as decimal (never 6.6e-8). Use enough decimals for micro-prices.
+    // Heuristic: up to 11 decimals, then trim. This matches CAPI-scale values well.
+    const fixed = num.toFixed(11);
+    const trimmed = fixed.replace(/0+$/,'').replace(/\.$/, '');
+    return trimmed;
+  }
+
   function fmtInt(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     const num = Number(n);
@@ -281,23 +295,43 @@
     if (!contract) { lastHoldersErr = "missing contract"; return null; }
     if (!apiKey) { lastHoldersErr = "missing API key"; return null; }
 
-    const url = `https://api.etherscan.io/api?module=token&action=tokenholdercount&contractaddress=${encodeURIComponent(contract)}&apikey=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) { lastHoldersErr = `http ${res.status}`; return null; }
-    const data = await res.json();
+    const urls = [
+      // Legacy API
+      `https://api.etherscan.io/api?module=token&action=tokenholdercount&contractaddress=${encodeURIComponent(contract)}&apikey=${encodeURIComponent(apiKey)}`,
+      // Etherscan v2 API (some keys/tenants only support this)
+      `https://api.etherscan.io/v2/api?chainid=1&module=token&action=tokenholdercount&contractaddress=${encodeURIComponent(contract)}&apikey=${encodeURIComponent(apiKey)}`
+    ];
 
-    // Etherscan returns { status: "1", message: "OK", result: "<number>" } on success
-    if (data && (data.status === "1" || data.message === "OK") && data.result) {
-      const n = Number(data.result);
-      if (Number.isFinite(n)) return n;
-      lastHoldersErr = "invalid result";
-      return null;
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) { lastHoldersErr = `http ${res.status}`; continue; }
+        const data = await res.json();
+
+        // Expected success shape: { status: "1", message: "OK", result: "<number>" }
+        if (data && (data.status === "1" || data.message === "OK") && data.result) {
+          const n = Number(data.result);
+          if (Number.isFinite(n)) return n;
+          lastHoldersErr = "invalid result";
+          continue;
+        }
+
+        // Some variants return {result:{...}} or plain strings.
+        if (data && typeof data.result === "number" && Number.isFinite(data.result)) return data.result;
+        if (data && typeof data.result === "string") {
+          const maybe = Number(data.result);
+          if (Number.isFinite(maybe)) return maybe;
+          lastHoldersErr = data.result.slice(0, 80);
+          continue;
+        }
+        if (data && data.message) { lastHoldersErr = String(data.message).slice(0, 80); continue; }
+
+        lastHoldersErr = "not ok";
+      } catch (e) {
+        lastHoldersErr = (e && e.message) ? e.message.slice(0, 80) : "fetch error";
+      }
     }
 
-    // Common failure shapes
-    if (data && typeof data.result === "string") lastHoldersErr = data.result.slice(0, 80);
-    else if (data && data.message) lastHoldersErr = String(data.message).slice(0, 80);
-    else lastHoldersErr = "not ok";
     return null;
   }
 
@@ -347,14 +381,27 @@
     const sinceEl = el("pulseSince");
     if (sinceEl) {
       if (priceUsd !== null) {
+        const baseline = getBaseline();
         const pct = pctSinceBaseline(priceUsd);
-        setPctBadge(sinceEl, pct);
+
+        // Desired display: baseline launch price (plain) + percentage vs current
+        // Example: 0.00000006676 (+775%)
+        if (baseline !== null && Number.isFinite(baseline) && pct !== null) {
+          sinceEl.textContent = `${fmtTokenUsdPlain(baseline)} (${fmtPct(pct)})`;
+        } else if (pct !== null) {
+          // If baseline missing but we can compute pct from a cached baseline,
+          // still show pct so the tile doesn't look broken.
+          sinceEl.textContent = fmtPct(pct);
+        } else {
+          sinceEl.textContent = "—";
+        }
       } else {
         sinceEl.textContent = "—";
       }
     }
 
     // Snapshots + deltas + chart
+    const priceSnapUsd = (priceUsd !== null && priceUsd !== undefined) ? Number(priceUsd) : null;
     let snaps = readSnapshots();
     const now = Date.now();
     snaps = pruneSnapshots(snaps);
@@ -366,6 +413,7 @@
     const snap = {
       t: now,
       liq: Number.isFinite(liqUsd) ? liqUsd : null,
+      price: Number.isFinite(priceSnapUsd) ? priceSnapUsd : null,
       holders: Number.isFinite(holders) ? holders : null
     };
 
@@ -402,9 +450,12 @@
       }
     }
 
-    // Render sparkline from liquidity history
-    const liqSeries = snaps.map(p => p && Number.isFinite(p.liqUsd) ? p.liqUsd : (Number.isFinite(p.liq) ? p.liq : null)).filter(v => v !== null);
-    renderSparkline(liqSeries);
+    // Render sparkline: prefer price history (more meaningful movement),
+    // fallback to liquidity if price is unavailable.
+    const priceSeries = snaps.map(p => (p && Number.isFinite(p.price)) ? p.price : null).filter(v => v !== null);
+    const liqSeries = snaps.map(p => (p && Number.isFinite(p.liq)) ? p.liq : null).filter(v => v !== null);
+    const series = (priceSeries.length >= 2) ? priceSeries : liqSeries;
+    renderSparkline(series);
 
     // Footnote sources (DexScreener + Etherscan)
     try {
@@ -421,10 +472,7 @@
 
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
-      ? (() => {
-          const pct = pctSinceBaseline(priceUsd);
-          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
-        })()
+      ? fmtUSD(priceUsd)
       : null;
 
     let suppress = false;
@@ -506,43 +554,57 @@
 
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
-      lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
+      lockPulseFields({
+        chain,
+        pair,
+        contract,
+        createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null,
+        priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null,
+        cfg
+      });
 
-    // Refresh loop: keeps stats & the 7d local liquidity sparkline accumulating over time.
-    // Very conservative: one in-flight request at a time, holders fetched less frequently.
-    const refreshMs = (typeof cfg.PULSE_REFRESH_MS === "number" && cfg.PULSE_REFRESH_MS >= 15000) ? cfg.PULSE_REFRESH_MS : 60000;
-    let refreshInFlight = false;
-    let lastHoldersFetchAt = Date.now();
+      // Refresh loop: keeps stats & the 7d local liquidity sparkline accumulating over time.
+      // Very conservative: one in-flight request at a time, holders fetched less frequently.
+      const refreshMs = (typeof cfg.PULSE_REFRESH_MS === "number" && cfg.PULSE_REFRESH_MS >= 15000) ? cfg.PULSE_REFRESH_MS : 60000;
+      let refreshInFlight = false;
+      let lastHoldersFetchAt = Date.now();
 
-    async function fetchDexPair() {
-      if (!pair) return null;
-      try {
-        const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pair}`;
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) return null;
-        const json = await res.json();
-        return (json && json.pairs && json.pairs[0]) ? json.pairs[0] : null;
-      } catch (_) { return null; }
-    }
-
-    async function refreshPulse() {
-      if (refreshInFlight) return;
-      refreshInFlight = true;
-      try {
-        const dp = await fetchDexPair();
-        let h = null;
-        const key = (cfg && cfg.ETHERSCAN_API_KEY) ? String(cfg.ETHERSCAN_API_KEY).trim() : "";
-        if (key && (Date.now() - lastHoldersFetchAt) > 15 * 60 * 1000) {
-          lastHoldersFetchAt = Date.now();
-          h = await fetchEtherscanHolderCount(contract, key);
-        }
-        applyValues(dp, (h ?? holdersFromApi ?? staticHolders), cfg);
-      } finally {
-        refreshInFlight = false;
+      async function fetchDexPairLatest() {
+        if (!pair) return null;
+        try {
+          const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pair}`;
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) return null;
+          const json = await res.json();
+          return (json && json.pairs && json.pairs[0]) ? json.pairs[0] : null;
+        } catch (_) { return null; }
       }
-    }
 
-    setInterval(refreshPulse, refreshMs);
+      async function refreshPulse() {
+        if (refreshInFlight) return;
+        refreshInFlight = true;
+        try {
+          const dp = await fetchDexPairLatest();
+
+          // Holders: refresh every 15 minutes (optional)
+          let h = null;
+          const key = (cfg && cfg.ETHERSCAN_API_KEY) ? String(cfg.ETHERSCAN_API_KEY).trim() : "";
+          if (key && contract && (Date.now() - lastHoldersFetchAt) > 15 * 60 * 1000) {
+            lastHoldersFetchAt = Date.now();
+            h = await fetchHoldersEtherscan(contract, key);
+          }
+
+          // Apply: prefer fresh holders, otherwise keep last known/static.
+          const holdersResolved = (h ?? holders ?? staticHolders ?? null);
+          applyValues(dp, holdersResolved, cfg);
+        } catch (e) {
+          console.warn("[CAPI Pulse] refresh failed:", e);
+        } finally {
+          refreshInFlight = false;
+        }
+      }
+
+      setInterval(refreshPulse, refreshMs);
     } catch (e) {
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
