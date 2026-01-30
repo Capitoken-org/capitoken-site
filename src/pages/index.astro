@@ -1311,29 +1311,10 @@ function iconCandidates(it){
         if(!p){ setMarketBadge("Market: Indexing"); return; }
 
         setMarketBadge("Market: Live");
+        // NOTE: Market badge only. Pulse metrics are rendered by /public/js/pulse-snapshot.js (single writer).
 
-        {
-        const priceStr = fmtUSD(p.priceUsd, 8);
-        const since = computeSinceLaunch(p.priceUsd);
-        const sinceStr = since ? fmtPct(since.pct) : "—";
-        $id("mPrice").textContent = since ? `${priceStr} (${sinceStr})` : priceStr;
-        setTxt("pulseSince", sinceStr);
-      }
-        $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
-        $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
-
-        const mc = p?.marketCap ?? p?.fdv ?? null;
-        $id("mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
-
-        const buys = p?.txns?.h24?.buys ?? null;
-        const sells = p?.txns?.h24?.sells ?? null;
-        setTxt("pulseBS", (Number.isFinite(buys) && Number.isFinite(sells)) ? `${buys} / ${sells}` : "—");
-
-        const created = p?.pairCreatedAt ?? null;
-        setTxt("pulseAge", created ? humanAge(created) : "—");
       }catch(e){
         setMarketBadge("Market: Blocked");
-        setTxt("pulseSince","—");
         console.warn("DexScreener fetch failed", e);
       }
     }
@@ -1463,5 +1444,3 @@ function iconCandidates(it){
 
   <script src={withBase("/js/community.js")} defer></script>
 </BaseLayout>
-
-  <script src={withBase("/js/pulse-snapshot.js")} defer></script>
