@@ -6,7 +6,7 @@
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
   const PULSE_VERSION = "snapshot-v1.4.1";
-  const CFG_WAIT_MS = 3200;
+  const CFG_WAIT_MS = 20000;
   const CFG_POLL_MS = 80;
 
   let lastHoldersErr = "";
@@ -436,9 +436,8 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
-          setBaseline(priceUsd);
-          const pct = pctSinceBaseline(priceUsd);
-          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
+          // Keep "Actual Price" as price only (no %). Since-launch handles variation.
+          return fmtUSD(priceUsd);
         })()
       : null;
 
@@ -533,16 +532,66 @@
     }
   }
 
+
+  async function fetchConfigFallback() {
+    // Fallback: try to parse /js/capi-config.js when window.CAPI_CONFIG isn't ready.
+    // This avoids "TBA" if module scripts are slow or blocked.
+    try {
+      const res = await fetch(new URL("js/capi-config.js?ts=" + Date.now(), document.baseURI).toString(), { cache: "no-store" });
+      if (!res.ok) return null;
+      const text = await res.text();
+
+      const mContract = text.match(/CONTRACT_ADDRESS\s*:\s*'([^']+)'/);
+      const mPair = text.match(/DEX_PAIR_ADDRESS\s*:\s*'([^']+)'/);
+      const mChain = text.match(/DEXSCREENER\s*:\s*\{[\s\S]*?\bchain\s*:\s*'([^']+)'/);
+      const mDsPair = text.match(/DEXSCREENER\s*:\s*\{[\s\S]*?\bpair\s*:\s*'([^']+)'/);
+
+      const contract = mContract ? mContract[1] : "";
+      const pair = (mPair ? mPair[1] : (mDsPair ? mDsPair[1] : ""));
+      const chain = (mChain ? mChain[1] : "ethereum").toLowerCase();
+
+      if (!pair) return null;
+
+      return {
+        CONTRACT_ADDRESS: contract,
+        DEX_PAIR_ADDRESS: pair,
+        DEXSCREENER_CHAIN: chain,
+        DEXSCREENER: { chain, pair },
+        PULSE_STAGE_LABEL: "Live (Early)",
+        ETHERSCAN_API_KEY: ""
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
   function waitForConfig() {
     const start = Date.now();
-    const timer = setInterval(() => {
+    let triedFallback = false;
+
+    const timer = setInterval(async () => {
       const cfg = window.CAPI_CONFIG || window.__CAPI_CONFIG__ || window.CFG || null;
       if (cfg) {
         clearInterval(timer);
         run(cfg);
-      } else if (Date.now() - start > CFG_WAIT_MS) {
+        return;
+      }
+
+      // After a short grace period, try fallback parsing once.
+      if (!triedFallback && Date.now() - start > 3500) {
+        triedFallback = true;
+        const fb = await fetchConfigFallback();
+        if (fb) {
+          clearInterval(timer);
+          run(fb);
+          return;
+        }
+      }
+
+      // Hard stop after wait window.
+      if (Date.now() - start > CFG_WAIT_MS) {
         clearInterval(timer);
-        // No config; nothing to do.
+        // Leave placeholders (trust-first). No infinite loops.
       }
     }, CFG_POLL_MS);
   }
