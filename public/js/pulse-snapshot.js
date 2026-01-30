@@ -231,16 +231,20 @@
     const w = 300, h = 60;
     const pad = 3;
 
-    if (!values || values.length < 2) {
-      // Flat line placeholder
+    if (!values || values.length === 0) {
+      // No data yet — show a neutral flat placeholder.
       const y = Math.round(h * 0.65);
       const dLine = `M ${pad} ${y} L ${w - pad} ${y}`;
       line.setAttribute("d", dLine);
-      area.setAttribute("d", `M ${pad} ${h-pad} L ${pad} ${y} L ${w-pad} ${y} L ${w-pad} ${h-pad} Z`);
+      area.setAttribute("d", `M ${pad} ${h - pad} L ${pad} ${y} L ${w - pad} ${y} L ${w - pad} ${h - pad} Z`);
       return;
     }
 
-    const nums = values.map(v => Number(v)).filter(v => Number.isFinite(v));
+    // One-point series is expected on first visit. Render a flat line (duplicate the single point)
+    // instead of leaving the chart empty.
+    const series = (values.length === 1) ? [values[0], values[0]] : values;
+
+    const nums = series.map(v => Number(v)).filter(v => Number.isFinite(v));
     if (nums.length < 2) return;
 
     const minV = Math.min(...nums);
@@ -320,9 +324,7 @@
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
-        setBaseline(priceUsd);
-        const pct = pctSinceBaseline(priceUsd);
-        mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
+        mPrice.textContent = fmtUSD(priceUsd);
       } else {
         mPrice.textContent = "TBA";
       }
@@ -420,7 +422,6 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
-          setBaseline(priceUsd);
           const pct = pctSinceBaseline(priceUsd);
           return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
         })()
@@ -465,7 +466,7 @@
   async function run(cfg) {
     // Load static extras early (global baseline + optional prefilled holders).
     // This prevents "since launch" from staying blank on first load.
-    const extras = await loadPulseExtras();
+    const extrasObj = await loadPulseExtras();
 
     // Accept config from multiple shapes/keys (back-compat)
     const ds = cfg.DEXSCREENER || {};
@@ -474,16 +475,11 @@
     const contract = cfg.CONTRACT_ADDRESS || cfg.TOKEN_CONTRACT || "";
     const apiKey = cfg.ETHERSCAN_API_KEY || cfg.ETHERSCAN_KEY || "";
 
-    // Global extras baseline (no Etherscan API required)
+    // Global extras baseline (static, from /public/data/pulse-extras.json)
     const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
-    let extras = null;
-    try {
-      const r = await fetch(new URL("data/pulse-extras.json?ts=" + Date.now(), document.baseURI).toString(), { cache: "no-store" });
-      if (r.ok) extras = await r.json();
-    } catch (_) {}
 
-    const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
-    const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
+    const staticHolders = (extrasObj && Number.isFinite(extrasObj.holders)) ? Number(extrasObj.holders) : null;
+    const staticLaunch = (extrasObj && typeof extrasObj.launchPriceUsd === "number" && extrasObj.launchPriceUsd > 0) ? extrasObj.launchPriceUsd : null;
     // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
     if (staticLaunch && !getBaseline()) {
       setBaseline(staticLaunch);
@@ -511,6 +507,42 @@
       applyValues(dexPair, holders, cfg);
       // Prevent late overwrites (race with other site scripts)
       lockPulseFields({ chain, pair, contract, createdAt: (dexPair && dexPair.pairCreatedAt) ? Number(dexPair.pairCreatedAt) : null, priceUsd: (dexPair && dexPair.priceUsd) ? Number(dexPair.priceUsd) : null, cfg });
+
+    // Refresh loop: keeps stats & the 7d local liquidity sparkline accumulating over time.
+    // Very conservative: one in-flight request at a time, holders fetched less frequently.
+    const refreshMs = (typeof cfg.PULSE_REFRESH_MS === "number" && cfg.PULSE_REFRESH_MS >= 15000) ? cfg.PULSE_REFRESH_MS : 60000;
+    let refreshInFlight = false;
+    let lastHoldersFetchAt = Date.now();
+
+    async function fetchDexPair() {
+      if (!pair) return null;
+      try {
+        const url = `https://api.dexscreener.com/latest/dex/pairs/${chain}/${pair}`;
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return (json && json.pairs && json.pairs[0]) ? json.pairs[0] : null;
+      } catch (_) { return null; }
+    }
+
+    async function refreshPulse() {
+      if (refreshInFlight) return;
+      refreshInFlight = true;
+      try {
+        const dp = await fetchDexPair();
+        let h = null;
+        const key = (cfg && cfg.ETHERSCAN_API_KEY) ? String(cfg.ETHERSCAN_API_KEY).trim() : "";
+        if (key && (Date.now() - lastHoldersFetchAt) > 15 * 60 * 1000) {
+          lastHoldersFetchAt = Date.now();
+          h = await fetchEtherscanHolderCount(contract, key);
+        }
+        applyValues(dp, (h ?? holdersFromApi ?? staticHolders), cfg);
+      } finally {
+        refreshInFlight = false;
+      }
+    }
+
+    setInterval(refreshPulse, refreshMs);
     } catch (e) {
       // Keep placeholders; do not crash the page
       console.warn("[CAPI Pulse] failed:", e);
