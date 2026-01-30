@@ -5,8 +5,8 @@
 (function () {
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
-  const PULSE_VERSION = "snapshot-v1.4.2";
-  const CFG_WAIT_MS = 20000;
+  const PULSE_VERSION = "snapshot-v1.4.1";
+  const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
   let lastHoldersErr = "";
@@ -30,18 +30,7 @@
     return `$${trimmed}`;
   }
 
-  
-  function fmtPlain(n, maxDecimals = 12) {
-    if (n === null || n === undefined || Number.isNaN(n)) return "—";
-    const num = Number(n);
-    if (!Number.isFinite(num)) return "—";
-    // For tiny numbers, show enough decimals to avoid rounding to 0.
-    const d = Math.max(6, Math.min(18, maxDecimals));
-    const fixed = num.toFixed(d);
-    return fixed.replace(/0+$/,"").replace(/\.$/,"");
-  }
-
-function fmtInt(n) {
+  function fmtInt(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     const num = Number(n);
     if (!Number.isFinite(num)) return "—";
@@ -55,17 +44,34 @@ function fmtInt(n) {
   let GLOBAL_BASELINE_USD = null;
 
   function getBaseline() {
-    // Global baseline only (same for all visitors)
+    // Prefer global baseline if present.
     if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
       return GLOBAL_BASELINE_USD;
     }
-    return null;
+    try {
+      const raw = localStorage.getItem(BASELINE_KEY);
+      const v = raw ? Number(raw) : null;
+      return Number.isFinite(v) && v > 0 ? v : null;
+    } catch {
+      return null;
+    }
   }
 
   // Set local baseline (fallback). If force=true, overwrite.
   function setBaseline(priceUsd, force = false) {
-    // No-op: baseline is global, loaded from pulse-extras.json
-    return;
+    const v = Number(priceUsd);
+    if (!Number.isFinite(v) || v <= 0) return;
+    // If we already have a global baseline, keep it authoritative.
+    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
+      return;
+    }
+    try {
+      if (!force) {
+        const existing = getBaseline();
+        if (existing) return;
+      }
+      localStorage.setItem(BASELINE_KEY, String(v));
+    } catch {}
   }
 
   // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
@@ -307,8 +313,6 @@ function fmtInt(n) {
 
     const createdAt = pair && pair.pairCreatedAt ? Number(pair.pairCreatedAt) : null;
 
-    const pct = pctSinceBaseline(priceUsd);
-
     // Market cap (prefer marketCap then fdv if present)
     const mcap = pair && (pair.marketCap || pair.fdv) ? Number(pair.marketCap || pair.fdv) : null;
 
@@ -316,7 +320,9 @@ function fmtInt(n) {
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
-        mPrice.textContent = fmtUSD(priceUsd);
+        setBaseline(priceUsd);
+        const pct = pctSinceBaseline(priceUsd);
+        mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
       } else {
         mPrice.textContent = "TBA";
       }
@@ -338,11 +344,9 @@ function fmtInt(n) {
 
     const sinceEl = el("pulseSince");
     if (sinceEl) {
-      const base = getBaseline();
-      if (priceUsd !== null && base !== null) {
-        const baseStr = fmtPlain(base, 12);
-        const pctStr = pct !== null ? fmtPct(pct) : "—";
-        sinceEl.textContent = `${baseStr} (${pctStr})`;
+      if (priceUsd !== null) {
+        const pct = pctSinceBaseline(priceUsd);
+        setPctBadge(sinceEl, pct);
       } else {
         sinceEl.textContent = "—";
       }
@@ -397,7 +401,7 @@ function fmtInt(n) {
     }
 
     // Render sparkline from liquidity history
-    const liqSeries = snaps.map(p => p && Number.isFinite(p.liq) ? p.liq : null).filter(v => v !== null);
+    const liqSeries = snaps.map(p => p && Number.isFinite(p.liqUsd) ? p.liqUsd : (Number.isFinite(p.liq) ? p.liq : null)).filter(v => v !== null);
     renderSparkline(liqSeries);
 
     // Footnote sources (DexScreener + Etherscan)
@@ -415,7 +419,11 @@ function fmtInt(n) {
 
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
-      ? fmtUSD(priceUsd)
+      ? (() => {
+          setBaseline(priceUsd);
+          const pct = pctSinceBaseline(priceUsd);
+          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
+        })()
       : null;
 
     let suppress = false;
@@ -455,6 +463,10 @@ function fmtInt(n) {
   }
 
   async function run(cfg) {
+    // Load static extras early (global baseline + optional prefilled holders).
+    // This prevents "since launch" from staying blank on first load.
+    const extras = await loadPulseExtras();
+
     // Accept config from multiple shapes/keys (back-compat)
     const ds = cfg.DEXSCREENER || {};
     const chain = String(cfg.DEXSCREENER_CHAIN || ds.chain || "ethereum").toLowerCase();
@@ -471,14 +483,10 @@ function fmtInt(n) {
     } catch (_) {}
 
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
-
-    // Global baseline ("launch price") from /data/pulse-extras.json — same for all visitors.
-    // Accept number or string.
-    if (extras && extras.launchPriceUsd != null) {
-      const lp = Number(extras.launchPriceUsd);
-      if (Number.isFinite(lp) && lp > 0) {
-        GLOBAL_BASELINE_USD = lp;
-      }
+    const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
+    // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
+    if (staticLaunch && !getBaseline()) {
+      setBaseline(staticLaunch);
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
@@ -508,7 +516,7 @@ function fmtInt(n) {
       console.warn("[CAPI Pulse] failed:", e);
       // Still try to draw chart from existing snapshots, if any
       const snaps = pruneSnapshots(readSnapshots());
-      const liqSeries = snaps.map(p => p && Number.isFinite(p.liq) ? p.liq : null).filter(v => v !== null);
+      const liqSeries = snaps.map(p => p && Number.isFinite(p.liqUsd) ? p.liqUsd : (Number.isFinite(p.liq) ? p.liq : null)).filter(v => v !== null);
       renderSparkline(liqSeries);
     }
   }
