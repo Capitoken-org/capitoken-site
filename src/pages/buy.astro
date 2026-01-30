@@ -9,9 +9,20 @@ const LINKS_HREF = BASE + "links/";
 const TOKEN_ADDR = TOKEN.address;
 
 // Uniswap swap link (se activa cuando TOKEN_ADDR sea 0x...)
-const uniswapUrl = isAddress(TOKEN_ADDR)
-  ? `https://app.uniswap.org/#/swap?outputCurrency=${TOKEN_ADDR}`
+// NOTE (mobile + MetaMask): Prefer a clean Uniswap URL (no "#/swap") and avoid forcing WETH.
+// Some Android setups hit a WalletConnect/rehydration bug otherwise.
+const uniswapUrlWeb = isAddress(TOKEN_ADDR)
+  ? `https://app.uniswap.org/swap?chain=ethereum&outputCurrency=${TOKEN_ADDR}`
   : "TBA";
+
+// MetaMask deep-link (mobile) — opens Uniswap inside MetaMask browser (avoids WalletConnect handoff issues).
+const uniswapUrlMM = isAddress(TOKEN_ADDR)
+  ? `https://metamask.app.link/dapp/app.uniswap.org/swap?chain=ethereum&outputCurrency=${TOKEN_ADDR}`
+  : "TBA";
+
+// Default visible/copyable link: Web URL (works everywhere). On mobile, the button action will
+// prefer the MetaMask deep-link to avoid connection handoff bugs.
+const uniswapUrl = uniswapUrlWeb;
 ---
 
 <BaseLayout
@@ -130,7 +141,7 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
   <div id="toast" class="toast" aria-live="polite" style="position:fixed;left:16px;bottom:16px;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:12px;font-size:.95rem;"></div>
 
   <!-- ✅ FIX: define:vars para inyectar valores de Astro -->
-  <script type="module" define:vars={{ BASE, TOKEN_ADDR, TOKEN, uniswapUrl }}>
+  <script type="module" define:vars={{ BASE, TOKEN_ADDR, TOKEN, uniswapUrl, uniswapUrlWeb, uniswapUrlMM }}>
     const $ = (s) => document.querySelector(s);
 
     const toast = (msg) => {
@@ -231,7 +242,9 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
       if (href && href !== "TBA" && href.startsWith("https://")) {
         primaryLink.addEventListener("click", (e) => {
           e.preventDefault();
-          openModal(href);
+          const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+          const targetUrl = (isMobile && uniswapUrlMM && uniswapUrlMM !== "TBA") ? uniswapUrlMM : href;
+          openModal(targetUrl);
         });
       }
     }
@@ -270,4 +283,3 @@ const uniswapUrl = isAddress(TOKEN_ADDR)
     });
   </script>
 </BaseLayout>
-EOF
