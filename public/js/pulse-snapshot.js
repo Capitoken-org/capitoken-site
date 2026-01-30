@@ -5,7 +5,7 @@
 (function () {
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
-  const PULSE_VERSION = "snapshot-v1.4.1";
+  const PULSE_VERSION = "snapshot-v1.4.2";
   const CFG_WAIT_MS = 3200;
   const CFG_POLL_MS = 80;
 
@@ -30,25 +30,16 @@
     return `$${trimmed}`;
   }
 
-  // Micro-price formatter WITHOUT currency prefix, avoiding scientific notation.
-  // Example: 6.676e-8 -> "0.00000006676"
-  function fmtMicroPlain(n, maxDec = 12) {
-    const num = Number(n);
-    if (!Number.isFinite(num) || num <= 0) return "—";
-    if (num >= 1) return String(num.toFixed(6)).replace(/0+$/,"").replace(/\.$/,"");
-    const fixed = num.toFixed(maxDec);
-    return fixed.replace(/0+$/,"").replace(/\.$/,"");
-  }
 
-  function fmtPctSigned(pct) {
-    if (pct === null || pct === undefined || Number.isNaN(pct)) return "—";
-    const p = Number(pct);
-    if (!Number.isFinite(p)) return "—";
-    const abs = Math.abs(p);
-    const digits = abs >= 10 ? 0 : 1;
-    const val = abs.toFixed(digits);
-    const sign = p > 0 ? "+" : p < 0 ? "−" : "+";
-    return `${sign}${val}%`;
+  // Plain micro-price (no $ sign). Avoid scientific notation.
+  // Default precision is enough for launch price like 0.00000006676
+  function fmtPlainPrice(n, maxDecimals = 12) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    const num = Number(n);
+    if (!Number.isFinite(num)) return "—";
+    if (num >= 1) return num.toFixed(6).replace(/0+$/,"").replace(/\.$/,"");
+    const fixed = num.toFixed(maxDecimals);
+    return fixed.replace(/0+$/,"").replace(/\.$/,"");
   }
 
   function fmtInt(n) {
@@ -58,58 +49,35 @@
     return Math.round(num).toString();
   }
 
-  // Baseline ("since launch") — stored per-browser. First valid price observed becomes baseline.
-  const BASELINE_KEY = "capi_pulse_baseline_price_usd_v1";
-  // Global baseline (preferred). When available, it comes from /public/data/pulse-extras.json (Baseline A).
-  // Local baseline is a fallback only (stored in localStorage).
+  /
+  // Baseline ("since launch") — GLOBAL for all visitors.
+  // Source of truth: /public/data/pulse-extras.json -> { "launchPriceUsd": 6.676e-8 }
+  // We do NOT auto-create a baseline from the current price (that caused the 0% "loop").
   let GLOBAL_BASELINE_USD = null;
 
   function getBaseline() {
-    // Prefer global baseline if present.
-    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
-      return GLOBAL_BASELINE_USD;
-    }
-    try {
-      const raw = localStorage.getItem(BASELINE_KEY);
-      const v = raw ? Number(raw) : null;
-      return Number.isFinite(v) && v > 0 ? v : null;
-    } catch {
-      return null;
-    }
+    return (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0)
+      ? GLOBAL_BASELINE_USD
+      : null;
   }
 
-  // Set local baseline (fallback). If force=true, overwrite.
-  function setBaseline(priceUsd, force = false) {
-    const v = Number(priceUsd);
-    if (!Number.isFinite(v) || v <= 0) return;
-    // If we already have a global baseline, keep it authoritative.
-    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
-      return;
-    }
-    try {
-      if (!force) {
-        const existing = getBaseline();
-        if (existing) return;
-      }
-      localStorage.setItem(BASELINE_KEY, String(v));
-    } catch {}
-  }
-
-  // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
+  // Load global baseline + extras (static, stored in /public/data/pulse-extras.json)
   async function loadPulseExtras(){
     try {
       if (window.__capiPulseExtras) return window.__capiPulseExtras;
-      const res = await fetch(new URL(`data/pulse-extras.json?ts=${Date.now()}`, document.baseURI).toString(), { cache: `no-store` });
+
+      const url = new URL(`data/pulse-extras.json?ts=${Date.now()}`, document.baseURI).toString();
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`extras ${res.status}`);
+
       const j = await res.json();
       window.__capiPulseExtras = j;
-      // Baseline A (global): use launchPriceUsd when present.
-      if (j && j.launchPriceUsd != null) {
-        const lp = Number(j.launchPriceUsd);
-        if (Number.isFinite(lp) && lp > 0) {
-          GLOBAL_BASELINE_USD = lp;
-        }
-      }
+
+      // Accept number OR string
+      const raw = j ? j.launchPriceUsd : null;
+      const v = raw !== null && raw !== undefined ? Number(raw) : null;
+      if (Number.isFinite(v) && v > 0) GLOBAL_BASELINE_USD = v;
+
       return j;
     } catch (_) {
       return null;
@@ -340,15 +308,9 @@
     // Update DOM
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
-      if (priceUsd !== null) {
-        setBaseline(priceUsd);
-        const pct = pctSinceBaseline(priceUsd);
-        mPrice.textContent = fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
-      } else {
-        mPrice.textContent = "TBA";
-      }
+      mPrice.textContent = (priceUsd !== null ? fmtUSD(priceUsd) : "TBA");
     }
-    const mLiq = el("mLiq"); if (mLiq && !isOwnedByIndex(mLiq)) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
+const mLiq = el("mLiq"); if (mLiq && !isOwnedByIndex(mLiq)) mLiq.textContent = (liqUsd !== null ? fmtUSD(liqUsd) : "TBA");
     const mVol = el("mVol"); if (mVol && !isOwnedByIndex(mVol)) mVol.textContent = (vol24 !== null ? fmtUSD(vol24) : "TBA");
     const mMcap = el("mMcap"); if (mMcap && !isOwnedByIndex(mMcap)) mMcap.textContent = (mcap !== null ? fmtUSD(mcap) : "TBA");
     const bs = el("pulseBS"); if (bs && !isOwnedByIndex(bs)) bs.textContent = (buys !== null && sells !== null) ? `${buys} / ${sells}` : "—";
@@ -365,21 +327,16 @@
 
     const sinceEl = el("pulseSince");
     if (sinceEl) {
-      if (priceUsd !== null) {
-        const base = getBaseline();
+      const base = getBaseline();
+      if (priceUsd !== null && base) {
         const pct = pctSinceBaseline(priceUsd);
-        if (base && pct !== null) {
-          // Show: launch price (plain, no scientific notation) + variation percentage
-          sinceEl.textContent = `${fmtMicroPlain(base)} (${fmtPctSigned(pct)})`;
-        } else {
-          sinceEl.textContent = "—";
-        }
+        // Show launch price (plain) + (% change)
+        sinceEl.textContent = `${fmtPlainPrice(base, 12)} (${fmtPct(pct)})`;
       } else {
         sinceEl.textContent = "—";
       }
     }
-
-    // Snapshots + deltas + chart
+// Snapshots + deltas + chart
     let snaps = readSnapshots();
     const now = Date.now();
     snaps = pruneSnapshots(snaps);
@@ -446,11 +403,7 @@
 
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
-      ? (() => {
-          setBaseline(priceUsd);
-          const pct = pctSinceBaseline(priceUsd);
-          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
-        })()
+      ? fmtUSD(priceUsd)
       : null;
 
     let suppress = false;
@@ -499,18 +452,9 @@
 
     // Global extras baseline (no Etherscan API required)
     const dexUrl = pair ? ("https://dexscreener.com/" + chain + "/" + pair) : ("https://dexscreener.com/" + chain);
-    let extras = null;
-    try {
-      const r = await fetch(new URL("data/pulse-extras.json?ts=" + Date.now(), document.baseURI).toString(), { cache: "no-store" });
-      if (r.ok) extras = await r.json();
-    } catch (_) {}
+    const extras = await loadPulseExtras();
 
-    const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
-    const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
-    // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
-    if (staticLaunch && !getBaseline()) {
-      setBaseline(staticLaunch);
-    }
+    const staticHolders = (extras && extras.holders !== undefined && extras.holders !== null && Number.isFinite(Number(extras.holders))) ? Number(extras.holders) : null;
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
 
