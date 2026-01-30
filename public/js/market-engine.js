@@ -333,6 +333,10 @@ async function fetchDexScreenerPair({ apiBase, chain, pair, timeoutMs }) {
 }
 
 function updatePulseFromPair(pairObj) {
+  // If Pulse Snapshot is active, avoid competing writers.
+  try {
+    if (typeof window !== "undefined" && window.__CAPI_PULSE_SNAPSHOT_ACTIVE__) return;
+  } catch (e) {}
   try {
     const priceUsd = pairObj?.priceUsd;
     const liqUsd = pairObj?.liquidity?.usd;
@@ -380,6 +384,9 @@ async function bootPulse() {
     // Only run if the Pulse panel exists
     const hasPulse = document.getElementById('mPrice') || document.getElementById('mLiq') || document.getElementById('mVol');
     if (!hasPulse) return;
+
+    // If Pulse Snapshot is active, avoid competing writers.
+    try { if (typeof window !== 'undefined' && window.__CAPI_PULSE_SNAPSHOT_ACTIVE__) return; } catch (e) {}
 
     // Prefer official registry (single source of truth)
     const reg = await getRegistry(STATE.baseUrl).catch(() => null);
