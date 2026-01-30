@@ -5,7 +5,7 @@
 (function () {
   try { if (typeof window !== 'undefined') window.__CAPI_PULSE_SNAPSHOT_ACTIVE__ = true; } catch (e) {}
 
-  const PULSE_VERSION = "snapshot-v1.4.1";
+  const PULSE_VERSION = "snapshot-v1.4.2";
   const CFG_WAIT_MS = 20000;
   const CFG_POLL_MS = 80;
 
@@ -307,6 +307,8 @@ function fmtInt(n) {
 
     const createdAt = pair && pair.pairCreatedAt ? Number(pair.pairCreatedAt) : null;
 
+    const pct = pctSinceBaseline(priceUsd);
+
     // Market cap (prefer marketCap then fdv if present)
     const mcap = pair && (pair.marketCap || pair.fdv) ? Number(pair.marketCap || pair.fdv) : null;
 
@@ -413,9 +415,7 @@ function fmtInt(n) {
 
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
-      ? (() => {
-          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
-        })()
+      ? fmtUSD(priceUsd)
       : null;
 
     let suppress = false;
@@ -471,10 +471,14 @@ function fmtInt(n) {
     } catch (_) {}
 
     const staticHolders = (extras && Number.isFinite(extras.holders)) ? Number(extras.holders) : null;
-    const staticLaunch = (extras && typeof extras.launchPriceUsd === "number" && extras.launchPriceUsd > 0) ? extras.launchPriceUsd : null;
-    // Baseline may be stored as a NUMBER (USD) or be null. Never treat it as an object.
-    if (staticLaunch && !getBaseline()) {
-      setBaseline(staticLaunch);
+
+    // Global baseline ("launch price") from /data/pulse-extras.json — same for all visitors.
+    // Accept number or string.
+    if (extras && extras.launchPriceUsd != null) {
+      const lp = Number(extras.launchPriceUsd);
+      if (Number.isFinite(lp) && lp > 0) {
+        GLOBAL_BASELINE_USD = lp;
+      }
     }
     const holdersLinkEl = document.querySelector("#pulseHoldersLink");
     if (holdersLinkEl) holdersLinkEl.href = dexUrl;
