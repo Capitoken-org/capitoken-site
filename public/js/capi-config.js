@@ -6,8 +6,7 @@
 (function () {
   const CFG = {
   // Etherscan (optional) — used for holders count. Leave blank to disable holders.
-  // IMPORTANT: never expose API keys in client-side JS.
-  // Pulse runs in free mode; Etherscan is used only as an external link.
+  // NOTE: This key will be visible client-side. Use a key with domain restrictions (as you already hardened).
   ETHERSCAN_API_KEY: '',
   // UI label for Pulse Stage
   PULSE_STAGE_LABEL: 'Live (Early)',
@@ -27,7 +26,8 @@
 
     // Pulse Baseline (Global)
     // Launch price observed on DexScreener at initial activity (used as a fixed baseline).
-    PULSE_BASELINE_USD: 0.000000006676,
+    // DexScreener shows this as $0.0 (with zeros) then 6676; that's 0.00000006676.
+    PULSE_BASELINE_USD: 0.00000006676,
     PULSE_BASELINE_CAPTURED_AT: '2026-01-14T00:00:00Z',
 
     // DexScreener (live stats for "CAPI Pulse")
