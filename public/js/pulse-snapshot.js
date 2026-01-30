@@ -30,6 +30,27 @@
     return `$${trimmed}`;
   }
 
+  // Micro-price formatter WITHOUT currency prefix, avoiding scientific notation.
+  // Example: 6.676e-8 -> "0.00000006676"
+  function fmtMicroPlain(n, maxDec = 12) {
+    const num = Number(n);
+    if (!Number.isFinite(num) || num <= 0) return "—";
+    if (num >= 1) return String(num.toFixed(6)).replace(/0+$/,"").replace(/\.$/,"");
+    const fixed = num.toFixed(maxDec);
+    return fixed.replace(/0+$/,"").replace(/\.$/,"");
+  }
+
+  function fmtPctSigned(pct) {
+    if (pct === null || pct === undefined || Number.isNaN(pct)) return "—";
+    const p = Number(pct);
+    if (!Number.isFinite(p)) return "—";
+    const abs = Math.abs(p);
+    const digits = abs >= 10 ? 0 : 1;
+    const val = abs.toFixed(digits);
+    const sign = p > 0 ? "+" : p < 0 ? "−" : "+";
+    return `${sign}${val}%`;
+  }
+
   function fmtInt(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     const num = Number(n);
@@ -345,8 +366,14 @@
     const sinceEl = el("pulseSince");
     if (sinceEl) {
       if (priceUsd !== null) {
+        const base = getBaseline();
         const pct = pctSinceBaseline(priceUsd);
-        setPctBadge(sinceEl, pct);
+        if (base && pct !== null) {
+          // Show: launch price (plain, no scientific notation) + variation percentage
+          sinceEl.textContent = `${fmtMicroPlain(base)} (${fmtPctSigned(pct)})`;
+        } else {
+          sinceEl.textContent = "—";
+        }
       } else {
         sinceEl.textContent = "—";
       }
