@@ -8,7 +8,7 @@
   // Etherscan (optional) — used for holders count. Leave blank to disable holders.
   // IMPORTANT: This key is optional. If you use it, restrict it by domain in Etherscan to reduce abuse.
   // Pulse runs in free mode; Etherscan is used only as an external link.
-  ETHERSCAN_API_KEY: '',
+  ETHERSCAN_API_KEY: '1E9EJAEXRU9UPR6Z52DXUYP8JRIMA8MC5H',
   // UI label for Pulse Stage
   PULSE_STAGE_LABEL: 'Live (Early)',
 
