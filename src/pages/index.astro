@@ -1228,8 +1228,18 @@ function iconCandidates(it){
     function setDexLinks(){
       const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
       if(tokenAddr){
-        const buy = `https://app.uniswap.org/#/swap?inputCurrency=${weth}&outputCurrency=${tokenAddr}`;
-        const sell = `https://app.uniswap.org/#/swap?inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
+        // NOTE (mobile + MetaMask): Some Android setups hit a WalletConnect/rehydration bug when
+        // opening Uniswap with "#/swap" and/or forcing WETH. We keep a clean Uniswap URL and
+        // prefer a MetaMask deep-link on mobile to avoid the blank-screen handoff.
+        const buyWeb  = `https://app.uniswap.org/swap?chain=ethereum&outputCurrency=${tokenAddr}`;
+        const sellWeb = `https://app.uniswap.org/swap?chain=ethereum&inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
+
+        const buyMM  = `https://metamask.app.link/dapp/app.uniswap.org/swap?chain=ethereum&outputCurrency=${tokenAddr}`;
+        const sellMM = `https://metamask.app.link/dapp/app.uniswap.org/swap?chain=ethereum&inputCurrency=${tokenAddr}&outputCurrency=${weth}`;
+
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+        const buy  = isMobile ? buyMM  : buyWeb;
+        const sell = isMobile ? sellMM : sellWeb;
         const dex = pairAddr ? `https://dexscreener.com/ethereum/${pairAddr}` : `https://dexscreener.com/ethereum/${tokenAddr}`;
 
         const aBuy = $id("buyOnUniswap"); if(aBuy) aBuy.href = buy;
