@@ -1097,6 +1097,17 @@ function iconCandidates(it){
       const val = Math.abs(n).toFixed(digits);
       return `${s}${val}%`;
     }
+
+    function computeSinceLaunch(priceUsd){
+      const n = Number(priceUsd);
+      if(!Number.isFinite(n) || n <= 0) return null;
+      const key = "capi_launch_price_usd_v1";
+      let base = null;
+      try { base = Number(localStorage.getItem(key)); } catch {}
+      if(!Number.isFinite(base) || base <= 0){
+        try { localStorage.setItem(key, String(n)); } catch {}
+        base = n;
+      }
       const pct = ((n - base) / base) * 100;
       return { base, pct };
     }
@@ -1301,11 +1312,28 @@ function iconCandidates(it){
 
         setMarketBadge("Market: Live");
 
-        // NOTE: Pulse metrics are handled by /public/js/pulse-snapshot.js to avoid competing writers.
-        // This function only sets the Market badge so the Launch Panel stays informative.
-        
+        {
+        const priceStr = fmtUSD(p.priceUsd, 8);
+        const since = computeSinceLaunch(p.priceUsd);
+        const sinceStr = since ? fmtPct(since.pct) : "—";
+        $id("mPrice").textContent = since ? `${priceStr} (${sinceStr})` : priceStr;
+        setTxt("pulseSince", sinceStr);
+      }
+        $id("mLiq").textContent = fmtUSD(p?.liquidity?.usd, 0);
+        $id("mVol").textContent = fmtUSD(p?.volume?.h24, 0);
+
+        const mc = p?.marketCap ?? p?.fdv ?? null;
+        $id("mMcap").textContent = mc ? fmtUSD(mc, 0) : "TBA";
+
+        const buys = p?.txns?.h24?.buys ?? null;
+        const sells = p?.txns?.h24?.sells ?? null;
+        setTxt("pulseBS", (Number.isFinite(buys) && Number.isFinite(sells)) ? `${buys} / ${sells}` : "—");
+
+        const created = p?.pairCreatedAt ?? null;
+        setTxt("pulseAge", created ? humanAge(created) : "—");
       }catch(e){
         setMarketBadge("Market: Blocked");
+        setTxt("pulseSince","—");
         console.warn("DexScreener fetch failed", e);
       }
     }
