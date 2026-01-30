@@ -30,7 +30,18 @@
     return `$${trimmed}`;
   }
 
-  function fmtInt(n) {
+  
+  function fmtPlain(n, maxDecimals = 12) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    const num = Number(n);
+    if (!Number.isFinite(num)) return "—";
+    // For tiny numbers, show enough decimals to avoid rounding to 0.
+    const d = Math.max(6, Math.min(18, maxDecimals));
+    const fixed = num.toFixed(d);
+    return fixed.replace(/0+$/,"").replace(/\.$/,"");
+  }
+
+function fmtInt(n) {
     if (n === null || n === undefined || Number.isNaN(n)) return "—";
     const num = Number(n);
     if (!Number.isFinite(num)) return "—";
@@ -44,34 +55,17 @@
   let GLOBAL_BASELINE_USD = null;
 
   function getBaseline() {
-    // Prefer global baseline if present.
+    // Global baseline only (same for all visitors)
     if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
       return GLOBAL_BASELINE_USD;
     }
-    try {
-      const raw = localStorage.getItem(BASELINE_KEY);
-      const v = raw ? Number(raw) : null;
-      return Number.isFinite(v) && v > 0 ? v : null;
-    } catch {
-      return null;
-    }
+    return null;
   }
 
   // Set local baseline (fallback). If force=true, overwrite.
   function setBaseline(priceUsd, force = false) {
-    const v = Number(priceUsd);
-    if (!Number.isFinite(v) || v <= 0) return;
-    // If we already have a global baseline, keep it authoritative.
-    if (typeof GLOBAL_BASELINE_USD === "number" && Number.isFinite(GLOBAL_BASELINE_USD) && GLOBAL_BASELINE_USD > 0) {
-      return;
-    }
-    try {
-      if (!force) {
-        const existing = getBaseline();
-        if (existing) return;
-      }
-      localStorage.setItem(BASELINE_KEY, String(v));
-    } catch {}
+    // No-op: baseline is global, loaded from pulse-extras.json
+    return;
   }
 
   // Global baseline + extras (static, stored in /public/data/pulse-extras.json)
@@ -320,9 +314,8 @@
     const mPrice = el("mPrice");
     if (mPrice && !isOwnedByIndex(mPrice)) {
       if (priceUsd !== null) {
-        setBaseline(priceUsd);
-        const pct = pctSinceBaseline(priceUsd);
-        mPrice.textContent = fmtUSD(priceUsd);} else {
+        mPrice.textContent = fmtUSD(priceUsd);
+      } else {
         mPrice.textContent = "TBA";
       }
     }
@@ -344,29 +337,14 @@
     const sinceEl = el("pulseSince");
     if (sinceEl) {
       const base = getBaseline();
-      if (priceUsd !== null && typeof base === "number" && Number.isFinite(base) && base > 0) {
-        const pct = pctSinceBaseline(priceUsd);
-
-        // Show baseline (launch) price without scientific notation + the % variation.
-        const basePlain = (function(n){
-          const num = Number(n);
-          if (!Number.isFinite(num)) return "—";
-          // keep up to 11 decimals for micro-prices (covers launch price like 0.00000006676)
-          const fixed = num.toFixed(11).replace(/0+$/,"").replace(/\.$/,"");
-          return fixed;
-        })(base);
-
-        const pctTxt = (pct !== null ? fmtPct(pct) : "—");
-
-        // Apply style (up/down/flat) based on pct.
-        setPctBadge(sinceEl, pct);
-        // Keep our composite text.
-        sinceEl.textContent = `${basePlain} (${pctTxt})`;
+      if (priceUsd !== null && base !== null) {
+        const baseStr = fmtPlain(base, 12);
+        const pctStr = pct !== null ? fmtPct(pct) : "—";
+        sinceEl.textContent = `${baseStr} (${pctStr})`;
       } else {
         sinceEl.textContent = "—";
       }
     }
-
 
     // Snapshots + deltas + chart
     let snaps = readSnapshots();
@@ -436,8 +414,7 @@
     const desiredAge = humanAge(createdAt);
     const desiredPrice = (priceUsd !== null && priceUsd !== undefined && Number.isFinite(Number(priceUsd)))
       ? (() => {
-          // Keep "Actual Price" as price only (no %). Since-launch handles variation.
-          return fmtUSD(priceUsd);
+          return fmtUSD(priceUsd) + (pct !== null ? ` (${fmtPct(pct)})` : "");
         })()
       : null;
 
@@ -532,66 +509,16 @@
     }
   }
 
-
-  async function fetchConfigFallback() {
-    // Fallback: try to parse /js/capi-config.js when window.CAPI_CONFIG isn't ready.
-    // This avoids "TBA" if module scripts are slow or blocked.
-    try {
-      const res = await fetch(new URL("js/capi-config.js?ts=" + Date.now(), document.baseURI).toString(), { cache: "no-store" });
-      if (!res.ok) return null;
-      const text = await res.text();
-
-      const mContract = text.match(/CONTRACT_ADDRESS\s*:\s*'([^']+)'/);
-      const mPair = text.match(/DEX_PAIR_ADDRESS\s*:\s*'([^']+)'/);
-      const mChain = text.match(/DEXSCREENER\s*:\s*\{[\s\S]*?\bchain\s*:\s*'([^']+)'/);
-      const mDsPair = text.match(/DEXSCREENER\s*:\s*\{[\s\S]*?\bpair\s*:\s*'([^']+)'/);
-
-      const contract = mContract ? mContract[1] : "";
-      const pair = (mPair ? mPair[1] : (mDsPair ? mDsPair[1] : ""));
-      const chain = (mChain ? mChain[1] : "ethereum").toLowerCase();
-
-      if (!pair) return null;
-
-      return {
-        CONTRACT_ADDRESS: contract,
-        DEX_PAIR_ADDRESS: pair,
-        DEXSCREENER_CHAIN: chain,
-        DEXSCREENER: { chain, pair },
-        PULSE_STAGE_LABEL: "Live (Early)",
-        ETHERSCAN_API_KEY: ""
-      };
-    } catch (_) {
-      return null;
-    }
-  }
-
   function waitForConfig() {
     const start = Date.now();
-    let triedFallback = false;
-
-    const timer = setInterval(async () => {
+    const timer = setInterval(() => {
       const cfg = window.CAPI_CONFIG || window.__CAPI_CONFIG__ || window.CFG || null;
       if (cfg) {
         clearInterval(timer);
         run(cfg);
-        return;
-      }
-
-      // After a short grace period, try fallback parsing once.
-      if (!triedFallback && Date.now() - start > 3500) {
-        triedFallback = true;
-        const fb = await fetchConfigFallback();
-        if (fb) {
-          clearInterval(timer);
-          run(fb);
-          return;
-        }
-      }
-
-      // Hard stop after wait window.
-      if (Date.now() - start > CFG_WAIT_MS) {
+      } else if (Date.now() - start > CFG_WAIT_MS) {
         clearInterval(timer);
-        // Leave placeholders (trust-first). No infinite loops.
+        // No config; nothing to do.
       }
     }, CFG_POLL_MS);
   }
